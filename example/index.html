@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+	<title>World Wide Internet Example</title>
+  <!--Define the source of wwi/port.es6 in the folder you have your static modules-->
+  <!--path defines a subpath for the website-->
+  <!--import defines the file to be imported for you custom elements-->
+	<script src="modules/wwi/port.es6" import="custom-elements.html" modules="modules" path="/"></script>
+</head>
+
+<body gui vertical>
+  <div gui horizontal center-center>
+    <h1>World Wide Internet Example</h1>
+  </div>
+  <list-element id=list>
+    <a slot=item href=a.html>A Item</a>
+    <a slot=item href=b.html>B Item</a>
+    <a slot=item href=c.html>C Item</a>
+  </list-element>
+
+	<script>
+    //the app event is triggered once all wwi files have been loaded
+		window.addEventListener('app',function(e){
+
+      let list = app.query('#list')
+      list.bg = 'skyblue'
+
+
+		})
+	</script>
+</body>
+</html>

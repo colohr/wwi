@@ -1,0 +1,220 @@
+
+<link rel="import" href="/api/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/api/bower_components/polymer/lib/elements/dom-repeat.html">
+
+<template id="app-aside-template">
+	<style>
+		@import "/api/modules/wwi/component/design/css/index.css";
+
+		:host{
+			position: fixed;
+			display: block;
+			background-color: dodgerblue;
+			width: 300px;
+			will-change: transform;
+			transform-style: preserve-3d;
+			transition:transform 200ms ease-in-out;
+			z-index: 10;
+			top:40px;
+			bottom: 0px;
+			overflow: visible;
+		}
+
+		:host([left]){
+			transform:translate3d(-300px,0,0);
+			left:0px;
+		}
+		:host([left])::before{
+			content:'';
+			position: absolute;
+			top:5px;
+			left:0px;
+			right:0px;
+			bottom:0px;
+			box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.4);
+		}
+
+		:host([right]){
+			right:0px;
+			transform:translate3d(300px,0,0);
+		}
+
+		:host([right])::before{
+			content:'';
+			position: absolute;
+			top:5px;
+			left:0px;
+			right:0px;
+			bottom:0px;
+			box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.4);
+		}
+
+		:host([opened]){
+			transform:translate3d(0,0,0);
+		}
+
+		[aside-container]{
+			background: inherit;
+			z-index: 1;
+			position: relative;
+			max-height: 100%;
+			overflow: hidden;
+			overflow-y: auto;
+		}
+
+		[aside-content]{
+			position: relative;
+			max-height: 100%;
+		}
+
+		[aside-container]::-webkit-scrollbar {
+			height: 13px;
+			overflow: visible;
+			width: 13px;
+		}
+
+		/*Pseudo ::scrollbar-button element*/
+		[aside-container]::-webkit-scrollbar-button {
+			height: 0;
+			width: 0;
+		}
+
+		/*Pseudo ::scrollbar-corner element*/
+		[aside-container]::-webkit-scrollbar-corner {
+			background: rgba(0, 0, 0, 0);
+		}
+
+		/*Pseudo ::scrollbar-thumb element*/
+		[aside-container]::-webkit-scrollbar-thumb {
+			background-color: rgba(3, 235, 255, 0.22);
+			background-color: rgba(107, 253, 255, 0.28);
+			background-clip: padding-box;
+			border: solid rgba(0, 0, 0, 0);
+			min-height: 28px;
+			padding: 100px 0 0;
+			border-radius: 100px;
+			box-shadow: inset 0px 0px 0 1px rgba(107, 253, 255, 0.3),
+			inset 1px 1px 0 rgba(107, 253, 255, 0.3),
+			inset 0 -1px 0 rgba(107, 253, 255, 0.3);
+			-webkit-filter: contrast(105%)  brightness(1.4);
+			filter: contrast(105%)  brightness(1.4);
+		}
+
+		/*Pseudo ::scrollbar-track element*/
+		[aside-content]::-webkit-scrollbar-track {
+			background-clip: padding-box;
+			border: solid rgba(0, 0, 0, 0);
+			border-width: 0 0 0 4px;
+		}
+
+		[aside-content]::-webkit-scrollbar-track-piece {
+			background-clip: padding-box;
+			background-color: rgba(245, 245, 245, 0.47);
+			border: solid rgba(245, 245, 245, 0.47);
+			border-width: 0 0 0 3px;
+		}
+
+		.drawer-list a,
+		shiny-item a{
+			display: block;
+			padding: 0 16px;
+			text-decoration: none;
+			color: var(--app-secondary-color);
+			line-height: 40px;
+		}
+
+		.drawer-list a.iron-selected {
+			color: black;
+			font-weight: bold;
+		}
+
+
+
+	</style>
+
+
+	<div aside-container id="container">
+		<div aside-content role="item">
+			<dom-repeat as="item">
+				<template>
+					<shiny-item role="menuitem" tabindex="-1" data="[[item]]" >
+						[[item]]
+					</shiny-item>
+				</template>
+			</dom-repeat>
+			<slot name="content"></slot>
+		</div>
+	</div>
+
+</template>
+
+<script>
+	((doc)=>{
+		const Aside = wwi.element(doc)
+
+		Aside( class AppAside extends Aside.Element{
+
+			get dom_repeat(){ return this.query('dom-repeat') }
+			constructor(){
+				super({
+					opened:true,
+					tabs:true,
+					repeat:true
+				})
+			}
+			get items(){ return this.all('[role="menuitem"]') }
+			set_items(items){
+				const aside = this
+				function check_ready(){
+					console.log('ready')
+					aside.dom_repeat.removeEventListener('dom-change',check_ready,false)
+					aside.items.forEach(item=>{
+						item.onclick = aside.on_item_click.bind(aside)
+					})
+				}
+				this.dom_repeat.addEventListener('dom-change',check_ready,false)
+				this.dom_repeat.items = items
+			}
+			changed(name,old,value){
+				switch(name){
+					case 'repeat':
+						if(Array.isArray(value)) this.set_items(value)
+						break
+					case 'tabs':
+						this.set_tabs(value)
+						break
+				}
+			}
+			connected(s,is){
+//				this.detection = { item:this.on_detected_item.bind(this) }
+				this.at('absolute','gui','bottom','right')
+//				this.detector.active = { target: this.slots.content.target }
+
+			}
+			set_tabs(value){
+				let items = this.items
+				if(value){
+					items.forEach(item=>{ item.setAttribute('tabindex','0') })
+				}else{
+					items.forEach(item=>{ item.setAttribute('tabindex','-1') })
+				}
+			}
+			on_detected_item(item){
+				if(item.type === 'child'){
+					this.set_item_action(item.contents.value)
+				}
+			}
+			on_item_click(e){
+				let item = e.currentTarget
+				this.dispatch('item',item)
+			}
+			set_item_action(item){
+				if(item){
+					item.on('click',this.on_item_click.bind(this))
+					item.setAttribute('tabindex','-1')
+				}
+			}
+
+		})
+	})(document)
+</script>

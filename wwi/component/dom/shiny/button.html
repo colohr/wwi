@@ -1,0 +1,195 @@
+<template id="shiny-button-template">
+	<style>
+		@import "/api/modules/wwi/component/design/css/attr.css";
+
+		:host{
+
+			--accent: var(--white);
+			--back: var(--blue);
+			--color: white;
+			--icon: var(--color);
+
+			--ripple: white;
+			--radius: 100px;
+			--shadow: var(--ripple);
+
+			--height: 33px;
+			--width: 33px;
+
+			--focus:var(--focus-color);
+
+			--icon-size:calc( var(--height) - 20.15% );
+
+
+			background-color: var(--back);
+			border-radius: var(--radius);
+			box-sizing: border-box;
+
+			color:var(--color);
+			cursor: pointer;
+
+			display: inline-block;
+
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+			font-size: 1em;
+			font-weight: 400;
+
+			height:var(--height);
+
+			outline: none;
+			overflow: visible;
+
+			position: relative;
+
+			text-rendering: geometricPrecision;
+
+			width:var(--width);
+
+		}
+
+		/*view*/
+		[button-view]{
+			display: block;
+			position: relative;
+			height:100%;
+			width: 100%;
+			overflow: hidden;
+			border-radius: inherit;
+			box-sizing: inherit;
+		}
+
+		icon,
+		::slotted(iron-icon),
+		svg{
+			position: relative;
+			display: inline-block;
+			text-align: center;
+			vertical-align: middle;
+			box-sizing: content-box;
+		}
+
+		svg{
+			height: 70%;
+			width: 70%;
+			pointer-events: none;
+			display: block;
+			fill: var(--icon);
+		}
+
+
+		paper-ripple {
+			color:var(--ripple);
+			--paper-icon-button-ink-color: var(--ripple);
+		}
+
+
+		:host{
+			--focus-filter: contrast(105%)  brightness(1.4) drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+			--drop-shadow:drop-shadow(0 0px 2px var(--shadow));
+		}
+		/*states*/
+
+		:host:before{
+			content:'';
+			position:absolute;
+			top:0;left:0;right:0;bottom:0;
+			display: block;
+			border-radius: inherit;
+			box-sizing: inherit;
+			z-index: 1;
+		}
+
+		:host(:focus):before{
+			box-shadow:0 0 1px 1px var(--focus);
+			border:2px solid var(--focus);
+		}
+
+		:host(:focus){
+			-webkit-filter:var(--focus-filter);
+			filter:var(--focus-filter);
+		}
+
+		:host([no-filter]:focus){
+			-webkit-filter:none;
+			filter:none;
+		}
+
+		:host([opened]){
+			-webkit-filter: var(--focus-filter);
+			filter: var(--focus-filter);
+		}
+
+		:host([no-filter][opened]){
+			-webkit-filter:none;
+			filter:none;
+		}
+
+		:host(:hover) svg{
+			-webkit-filter:var(--drop-shadow);
+			filter:var(--drop-shadow);
+		}
+		:host([no-filter]:hover) svg{
+			-webkit-filter:none;
+			filter:none;
+		}
+
+
+		:host([disabled]) icon,
+		:host([disabled]) svg{
+			-webkit-filter: saturate(0%);
+			filter: saturate(0%);
+			opacity: 0.9;
+			pointer-events: none;
+			cursor: default;
+		}
+
+
+		/*polymers*/
+		::slotted(iron-icon) {
+			--iron-icon-fill-color: var(--icon);
+			--iron-icon-stroke-color: var(--accent, none);
+			--iron-icon-width: 100%;
+			--iron-icon-height: 100%;
+		}
+		icon{
+			backface-visibility: visible;
+			-webkit-transform: scale(1.68,1.68) translateY(-1%);
+			transform: scale(1.68,1.68) translateY(-1%);
+			text-rendering: geometricPrecision;
+		}
+
+		[title]{
+			position: absolute;
+			display: block;
+			text-align: center;
+			z-index: 2;
+			right:0px;
+			left:2px;
+			bottom:2px;
+			font-size:12px;
+			font-weight: 200;
+			color:var(--color);
+		}
+
+
+
+	</style>
+
+	<div button-view gui horizontal center-center>
+		<slot name="icon"></slot>
+	</div>
+	<div title gui horizontal center-center><slot></slot></div>
+
+</template>
+<script>
+	((doc)=>{
+		const Shiny = wwi.button(doc)
+		class ShinyButton extends Shiny.Element{
+			connected(){
+				this.ripple = true
+			}
+		}
+		Shiny(ShinyButton)
+	})(document)
+</script>
+

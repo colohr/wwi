@@ -1,0 +1,84 @@
+<link rel="import" href="pointer.html">
+<link rel="import" href="letterify.html">
+<template id="explode-button-template">
+	<style>
+		:host{
+			display: block;
+			min-height: 10px;
+			min-width: 10px;
+			padding:10px;
+			border-radius: 100px;
+			cursor: pointer;
+			color:white;
+			will-change: filter;
+			transition:filter 200ms linear;
+			text-rendering: geometricPrecision;
+			font-weight: bold;
+			backface-visibility: hidden;
+			outline: none;
+		}
+		:host(:active){
+			filter:drop-shadow(0 0 0 rgba(60,50,70,0)) ;
+		}
+		:host(:hover){
+			filter:drop-shadow(0 1px 6px rgba(60,50,70,1));
+		}
+		:host(:focus){
+			filter:drop-shadow(0 0px 1px rgba(90,70,230,1));
+			box-shadow:0 0px 0px 1px rgba(90,70,230,1);
+		}
+		:host([silly]){
+			animation: silly 3500ms infinite;
+		}
+		::slotted(*){
+			text-rendering: geometricPrecision;
+			font-weight: bold;
+		}
+		@keyframes silly{
+			0%{
+				filter:hue-rotate(0deg);
+			}
+			100%{
+				filter:hue-rotate(-456deg);
+			}
+		}
+	</style>
+	<div>
+		<slot name="title"></slot>
+	</div>
+</template>
+
+<script>
+	((doc)=>{
+
+
+		const Explode = wwi.element(doc)
+		class ExplodeButton extends Explode.Element{
+			connected(){
+				this.define({pointer:true})
+				if(!this.hasAttribute('pointer')) this.pointer = 'explode'
+
+				this.ui({
+					background:'rgba(40,20,140,1)'
+				})
+			}
+		}
+
+		Explode(ExplodeButton)
+
+	})(document)
+
+</script>
+
+
+
+
+
+
+
+
+<!--//	Basic.PointerController = Pointer-->
+
+<!--//		static get template(){-->
+<!--//			return { doc:document.currentScript.ownerDocument,  path:'custom-elements/explosion/element/index.html' }-->
+<!--//		}-->

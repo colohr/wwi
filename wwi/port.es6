@@ -425,16 +425,28 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 			}
 			
 			let wwis = [
-				window.url.component('component.es6'),
-				// window.url.vally('va11y.es6')
+				window.url.component('component.es6')
 			]
+
+      
+      /* 
+        // if load va11y 
+        wwis.push(window.url.vally('va11y.es6'))
+        return window.app
+              .port
+              .eval(wwis[0])
+              .then(()=>wwis[1])
+              .then(next=>get_eval(next))
+              .then(window_imports)
+      */
+       
 		
 			return window.app
 			             .port
 			             .eval(wwis[0])
-			             .then(()=>wwis[1])
-			             .then(next=>get_eval(next))
-			             .then(window_imports)
+                   .then(window_imports)
+			            
+			             
 			
 		}
 		

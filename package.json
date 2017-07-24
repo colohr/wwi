@@ -1,6 +1,6 @@
 {
   "name": "wwi",
-  "version": "0.0.4",
+  "version": "0.0.45",
   "description": "World Wide Internet Web Component Library",
   "main": "./lib/index.js",
   "repository": {
@@ -21,6 +21,7 @@
   "dependencies": {
     "compression": "^1.6.2",
     "express": "^4.15.2",
+    "fxy": "^0.1.5",
     "yargs": "^8.0.1"
   },
   "devDependencies": {

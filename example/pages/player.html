@@ -1,0 +1,63 @@
+<template id="player-page-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host{
+			contain: content;
+		}
+		[view]{
+
+			transition-timing-function: linear;
+			transition-property: filter;
+			transition-duration: 500ms;
+			will-change: filter;
+			backface-visibility: visible;
+		}
+		media-player{
+			height:calc(100% - 95px);
+			max-height:calc(100% - 95px);
+			width:calc(100% - 95px);
+			backface-visibility: visible;
+		}
+
+	</style>
+	<div view gui fit vertical center-center style="filter:opacity(0);">
+		<media-player ></media-player>
+	</div>
+
+
+</template>
+<script>
+	(function (doc) {
+		const Page = wwi.page(doc)
+		Page(class extends Page.Element{
+			connected(){
+				this.on('active',()=>{
+					if(!('player' in this)) {
+						console.log('player')
+						this.player = populate_music_player(this.query('media-player'))
+						this.player.on('items updated',()=>{
+							this.view.style.filter = 'opacity(1)'
+						})
+					}
+				})
+			}
+		})
+
+		function populate_music_player(player) {
+			player.add('media/Best Kept Secret.mp3',
+				'media/Im Better ft. Lamb.mp3',
+				'media/Jay-Z Trouble instrumental.mp3',
+				'media/Lloyd Banks - On Fire Instrumental.mp3',
+				'media/System of a Down - Chop Suey official instrumental.mp3',
+				'media/Time to Eat.m4a',
+				'media/Trouble.mp3',
+				'media/Wanted.m4a',
+				'media/White Tennis Sneakers (1960).mp3',
+				'media/beat.mp3',
+				'media/shawnna_ft_ludacris_shake_dat_shit_instrumental.mp3',
+				'media/timbaland and magoo feat missy cop that shit instrumental.mp3')
+			return player
+		}
+	})(document)
+</script>

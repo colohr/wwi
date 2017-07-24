@@ -1,0 +1,96 @@
+<template id="browser-page-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		browser-list{
+			display: inline-block;
+			width: calc(98.9% / 3);
+			top:1px;
+			height:calc(100% - 1px);
+			background:white;
+		}
+	</style>
+	<browser-list></browser-list>
+</template>
+<script>
+	(function (doc) {
+		const Page = wwi.page(doc)
+
+		Page(class extends Page.Element{
+			get list(){ return this.query('browser-list') }
+			connected(){
+				this.unset = true
+				let colors = fxy.require('design/colors')
+				this.on('active',()=>{
+					set_browser(this)
+				})
+			}
+		})
+
+		function set_browser(page){
+			if('unset' in page){
+				get_data().then(data=>{
+					return set_data(page.list,data)
+				}).then(()=>{
+					page.list.on('select',(e)=>{
+						if(page.list.selected_item){
+							page.list.selected_item.selected=false
+						}
+						let selection = e.detail
+						if(!selection.selected) selection.selected=true
+						page.list.selected_item = selection
+					})
+				}).catch(console.error)
+				//				let sections = page.list.add_sections({title:'Section'},{title:'Section 2 '},{title:'Section 3'})
+				//				sections.forEach(section=>{
+				//
+				//					let subs = section.add_sections({title:'SSection'},{title:'SSection 2 '},{title:'SSection 3'})
+				//					subs.forEach(sub=>{
+				//						sub.add_items({title:'Hello'},{title:'Hello'},{title:'Hello'})
+				//					})
+				//				})
+
+				delete page.unset
+			}
+		}
+
+		function set_data(list,data){
+			return new Promise((success,error)=>{
+				for(let item of data){
+					let bank = list.add_section(item)
+					set_sections(bank)
+				}
+				return success()
+			})
+		}
+		function set_sections(list){
+			let data = list.data.sections
+			delete list.data.sections
+			for(let item of data){
+				let section = list.add_section(item)
+				set_targets(section)
+			}
+		}
+		function set_targets(list){
+			let data = list.data.targets
+			delete list.data.targets
+			for(let item of data){
+				let target = list.add_section(item)
+				set_items(target)
+			}
+		}
+		function set_items(list){
+			let data = list.data.items
+			delete list.data.items
+			for(let item of data){
+				item.title = item.ditl
+				list.add_item(item)
+			}
+		}
+
+		function get_data(){
+			return fetch(url.logic('banks.json')).then(res=>res.json())
+		}
+
+
+	})(document)
+</script>

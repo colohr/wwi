@@ -1,0 +1,20 @@
+<template id="a-page-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+		}
+	</style>
+	<div view>
+
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const A = wwi.page(doc)
+		A(class extends A.Element {
+
+		})
+	})(document)
+</script>

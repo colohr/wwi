@@ -1,0 +1,3 @@
+wwi.exports('walki',(walki)=>{
+
+})

@@ -1,0 +1,130 @@
+<template id="i-tab-template">
+	<style>
+		:host {
+			border-radius: 7px 7px 0 0;
+			box-sizing: border-box;
+
+			color:rgba(30,144,255,1);
+			cursor: pointer;
+
+			display:inline-flex;
+
+			font-size:8px;
+			font-weight: 600;
+			flex-grow: 1;
+			/*filter:drop-shadow(0 0px 4px rgba(0,0,0,0.2));*/
+
+			margin-top:var(--tab-margin,2px);
+			max-height: 80%;
+			max-width: 30px;
+			min-height:20px;
+			min-width:30px;
+
+			pointer-events: auto;
+			position: relative;
+
+			z-index: 0;
+		}
+		:host(:active){  cursor: move;  }
+
+		:host([aria-selected="true"]){
+			text-decoration: underline;
+			font-weight: bold;
+			z-index: 1;
+			flex-grow: 5;
+			max-width: none;
+			font-size:13px;
+		}
+
+		:host:before{
+			content: '';
+			position: absolute;
+			top:2px;left:2px;right:2px;bottom:2px;
+			border: 1px dotted transparent;
+			box-sizing: border-box;
+			display: block;
+			opacity:0;
+			z-index: 1;
+			border-radius: inherit;
+		}
+
+		:host([over]){
+			background-color: rgba(255,255,255,0.5);
+		}
+		:host([over]):before{
+			opacity: 1;
+			border-color: #d8ff5f;
+		}
+
+		:host([dragging]){
+			opacity: 0.9;
+		}
+		:host([dragging]):before{
+			opacity: 0.9;
+			box-shadow: inset 0 0 0 2px white;
+		}
+
+		:host([aria-selected="true"]):after{
+			content: '';
+			position: absolute;
+			top:0px;left:0px;right:0px;bottom:0px;
+			box-sizing: border-box;
+			display: block;
+			z-index: 0;
+			border-radius: inherit;
+			background-color: rgb(248, 248, 255);
+			/*box-shadow:0 0px 0 1px rgba(180, 178, 184,0.8);*/
+			box-shadow: 0 0 0 1px rgb(208, 208, 208);
+
+		}
+
+		[title]{
+			position: relative;
+			display: block;
+			height:100%;
+			width: calc(100% - 2px);
+			max-height:100%;
+			max-width: calc(100% - 2px);
+			overflow: hidden;
+			z-index: 1;
+			padding:2px 1px 3px 1px;
+			box-sizing: border-box;
+			text-align: center;
+			white-space: normal;
+			word-wrap: break-word;
+		}
+		:host([aria-selected="true"]) [title]{
+			padding:2px 0px 3px 0px;
+		}
+
+	</style>
+	<div title><slot id="title">Tab Title</slot></div>
+</template>
+<script>
+	(function (doc) {
+		var Tab = wwi.element(doc)
+		app.port.eval(url.elements('tabs/sort.es6')).then(Sort=>{
+			Tab(class extends Sort().Mix(Tab.Element){
+				connected(){
+					this.slot = 'tab'
+					this.aria.role = 'tab'
+					this.draggable = true
+					this.aria.dropeffect = 'none'
+					this.aria.selected = 'false'
+					this.define({ ariaSelected:true })
+					if(!this.id) this.id = fxy.id.dash(this.textContent.trim())+'-tab'
+					this.onclick = e => this.tabs.select(this)
+					this.sorted()
+				}
+				get panel(){
+					if(this.hasAttribute('aria-controls')){
+						let tabs = this.tabs
+						if(tabs) return tabs.panel(this.aria.controls)
+					}
+					return null
+				}
+				get tabs(){ return this.parentElement }
+			})
+		})
+	})(document)
+</script>

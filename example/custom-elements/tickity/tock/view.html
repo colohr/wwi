@@ -1,0 +1,69 @@
+<template id="tickity-tock-template">
+	<style>
+		@import "/custom-elements/tickity/design/view.css";
+		:host{
+			contain:style;
+			backface-visibility: hidden;
+		}
+	</style>
+
+	<slot name="top-title"></slot>
+	<tickity-date></tickity-date>
+	<tickity-time></tickity-time>
+
+
+</template>
+<script>
+	(function (doc) {
+		const Tickity = wwi.element(doc)
+		const TickitySize = fxy.require('tickity/Size')
+
+		Tickity(class extends TickitySize(Tickity.Element){
+			connected(){
+				this.define('routes',{
+					tick(){
+						this.stop()
+						this.start()
+					}
+				})
+
+				this.start(true)
+			}
+
+			get date(){ return this.query('tickity-date') }
+
+			resize({height,width}){
+
+				let time = this.time
+				if (this.hasAttribute('is-button')) time.frame = '12px';
+				else {
+					let ratio = fxy.require('tickity/ratio')
+					time.frame = ratio(width).value(0) + 'px';
+				}
+				this.date.resize({height,width})
+			}
+
+			stop(){
+				if(!this.stopped) this.time.stop()
+				return this
+			}
+			get stopped(){ return !this.time.ticking }
+			start(connected){
+				if(connected){
+					[this.date,this.time].forEach(tock=>tock.control.update())
+				}
+				if (this.stopped) this.time.start()
+				return this
+			}
+			get time(){ return this.query('tickity-time') }
+		})
+	})(document)
+</script>
+
+
+
+
+
+
+
+

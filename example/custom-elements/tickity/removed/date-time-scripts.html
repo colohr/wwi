@@ -1,0 +1,158 @@
+<script>
+	(function(window){
+		'use strict';
+		var PHI = 1.61803398875;
+		function getNumber( value ){
+			 value = parseFloat(value);
+			return isNaN(value) ? 0:value;
+		}
+
+		//golden methods
+		function getGoldenValue(value){  return getNumber(value) * PHI;  }
+		function getGoldenRatio(value){
+			return {
+				origin:getNumber(value),
+				get section(){ return getGoldenValue(this.origin) - this.origin; },
+				get a(){ return this.section; },
+				get b(){ return this.origin - this.section; },
+				get ab(){ return getSum(this.a,this.b); }
+			};
+		}
+		function getGoldenRatios(value){
+			return {
+				origin:value,
+				get ratio(){return getGoldenRatio(value);},
+				value(degrees){
+					var g = this.ratio;
+					var v = g.b;
+					for(var i=0;i<degrees;i++){
+						g = getGoldenRatio(g.a);
+						v = g.b;
+					}
+					return v;
+				}
+			};
+		};
+		function AddZero(num) { return (num >= 0 && num < 10) ? "0" + num : num + ""; }
+		function DateTimeValue(key,value){
+			this.setKeyValue(key,value);
+			this.withZero = function(){  if(!isNaN(this.value)){ return AddZero(this.value); } return ''; };
+		}
+
+		var DateValue=function(key,value){this.key=key;this.value=value;};
+		var TimeValue=function(key,value){this.key=key;this.value=value;};
+
+
+
+		function DateModel(element){
+			if(typeof element === 'object' && element !== null) this.element = element;
+			this.data = this.update();
+		}
+
+		DateModel.prototype = {
+			locale:"en-us",
+			get data(){ return this.dateData; },
+			set data(value){
+				this.dateData=value;
+				this.day = new DateValue('day',value.day);
+				this.month = new DateValue('month',value.month);
+				this.year = new DateValue('year',value.year);
+				return this.notify();
+			},
+			get ready(){ return (typeof this.element === 'object' && this.element !== null); },
+			notify(){
+				if(this.element && typeof this.element.updateDate === 'function')  this.element.updateDate(this);
+				return;
+			},
+			update(){
+				var year, month, day;
+				var date = new Date();
+				day = AddZero(date.getDate());
+				month = date.toLocaleString(this.locale, {month: "short"});
+				year = date.getFullYear();
+				return {month,day,year};
+			}
+		};
+		function elementType(el){return (typeof el === 'object' && el !== null); }
+
+
+
+
+
+
+
+		function TimeModel(element){
+			if(typeof element === 'object' && element !== null) this.element = element;
+			this.hands = {
+				sec:0,
+				min:0,
+				hr:0,
+				preHr:-1,
+				preMin:-1,
+			};
+			this.tick=60*1000;
+			this.isButtonValue=false;
+			Object.defineProperty(this,'isButton',{
+				get:function(){
+					return this.isButtonValue;
+				},
+				set:function(value){
+					var ibv = this.isButtonValue;
+					this.isButtonValue=value;
+					if(ibv !== value){
+						this.start();
+					}
+				}
+			});
+			this.start();
+		}
+		TimeModel.prototype = {
+			get data(){
+				return this.timeData;
+			},
+			set data(value){
+				this.timeData = value;
+				return this.notify(value);
+			},
+			clear(){
+				if(typeof this.timer === 'number'){
+					window.clearInterval(this.timer);
+					delete this.timer;
+				}
+				return true;
+			},
+			start(){
+				if(this.clear()){
+					this.timer = window.setInterval(this.updateTime.bind(this), this.tick);
+					this.updateTime()
+				}
+				return this;
+			},
+			notify(data){
+				if(this.element && typeof this.element.updateTime === 'function')  this.element.updateTime(data);
+				return;
+			},
+			text(){
+				return AddZero(this.hours) + ":" + AddZero(this.minutes);
+			},
+
+			updateTime(){
+				var hours, minutes, seconds;
+				var date=new Date();
+				seconds = date.getSeconds();
+				if (seconds === 0) this.hands.sec++;
+				seconds += (this.hands.sec * 60);
+
+				minutes = date.getMinutes();
+				hours = date.getHours();
+				if (hours > 12) { hours -= 12; }
+
+				this.data = {hours,minutes,seconds};
+
+			}
+		};
+		DateModel.gold = getGoldenRatios
+		window.DateModel=DateModel;
+		window.TimeModel=TimeModel;
+	})(window);
+</script>

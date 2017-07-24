@@ -1,0 +1,11 @@
+library = {}
+
+library.logic = [
+	'control/template.es6',
+	'control/validate.es6',
+	'control/inputs.es6'
+]
+
+library.elements = [
+	'form.html'
+]

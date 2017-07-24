@@ -1,0 +1,63 @@
+<template id="type-library-page">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+        }
+        [view]{
+            overflow-y:auto;
+            max-height:100%;
+        }
+    </style>
+    <div view>
+       <ol></ol>
+    </div>
+</template>
+<script>
+    (function(doc){
+        const TypeLibrary = wwi.page(doc)
+	    TypeLibrary(class extends TypeLibrary.Element{
+
+	    	constructor(){
+	    		super({color:true})
+            }
+	    	changed(name,old,value){
+	    		switch(name){
+                    case 'color':
+	                    if(value !== null){
+	                    	this.all('li > b').forEach(item=>{
+	                    		item.style.color = value
+                            })
+                        }
+                }
+            }
+            connected(){
+            	this.define('routes',{
+            		background(value){
+            			if(value !== null) this.style.backgroundColor = value
+                    }
+                })
+                let index = fxy.require('type/index')
+                for(let i in index.items){
+                	this.query('ol').appendChild(get_item(index.items[i]))
+                }
+
+                this.background = 'white'
+                setTimeout(()=>{
+                	this.color = 'var(--grape)'
+                },300)
+            }
+        })
+
+	    function get_item(item){
+        	let li = document.createElement('li')
+		    let html = ''
+            html += `<b>${fxy.id.proper(item.name)}</b>`
+		    for(let name in item){
+        		html += `<div>${name}: ${item[name]}</div>`
+		    }
+		    li.innerHTML = html
+		    return li
+	    }
+    })(document)
+</script>

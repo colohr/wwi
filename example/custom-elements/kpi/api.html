@@ -1,0 +1,26 @@
+<template id="kpi-api">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+            position:relative;
+            width:100%;
+            height:100%;
+            background:var(--grape-dark);
+            color:var(--berry);
+        }
+    </style>
+    <div view>
+
+    </div>
+</template>
+<script>
+    (function(doc){
+        const KpiApi = wwi.element(doc).extension({name:'Api',module:'type'})
+        KpiApi(class extends KpiApi.Element{
+            constructor(){
+            	super()
+            }
+        })
+    })(document)
+</script>

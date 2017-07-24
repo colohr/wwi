@@ -1,0 +1,31 @@
+@import "../component/design/host.css";
+[role=listbox]{
+    overflow:hidden;
+    overflow-y:auto;
+}
+[role] > a[role]{
+    display: block;
+    width: 100%;
+    padding:8px;
+    box-sizing: border-box;
+    outline: none;
+    text-decoration: none;
+    cursor: pointer;
+    border:1px solid transparent;
+    border-radius: 4px;
+}
+
+
+[role] > a[role]:hover{
+    text-decoration: underline;
+
+}
+[role] > a[role]:focus{
+    border:1px dotted;
+}
+[role] > a[role]:active{
+    border:1px solid;
+}
+[role] > a[role][aria-selected="true"]{
+    text-decoration: underline;
+}

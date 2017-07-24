@@ -1,0 +1,144 @@
+<script>
+	/**
+	 * @polymerBehavior KindleSparksBehavior
+	 */
+
+	var KindleSparksBehavior = {
+		properties:{
+			loading:{type:Boolean,value:true,notify:true,reflectToAttribute:true},
+			media:{observer:'mediaChanged'},
+			haedTitle:String,
+			toolbarKeys: Array,
+			_toolbar: {type: Object, computed: '_computeToolbar(toolbarKeys)'},
+			banks:{type:Object},
+			userLibrary:{type:Object,notify:true},
+			moduleName:{type:String,notify:true}
+		},
+		observers:['onTitle(headTitle)','onBanks(banks)','onLoading(loading)'],
+		get kp(){return this.$$('kindle-publishing')},
+		get base(){return window.app;},
+		get module(){ return this.router.currentModule},
+		get launcher(){return document.body.querySelector('app-launcher')},
+		get drawer(){return document.querySelector('#drawer[is-app-drawer]')},
+		get loader(){return document.querySelector('ui-loading')},
+		onLoading(loading){
+			if(this.loader.loading !== loading){
+				this.loader.loading = loading;
+			}
+		},
+		mediaChanged(v,oldv){
+			//					console.log({mediaChanged:{v,oldv}})
+		},
+		tool(named){ return this.root.querySelector('[tool="' + named + '"]') },
+		_computeToolbar(keys){
+			var tb = {};
+			if (Array.isArray(keys)) {
+				keys.map(function (key) {
+					tb[key] = true;
+				});
+			}
+			return tb;
+		},
+		onTitle(value){
+			if(typeof value === 'string' && value.length){
+				window.document.head.querySelector('title').innerText = value;
+			}
+		},
+		moduleTitle(page){
+			var title;
+			switch (page) {
+				case 'banks':
+					title = 'Item Banks'
+					break;
+				case 'subscribe':
+					title = 'Item Messages';
+					break;
+				case 'shop':
+					title = 'Shop Licenses'
+					break;
+				default:
+					title = 'Question-of-the-Day'
+					break;
+			}
+			return title;
+		},
+
+		setupModule(module){
+			this.headTitle=this.moduleTitle(module.name);
+			return new Promise((resolve)=>{
+				this.page=module.name;
+				module.active=true;
+				return resolve(module);
+			})
+		},
+		onBanks(banks){
+			if(this.page && this.page === 'banks'){
+				if(window.document.banks) window.document.banks._onBanks(banks)
+			}
+		},
+		setLauncher(module){
+			this.kp.module = module
+			this.moduleName = module.name
+		},
+		scrollView(module){
+			switch(module.name){
+				case 'today':
+				case 'license':
+					module.element.scrollIntoView()
+					break;
+				default:
+					module.focus();
+					break;
+			}
+		},
+		focusView(view){
+			view.active=true;
+			view.style.display='block';
+			view.style.pointerEvents='auto';
+			view.setAttribute('aria-disabled','false');
+		},
+		blurView(view){
+			view.blur();
+			view.style.display='none';
+			view.style.pointerEvents='none';
+			view.setAttribute('aria-disabled','true')
+			let kview = view.querySelector('.kindle-view')
+			if(kview) kview.active=false;
+		},
+		finishView(module){
+			return this.setupModule(module).then(()=>{
+				return new Promise((resolve)=>{
+					Polymer.RenderStatus.afterNextRender(module.element,function(){
+						return resolve(module.show())
+					})
+				})
+			});
+		},
+		pageHasError(error){
+			console.error(error)
+			this.page = 'today'
+		},
+		activateModule(module){
+			if(!module.element) return console.error('No module element')
+			if(this.drawer && !app.drawer){
+				this.drawer.setAttribute('side','top left')
+				app.drawer=this.drawer
+			}
+
+			this.finishView(module).then((module)=>{
+				if(module.onViewFinish){
+					return module.onViewFinish().then(()=>{
+						this.loading=false;
+						return this.setLauncher(module)
+					}).catch(this.pageHasError.bind(this))
+				}
+				this.loading=false;
+				return this.setLauncher(module)
+			}).catch(this.pageHasError.bind(this))
+		},
+		_notifyNetworkStatus(e){
+			console.log(e);
+		},
+
+	}
+</script>

@@ -1,0 +1,42 @@
+<template id="kindle-tab">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        @import "/custom-elements/kpi/elements/tab.css";
+    </style>
+    <div view>
+	    <content-action handle toggles></content-action>
+	    <div info aria-expanded="false"></div>
+	    <kindle-item aria-expanded="false"></kindle-item>
+    </div>
+</template>
+<script>
+    (function(doc){
+
+        const KindleTab = wwi.element(doc)
+        KindleTab(class extends KindleTab.Element{
+            constructor(){
+            	super('routes',{
+		            type(value){
+		            	if(value !== null){
+				            this.handle.innerHTML = value
+			            }
+		            }
+	            })
+            }
+            connected(){
+            	this.handle.selected_action = e => {
+            		this.info.setAttribute('aria-expanded',e.selected)
+		            this.item.aria.expanded=e.selected
+	            }
+            }
+	        get handle(){ return this.query('[handle]') }
+            get info(){ return this.query('[info]') }
+            get item(){ return this.query('kindle-item') }
+            update(data){
+            	if(fxy.is.text(data.info)) this.info.innerHTML = data.info
+	            else this.info.innerHTML = ''
+            	return this.item.update(data)
+            }
+        })
+    })(document)
+</script>

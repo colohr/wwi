@@ -1,0 +1,77 @@
+
+track-time
+————
+icons:more-horiz
+av:repeat
+
+music
+————
+hardware:headset //headphones
+av:equalizer //music bar or visualizer
+av:radio //radio or live
+
+laser
+————
+hardware:toys //fan blades
+icons:pets //paw - roof roof
+
+
+tags
+———
+social:whatshot //i likey a lot
+social:public //globally known or regularly used tag
+social:school //educational material
+social:cake //special suprise of something
+maps:local-see //photograph
+editor:insert-link //a website link
+image:loupe //zoom in or magnify information - there is more info here or a zoomed in portion of an image
+icons:lightbulb-outline //bright idea
+
+lists
+———
+maps:restaurant //recipe list
+maps:restaurant-menu //recipe list
+editor:wrap-text //item in list links to another item in another list
+editor:format-line-spacing //sort the list
+editor:format-list-bulleted //bullet list
+editor:format-list-numbered //numbered list
+icons:low-priority //move a list or sublist
+
+
+tools
+==============
+text
+———
+editor:format-align-center
+editor:format-align-justify
+editor:format-align-left
+editor:format-align-right
+editor:format-indent-decrease
+editor:format-indent-increase
+π
+
+
+scraps
+———-
+image:color-lens //colors
+image:style //palettes
+maps:local-movies //video - video film
+av:movie //video - cut thingy
+image:brush //brush type or doodle
+icons:gesture //doodle drawing
+editor:format-paint //background color or wallpaper
+editor:mode-edit //brush type
+av:hearing //stuff you can hear
+maps:local-offer //label
+maps:layers //layer
+
+
+
+collaborative stuff
+———
+places:all-inclusive //stream
+notification:confirmation-number //a backstage pass ticket to view a collaborative project
+communication:vpn-key//a pass to join a collaborative project
+maps:local-play //ticket to redeem a special gift
+hardware:keyboard-voice //audio or a speaker note audio
+editor:attach-file //a collection of things

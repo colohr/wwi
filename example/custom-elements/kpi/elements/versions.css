@@ -1,0 +1,14 @@
+:host{
+    display:block;
+    outline: none;
+}
+
+[view]{
+    max-height:100%;
+    overflow-y: auto;
+}
+
+kindle-tab{
+    margin-left:2px;
+    margin-right:2px;
+}

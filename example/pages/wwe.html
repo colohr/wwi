@@ -1,0 +1,238 @@
+<template id="wwe-page-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+		}
+		[view]{
+			max-height: 100%;
+			overflow-y: auto;
+		}
+		[title]{
+			font-weight: 900;
+			font-size:70px;
+			line-height: 0.9;
+		}
+		wwe-card{
+			margin: 0 50px 10px 50px;
+		}
+		wwe-spinner{
+			display: inline-block;
+			height:30px;
+			width:30px;
+		}
+		[footer]{
+			position: relative;
+		}
+
+		[buttons],[shinys]{
+			padding:3px;
+			border-radius:9px;
+			background-color: var(--dark);
+			-webkit-filter: drop-shadow(0 1px 7px rgba(16, 15, 20, 0.5));
+			filter: drop-shadow(0 1px 7px rgba(16, 15, 20, 0.5));
+		}
+		[shinys]{
+			padding:3px;
+			width: auto;
+			margin:20px;
+			border-radius: 100px;
+			background-color: var(--dark);
+			-webkit-filter: drop-shadow(0 1px 5px rgba(16, 15, 20, 0.5));
+			filter: drop-shadow(0 1px 5px rgba(16, 15, 20, 0.5));
+		}
+		[shinys] > shiny-button{
+			margin:2px 4px 2px 4px;
+			min-width: 14vw;
+		}
+		[shinys] > shiny-button:first-child{
+			margin-left: 4px;
+		}
+		[shinys] > shiny-button:last-child{
+			margin-right: 4px;
+		}
+
+		[buttons] > explode-button{
+			border-radius: 0;
+			font-size:18px;
+			min-width: 20vw;
+			color:white;
+		}
+		[buttons] > explode-button:last-child{
+			border-radius: 0 7px 7px 0;
+		}
+		[buttons] > explode-button:first-child{
+			border-radius: 7px 0 0 7px;
+		}
+
+		[mini]{
+			font-size:14px;
+			display: inline-block;
+			position: relative;
+			text-align: center;
+			padding:0 7px 2px 7px;
+			border-radius: 100px;
+			border:1px solid;
+			box-sizing: border-box;
+			margin:4px;
+			line-height:1;
+		}
+		[mini]:nth-child(1){
+			color:var(--grape);
+		}
+		[mini]:nth-child(2){
+			color:var(--turquoise);
+		}
+		[mini]:nth-child(3){
+			color:var(--orange);
+		}
+		[mini]:nth-child(4){
+			color:var(--emerald);
+		}
+		[mini]:nth-child(5){
+			color:var(--apple);
+		}
+		[mini]:nth-child(6){
+			color:var(--indigo);
+		}
+		[mini]:nth-child(7){
+			color:var(--tangerine);
+		}
+
+		[shinys] > shiny-button:first-child{
+			background: var(--blue-cyan-bg);
+		}
+		[shinys] > shiny-button{
+			background: var(--apple-mandarine-bg);
+			background:white;
+		}
+		[shinys] > shiny-button:last-child{
+			background: var(--purple-fuchsia-bg);
+		}
+
+		wwe-position{
+			height:30%;
+			background:white;
+		}
+		[description]{
+			position: relative;
+			width:300px;
+			padding:10px;
+			background-color: green;
+
+		}
+
+
+	</style>
+	<div view gui vertical center-center  around-justified>
+		<wwe-card>
+			<wwe-background index="4" color="white" alpha="0.79"></wwe-background>
+			<div slot="title" spin-title gui horizontal center-center wrap>
+				<div mini>
+					<small>wwe-card</small>
+				</div>
+				<div mini>
+					<small>wwe-background</small>
+				</div>
+				<div mini>
+					<small>wwe-button</small>
+				</div>
+				<div mini>
+					<small>wwe-spinner</small>
+				</div>
+				<div mini>
+					<small>shiny-button</small>
+				</div>
+				<div mini>
+					<small>explode-button</small>
+				</div>
+			</div>
+
+			<div title gui horizontal style="margin:0 15px 5px 15px;padding-bottom:5px;">
+				<div relative block>
+					World<br>Wide<br>
+					<div style="font-size:60%;">Elements</div>
+				</div>
+			</div>
+
+			<div footer slot="footer" gui horizontal center-center>
+				<div buttons gui horizontal>
+					<explode-button id="letters" pointer="letterify">Letters</explode-button>
+					<explode-button id="explode">Explode</explode-button>
+					<explode-button id="silly" pointer="letterify">Silly</explode-button>
+				</div>
+			</div>
+		</wwe-card>
+
+		<div shinys gui horizontal around-justified>
+			<shiny-button gui horizontal center-center onclick="act.popup(event)">shiny</shiny-button>
+			<shiny-button onclick="act.spin(event)">
+				<wwe-spinner loading paused color="var(--grape)"></wwe-spinner>
+			</shiny-button>
+			<shiny-button gui horizontal center-center>button</shiny-button>
+		</div>
+
+		<!--<wwe-position offset-y="40">-->
+			<!--<div description>-->
+				<!--<div mini>-->
+					<!--<small>wwe-position</small>-->
+				<!--</div>-->
+			<!--</div>-->
+		<!--</wwe-position>-->
+	</div>
+
+
+
+</template>
+<script>
+	(function (doc) {
+		const WWE = wwi.page(doc)
+		WWE(class extends WWE.Element {
+			connected(){
+				let buttons = this.all('[buttons] > explode-button')
+				this.colors = fxy.require('design/colors')
+				buttons.forEach((item)=>{
+					let id = item.id
+					item.on('click',(e)=>this[id](e.currentTarget))
+				})
+
+				this.popup = e=>{
+					let popup = document.querySelector('#popup')
+					popup.present(e.target)
+					this.content.present(e.target)
+				}
+				this.on.close = e => alert('close')
+			}
+
+			explode(i){
+				if(typeof i.opacity !== 'number' || i.opacity <= 0){
+					i.opacity = 1
+					i.color = this.colors.random()
+				}
+				else{
+					i.opacity = i.opacity - 0.1
+					i.color = this.colors.transparent(i.color,i.opacity)
+				}
+			}
+			letters(i){
+				i.color = this.colors.random()
+				i.style.color = this.colors.random()
+			}
+			spin(e){
+				let spinner = e.currentTarget.slots.title.item
+				if(spinner){
+					if(spinner.paused) spinner.paused = false
+					else spinner.paused = true
+				}
+			}
+			silly(i){
+				i.color = this.colors.random()
+				i.style.color = this.colors.random()
+				if(i.silly) i.silly = null
+				else i.silly = true
+			}
+			get spinner(){ return this.query('ui-spinner') }
+		})
+	})(document)
+</script>

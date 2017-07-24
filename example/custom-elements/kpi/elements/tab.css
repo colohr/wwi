@@ -1,0 +1,56 @@
+:host{
+    display:block;
+}
+
+[handle]{
+    cursor: pointer;
+    display: inline-block;
+    margin-top:5px;
+    --radius: 6px 6px 0 0;
+    --color: var(--berry);
+    text-transform: capitalize;
+    font-weight: 600;
+    border-bottom:none;
+    font-size:14px;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+kindle-item{
+    display: none;
+    position: relative;
+    background:white;
+}
+
+kindle-item[aria-expanded="true"]{
+    display: block;
+    box-shadow:inset 0 0 0 1px var(--berry);
+}
+
+[info]{
+    display: none;
+    position:relative;
+    background-color: rgba(255,255,255,0.85);
+    box-sizing: border-box;
+    border:1px solid var(--berry);
+    border-bottom:0;
+    border-radius:  0 4px 0 0;
+}
+[info][aria-expanded="true"]{
+    display: block;
+}
+
+[item-info]{
+    padding:10px;
+}
+
+[info-value]{
+    font-size:12px;
+}
+[info-value] [name]{
+    font-style: italic;
+}
+[info-value] [value]{
+    font-weight: 900;
+    margin-left:4px;
+}
+

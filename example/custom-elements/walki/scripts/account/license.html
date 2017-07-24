@@ -1,0 +1,116 @@
+<dom-module id="kindle-account-license">
+	<template>
+		<style>
+			:host {
+				position: relative;
+				overflow:visible;
+				outline:none;
+				display: none;
+				max-height:40px;
+
+			}
+			#list{
+				display: none;
+			}
+			:host([expanded]) #list{
+				display: block;
+			}
+			:host([expanded]){
+				max-height:400px;
+			}
+
+
+		</style>
+
+		<tap-action id="button" outline enhanced="[[expanded]]" on-tap="toggle"><span slot="currentTitle">License</span></tap-action>
+		<box-content id="box">
+			<any-list id="list" items="[[items]]" unique-property="license"></any-list>
+		</box-content>
+
+	</template>
+	<script>
+		
+		Polymer({
+			is: "kindle-account-license",
+			hostAttributes: {
+				role:'listbox',
+				tabindex:'-1',
+				'aria-expanded':'false',
+				'aria-disabled':'true'
+			},
+			properties: {
+				expanded:{
+					type:Boolean,
+					reflectToAttribute:true,
+					observer:'onExpand',
+					value:false
+				},
+				items:{type:Array,observer:'onItems'},
+				user:{
+					type:Object,
+					observer:'onUser',
+					value:null
+				}
+			},
+			get active(){return this.$.box.active},
+			set active(active){return this.$.box.active=active},
+			attr(key,value){
+				if(typeof key === 'undefined') return null;
+				if(typeof value === 'undefined' && typeof key === 'string') return this.getAttribute(key)
+				if(value === null){ this.removeAttribute(key) }
+				else if(typeof key === 'object'){
+					for(var k in key){
+						var val = key[k]
+						this.setAttribute(k,key[k])
+					}
+				}else{
+					this.setAttribute(key,value);
+				}
+				return this.getAttribute(key)
+			},
+			onUser(user){
+				this.items=[];
+				if(user) this.setUser(user);
+			},
+			onItems(items){
+				if(Array.isArray(items) && items.length){
+					this.style.display='block';
+				}else{
+					this.style.display='none';
+				}
+				this.expanded=false;
+			},
+			onExpand(expand){
+				if(expand){
+					this.attr({
+						'aria-disabled':'false',
+						'aria-expanded':'true',
+						'tabindex':'0'
+					})
+					this.active=expand;
+					this.$.list.expanded=expand;
+				}else if(expand === false){
+					this.attr({
+						'aria-disabled':'true',
+						'aria-expanded':'false',
+						'tabindex':'-1'
+					})
+					this.active=expand;
+					this.$.list.expanded=expand;
+				}
+
+			},
+			toggle(){
+				if(this.expanded) this.expanded=false;
+				else this.expanded=true;
+				this.active=this.expanded;
+			},
+			ready(){
+				this.style.display='none';
+				this.active=false;
+				KindleLicenseProperty(this);
+			}
+		})
+
+	</script>
+</dom-module>

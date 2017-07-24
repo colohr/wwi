@@ -1,0 +1,197 @@
+<template id="wwe-spinner-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+
+		:host {
+			position: relative;
+			z-index: -1;
+			cursor: default;
+			display: none;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+			overflow: visible;
+			contain:content;
+			opacity:0;
+		}
+
+		:host([loading]),
+		:host([paused]){
+			display: inline-block;
+			vertical-align: middle;
+			background-color: rgba(255, 255, 255, 0);
+			opacity:1;
+			filter:saturate(1.2) brightness(1.1) contrast(1.1);
+			z-index: 1000;
+		}
+
+		.spinner {
+			width: 0;
+			height: 0;
+			position: relative;
+			-webkit-transform-style: preserve-3d;
+			transform-style: preserve-3d;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+		}
+
+		:host([loading]) .spinner{
+			-webkit-animation: spin 2.5s linear infinite;
+			animation: spin 2.5s linear infinite;
+			z-index: 1000;
+		}
+
+		:host([paused]) .spinner,
+		:host([loading][paused]) .spinner{
+			-webkit-animation:none;
+			animation-duration:none;
+		}
+
+		.spinner .pill {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			-webkit-transform-style: preserve-3d;
+			transform-style: preserve-3d;
+			-webkit-transform-origin: 0 0;
+			transform-origin: 0 0;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+			z-index:0;
+			filter:drop-shadow(0 0 2px rgba(0,0,0,0.4));
+		}
+
+		.spinner .pill:before {
+			content: "";
+			display: block;
+			width: 2px;
+			height: 1px;
+			margin-left: 10px;
+			margin-top: -4.5px;
+			background-color: inherit;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+			border-radius: 100px;
+			box-shadow:0 0 0 0.5px rgba(255,255,255,1);
+			z-index:1;
+		}
+
+		.spinner .pill:nth-child(1) {
+			-webkit-transform: rotate3d(0, 0, 1, 30deg);
+			transform: rotate3d(0, 0, 1, 30deg);
+		}
+		.spinner .pill:nth-child(2) {
+			-webkit-transform: rotate3d(0, 0, 1, 60deg);
+			transform: rotate3d(0, 0, 1, 60deg);
+		}
+		.spinner .pill:nth-child(3) {
+			-webkit-transform: rotate3d(0, 0, 1, 90deg);
+			transform: rotate3d(0, 0, 1, 90deg);
+		}
+		.spinner .pill:nth-child(4) {
+			-webkit-transform: rotate3d(0, 0, 1, 120deg);
+			transform: rotate3d(0, 0, 1, 120deg);
+		}
+		.spinner .pill:nth-child(5) {
+			-webkit-transform: rotate3d(0, 0, 1, 150deg);
+			transform: rotate3d(0, 0, 1, 150deg);
+		}
+		.spinner .pill:nth-child(6) {
+			-webkit-transform: rotate3d(0, 0, 1, 180deg);
+			transform: rotate3d(0, 0, 1, 180deg);
+		}
+		.spinner .pill:nth-child(7) {
+			-webkit-transform: rotate3d(0, 0, 1, 210deg);
+			transform: rotate3d(0, 0, 1, 210deg);
+		}
+		.spinner .pill:nth-child(8) {
+			-webkit-transform: rotate3d(0, 0, 1, 240deg);
+			transform: rotate3d(0, 0, 1, 240deg);
+		}
+		.spinner .pill:nth-child(9) {
+			-webkit-transform: rotate3d(0, 0, 1, 270deg);
+			transform: rotate3d(0, 0, 1, 270deg);
+		}
+		.spinner .pill:nth-child(10) {
+			-webkit-transform: rotate3d(0, 0, 1, 300deg);
+			transform: rotate3d(0, 0, 1, 300deg);
+		}
+		.spinner .pill:nth-child(11) {
+			-webkit-transform: rotate3d(0, 0, 1, 330deg);
+			transform: rotate3d(0, 0, 1, 330deg);
+		}
+		.spinner .pill:nth-child(12) {
+			-webkit-transform: rotate3d(0, 0, 1, 360deg);
+			transform: rotate3d(0, 0, 1, 360deg);
+		}
+
+		@-webkit-keyframes spin {
+			from {  -webkit-transform: rotateZ(0deg);  }
+			to {  -webkit-transform: rotateZ(359deg);  }
+		}
+
+		@keyframes spin {
+			from {  transform: rotateZ(0deg);  }
+			to {  transform: rotateZ(359deg);  }
+		}
+
+		[msg]{
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			line-height: 2;
+		}
+
+	</style>
+	<div view gui horizontal center-center>
+		<div msg><slot></slot></div>
+		<div id="spinner" class="pos spinner">
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+			<span class="pill"></span>
+
+		</div>
+
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const Spinner = wwi.element(doc)
+		Spinner(class extends Spinner.Element {
+			constructor(){
+				super('routes',{
+					random_colors:true,
+					color(value){
+						if(value !== null) this.set_color(value)
+					},
+					loading(value){
+						if(value !== null && this.random_colors) this.set_random_colors()
+					},
+					paused(value){
+						if(value === null && this.random_colors) this.set_random_colors()
+					}
+				})
+			}
+			get pills(){ return this.all('.pill') }
+			set_color(color){
+				for(let pill of this.pills) pill.style.background = color
+			}
+			set_random_colors(){
+				for(let pill of this.pills) pill.style.background = fxy.require('design/colors').random()
+			}
+			get spinner(){ return this.query('#spinner') }
+		})
+	})(document)
+</script>

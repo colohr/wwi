@@ -1,0 +1,128 @@
+<template id="kpi-page">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host{
+			--container-height:calc(100% - 35px);
+			--list-width:240px;
+
+		}
+		[view]{
+			background-color: whitesmoke;
+		}
+
+		type-dash{
+			--toolbar-button:var(--berry);
+		}
+
+		[api-title]{
+			color:var(--berry);
+			font-size:22px;
+			font-weight: 900;
+			padding:3px;
+			display: inline-block;
+			position: relative;
+
+		}
+
+		[content]{
+			width: 100%;
+			position: relative;
+			min-height:100%;
+		}
+		[box]{
+			position: relative;
+			min-height:100%;
+			max-height: 100%;
+			width: 300px;
+			background-color: var(--emerald);
+		}
+
+		browser-list{
+			--item-color:var(--berry);
+			width:var(--list-width);
+			display: inline-block;
+			min-height:var(--container-height);
+			max-height: var(--container-height);
+			height:var(--container-height);
+		}
+
+		kindle-item-versions{
+			position: absolute;
+			left:var(--list-width);
+			width:calc(100% - var(--list-width));
+			height:var(--container-height);
+			top:35px;
+		}
+		:host([banks-loaded]) wwe-button[load-banks]{
+			display: none;
+		}
+	</style>
+
+	<!--<kpi-dash host="http://localhost" port="2223" paths="api,kindle-publishing,graph"></kpi-dash>-->
+
+
+	<div view fit gui vertical>
+		<type-dash name="kindle-publishing" navigation>
+			<content-action slot="tool" load-banks centered>Load Banks</content-action>
+			<div api-title slot="tool">KPI</div>
+		</type-dash>
+		<browser-list id="banks"></browser-list>
+		<kindle-item-versions></kindle-item-versions>
+	</div>
+
+
+</template>
+<script>
+	(function (doc) {
+		const Page = wwi.page(doc)
+		Page(class extends Page.Element{
+
+			connected(){
+				this.define({banks_loaded:true})
+
+				let dash = this.query('type-dash')
+				dash.container = fxy.require('kpi/list')(this)
+				dash.api.control = {
+					container:this,
+					queries:fxy.require('kpi/queries'),
+					results:fxy.require('kpi/results')
+				}
+
+				dash.on('navigation',(e)=>{
+					let detail = e.detail
+					let type = detail.type
+					let new_item = this.navigator[type]
+					this.select(new_item)
+				})
+
+				this.item.api = dash.api
+
+				let load_button = this.query('[load-banks]')
+				load_button.onclick = e => {
+					if(!this.banks_loaded){
+						dash.load('banks').then(_=>this.banks_loaded=true)
+					}
+				}
+
+
+
+				window.kpi = this
+
+			}
+			get dash(){ return this.query('type-dash') }
+			get item(){ return this.query('kindle-item-versions') }
+			get list(){ return this.query('browser-list') }
+			get navigator(){ return fxy.require('type/navigator')(this) }
+			select(item){
+				this.item.bank = item.bank.name
+				this.item.ditl = item.ditl
+				let navigator = this.navigator
+				let id = item[navigator.id]
+				navigator.select(id)
+			}
+
+		})
+
+	})(document)
+</script>

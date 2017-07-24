@@ -1,0 +1,279 @@
+
+<template id="developer-survey-template">
+	<style>
+		@import "/pages/specialist/data/developer-survey/developer-survey.css";
+		@import "/modules/wwi/component/design/host.css";
+		:host {
+			display: block;
+			position: relative;
+			width:100%;
+			max-height: 100%;
+			overflow:hidden;
+		}
+
+		[nav]{
+			position: relative;
+			width: 30%;
+			height: 100%;
+			box-sizing: border-box;
+			font-size:14px;
+		}
+		[wrap]{
+			position: relative;
+			width: 100%;
+			height: 900px;
+			box-sizing: border-box;
+		}
+		[view]{
+			position: relative;
+			width: 70%;
+			max-height: 100%;
+			box-sizing: border-box;
+			overflow: hidden;
+			overflow-y: auto;
+		}
+	</style>
+	<div wrap gui horizontal>
+		<div nav>
+			<div data-offset-top="306" data-spy="affix">
+				<ul>
+					<li class="active">
+						<a href="#overview">
+							Overview
+						</a>
+					</li>
+
+					<li class="">
+						<a href="#profile">
+							Developer Profile
+						</a>
+						<ul class="sub-nav">
+							<li class="">
+								<a href="#profile-geo">I. Geography</a>
+							</li>
+							<li class="">
+								<a href="#profile-percapita">II. Devs per Capita</a>
+							</li>
+							<li class="">
+								<a href="#profile-age">III. Age</a>
+							</li>
+							<li class="">
+								<a href="#profile-agebycountry">IV. Age by Country</a>
+							</li>
+							<li class="">
+								<a href="#profile-gender">V. Gender</a>
+							</li>
+							<li class="">
+								<a href="#profile-experience">VI. Experience</a>
+							</li>
+							<li class="">
+								<a href="#profile-women">VII. Women Who Code</a>
+							</li>
+							<li class="">
+								<a href="#profile-education">VIII. Education</a>
+							</li>
+							<li class="">
+								<a href="#profile-sideprojects">IX. Side Projects and Open Source</a>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						<a href="#tech">
+							Technology
+						</a>
+						<ul class="sub-nav">
+							<li class="">
+								<a href="#tech-lang">I. Most Popular Technologies</a>
+							</li>
+							<li class="">
+								<a href="#tech-super">II. Most Loved, Dreaded, and Wanted Tools</a>
+							</li>
+							<li class="">
+								<a href="#tech-os">III. Desktop Operating System</a>
+							</li>
+							<li class="">
+								<a href="#tech-editor">IV. Text Editor</a>
+							</li>
+							<li class="">
+								<a href="#tech-ide">V. IDE Theme</a>
+							</li>
+							<li class="">
+								<a href="#tech-sourcecontrol">VI. Source Control</a>
+							</li>
+							<li class="">
+								<a href="#tech-tabsspaces">VII. Tabs vs. Spaces</a>
+							</li>
+							<li class="">
+								<a href="#tech-caffeine">VIII. Caffeine</a>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						<a href="#work">
+							Work
+						</a>
+						<ul class="sub-nav">
+							<li class="">
+								<a href="#work-occupation">I. Occupation</a>
+							</li>
+							<li class="">
+								<a href="#work-mobile">II. Mobile Developers</a>
+							</li>
+							<li class="">
+								<a href="#work-math">III. Mathematics Developers</a>
+							</li>
+							<li class="">
+								<a href="#work-other-dev">IV. Other Dev Types</a>
+							</li>
+							<li class="">
+								<a href="#work-industry">V. Industry</a>
+							</li>
+							<li class="">
+								<a href="#work-complang">VI. Compensation by Technology</a>
+							</li>
+							<li class="">
+								<a href="#work-compensation-geo">VII. Compensation by Purchasing Power</a>
+							</li>
+							<li class="">
+								<a href="#work-compensation-remote">VIII. Compensation by Remote Status</a>
+							</li>
+							<li class="">
+								<a href="#work-compensation-so">IX. Compensation by Stack Overflow Rep</a>
+							</li>
+							<li class="">
+								<a href="#work-status">X. Employment Status</a>
+							</li>
+							<li class="">
+								<a href="#work-satisfaction">XI. Job Satisfaction</a>
+							</li>
+							<li class="">
+								<a href="#work-satisfaction-by-type">XII. Job Satisfaction by Dev Type</a>
+							</li>
+							<li class="">
+								<a href="#work-remote">XIII. Remote Work</a>
+							</li>
+							<li class="">
+								<a href="#work-remote-by-job">XIV. Working Remotely - Who Wants It?</a>
+							</li>
+						</ul>
+					</li>
+
+					<li>
+						<a href="#community">
+							Community
+						</a>
+						<ul class="sub-nav">
+							<li>
+								<a href="#community-satisfaction">I. Visit Satisfaction</a>
+							</li>
+							<li>
+								<a href="#community-frequency">II. Visit Frequency</a>
+							</li>
+							<li>
+								<a href="#community-rep">III. Reputation</a>
+							</li>
+							<li>
+								<a href="#community-motivation">IV. Motivation for Using Stack Overflow</a>
+							</li>
+							<li>
+								<a href="#community-answer">V. Motivation for Answering Questions</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div view></div>
+	</div>
+
+</template>
+<script>
+	(function (doc) {
+		const DeveloperSurvey = wwi.element(doc)
+		DeveloperSurvey(class extends DeveloperSurvey.Element{
+			connected(){
+				this.result = 1
+				get_survey().then(survey=>{
+					this.survey = survey
+					for(let link of this.links) link.onclick = go_to_link
+					function go_to_link(e){
+						let link = e.currentTarget
+						let href = link.getAttribute('href')
+						let target = survey.get(`a.anchor${href}`)
+						if(!target) target = survey.get(`a[href="${href}"]`)
+						if(target) target.scrollIntoView()
+					}
+				})
+
+			}
+			get links(){ return this.nav.get_all('a') }
+			get nav(){ return get_element(this.query('[nav]')) }
+			get survey(){ return get_element(this.query('#survey.container')) }
+			set survey(survey){
+				if(survey) this.view.appendChild(survey.self)
+				return survey
+			}
+			get view(){ return this.query('[view]') }
+		})
+
+
+		function get_survey(){
+			const survey_url = url.site('pages/specialist/data/developer-survey/developer-survey.html')
+			return fetch(survey_url).then(r=>r.text()).then(text=>{
+				const survey = get_element(document.createElement('div'))
+				survey.innerHTML = text
+				let container = survey.get('#survey.container')
+				return container
+			})
+		}
+		function get(selector){
+			let element = this
+			let target = element.querySelector(selector)
+			if(target === null) return target
+			return get_element(target)
+		}
+		function get_all(selector){
+			let element = this
+			return Array.from(element.querySelectorAll(selector)).map(get_element)
+		}
+		function get_element(element){
+			return new Proxy(element,{
+				get(o,name){
+					if(name in o) {
+						let value = o[name]
+						if(typeof value === 'function') return value.bind(o)
+					}
+					switch(name){
+						case 'get':
+						case 'query':
+							return get.bind(o)
+						case 'get_all':
+							return get_all.bind(o)
+						case 'sections':
+							return get_all.bind(o)('section')
+						case 'self':
+							return o
+						case 'show':
+							return ()=>{
+								return o.style.display = ''
+							}
+						case 'hide':
+							return ()=>{
+								return o.style.display = 'none'
+							}
+					}
+					return null
+				},
+				set(o,name,value){
+					o[name] = value
+					return true
+				},
+				has(o,name){
+					return name in o
+				}
+			})
+		}
+	})(document)
+</script>

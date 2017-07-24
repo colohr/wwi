@@ -1,0 +1,42 @@
+<template id="browser-section-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		:host {
+			display: none;
+			position: relative;
+			width: 100%;
+			height:auto;
+			box-sizing: border-box;
+			cursor: default;
+			outline: none;
+			overflow: hidden;
+			max-height:0;
+			pointer-events: none;
+		}
+
+		:host([opened]){
+			display: block;
+			max-height: 100%;
+			pointer-events: auto;
+		}
+
+
+
+	</style>
+
+
+</template>
+<script>
+	(function (doc) {
+		const Section = wwi.element(doc)
+		Section(class extends Section.Element {
+
+			constructor(){super({opened:true})}
+			toggle(){
+				if(this.opened) this.opened=false
+				else this.opened=true
+				return this
+			}
+		})
+	})(document)
+</script>

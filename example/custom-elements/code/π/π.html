@@ -1,0 +1,76 @@
+<template id="code-π-template">
+	<style>
+		@import '/custom-elements/code/π/design.css';
+	</style>
+	<slot>π</slot>
+</template>
+
+<script>
+	((doc)=>{
+		const πElement = wwi.element(doc)
+		class πState{
+			constructor(index,value,type){
+				this.index = fxy.is.number(index) ? index:0
+				this.value = fxy.is.text(value) ? value:''
+				this.type = fxy.is.text(type) ? type:'hash'
+			}
+		}
+
+		πElement(class extends πElement.Element{
+
+			get_type(){
+				return fxy.is.text(this.states) && !this.type ? 'state':(this.type || 'hash')
+			}
+			get_states(){
+
+				let states = fxy.is.text(this.states) ? this.states.split(',').map(state=>state.trim()) : []
+				let type = this.get_type()
+				return states.map( (type,index) => new πState(index, states[index], type) )
+			}
+
+			toggle_state(){
+				let states = this.get_states()
+				if(states.length < 2) throw new Error(`code-π must have states to switch to when activated.`,this)
+				let type = this.get_type()
+				let current = states[this.current_state]
+				let next_index = this.current_state === states.length-1 ?
+								  0:this.current_state + 1
+				let next = states[next_index]
+
+				if(this.active){
+					switch(type){
+						case 'hash':
+							app.hash = next.value
+							this.current_state = next.index
+							break
+						default:
+							this.current_state = next.index
+							this.dispatch('state',{last:current,state:next})
+							break
+					}
+				}
+			}
+
+			connected(){
+				this.define({
+					active:true,
+					type:true,
+					states:true
+				})
+				this.current_state = 0 //as the state index
+				window.addEventListener('keydown',this.keydown.bind(this))
+				window.addEventListener('keyup',this.keyup.bind(this))
+				this.onclick = e => this.toggle_state()
+			}
+			keydown(e){
+
+				if(!this.active && e.key === 'π') this.active = true
+			}
+			keyup(e){
+				if(this.active) this.active = null
+			}
+		})
+
+	})(document)
+
+</script>

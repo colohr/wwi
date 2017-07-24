@@ -1,0 +1,47 @@
+:host{
+    backface-visibility: hidden;
+    bottom:0px;
+
+    color: #f01f64;
+    cursor: default;
+
+    display: block;
+
+    -webkit-filter:saturate(0) opacity(40%);  filter:saturate(0) opacity(40%);
+    font-size:20px;
+
+    height:25px;
+
+    position: absolute;
+
+    right:0px;
+
+    text-align: center;
+    text-rendering: geometricPrecision;
+    transform: translate(0,0) scale(0.7,0.7);
+    transition:filter 200ms linear, transform 200ms ease-in-out;
+
+    width: 25px;
+    will-change: filter, transform;
+
+    z-index: 1000000000;
+}
+:host([hash]){
+    position:fixed;
+
+}
+:host([active]){
+    pointer-events: auto;
+    -webkit-filter:saturate(1);
+    filter:saturate(1);
+    transform: translate(-10px,-10px);
+}
+
+@keyframes silly{
+    0%{
+        filter:hue-rotate(0deg);
+    }
+    100%{
+        filter:hue-rotate(-456deg);
+    }
+}

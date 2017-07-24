@@ -1,0 +1,91 @@
+<template id="window-page-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+			position: relative;
+			/*background-color: rgb(237, 239, 241);*/
+			perspective: 1000px;
+		}
+
+		[view]{
+			transition-timing-function: ease;
+			transition-property: opacity;
+			transition-duration: 200ms;
+		}
+		[menu-container]{
+			position: relative;
+			display: block;
+			width: 80%;
+			max-height: 100%;
+		}
+
+		window-frame{
+			width:40%;
+			height:40%;
+		}
+
+		code{
+			position:relative;
+			display: block;
+			margin-top:10px;
+			padding: 10px;
+			text-align: center;
+		}
+	</style>
+
+	<div view fit style="opacity:0;">
+		<window-frame id="contain">
+			<div code>
+				<code>window-frame</code>
+				<code>
+					this.contain = element
+					this.center()
+				</code>
+			</div>
+		</window-frame>
+		<window-frame id="drag" drag>
+			<div code>
+				<code>window-frame[drag]</code>
+			</div>
+		</window-frame>
+	</div>
+
+
+
+</template>
+<script>
+	(function (doc) {
+		const Page = wwi.page(doc)
+		Page(class extends Page.Element{
+			constructor(){
+				super()
+				this.unset = true
+			}
+			get frames(){
+				return {
+					main:this.query('window-frame#contain'),
+					drag:this.query('window-frame#drag')
+				}
+			}
+			transitioned(e){
+				if(this.hasAttribute('active')){
+
+				}
+			}
+			connected(){
+				this.on('active',()=>{
+					if('unset' in this){
+						delete this.unset
+						setTimeout(()=>{
+							this.frames.main.contain = this.view
+							this.view.style.opacity=1
+						},300)
+					}
+				})
+			}
+		})
+
+	})(document)
+</script>

@@ -1,0 +1,41 @@
+<template id="track-time-template">
+	<style>
+		@import "modules/wwi/component/design/gui.css";
+		:host {
+			display: inline-block;
+			font-size:inherit;
+			position: relative;
+		}
+	</style>
+	<div view gui horizontal>
+		<div id="minutes">00</div>
+		<div>:</div>
+		<div id="seconds">00</div>
+	</div>
+</template>
+<script id="track-time">
+	(function (doc) {
+		const get_time = fxy.require('media/time')
+		const TrackTime = wwi.element(doc)
+		const value = Symbol('tack time value')
+		TrackTime(class extends TrackTime.Element{
+			connected(){
+				this.dispatch(`${this.id} connected`,this)
+			}
+			element(named){ return this.query(`#${named}`) }
+			get minutes() { return parseInt(this.element('minutes').textContent) }
+			set minutes(minutes) {
+				return this.element('minutes').innerHTML = minutes
+			}
+			get seconds() { return parseInt(this.element('seconds').textContent) }
+			set seconds(seconds) {
+				return this.element('seconds').innerHTML = seconds
+			}
+			value(time,update){
+				if(!update && value in this) return this[value]
+				return this[value] = get_time(time)
+			}
+
+		})
+	})(document)
+</script>

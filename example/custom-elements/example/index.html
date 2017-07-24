@@ -1,0 +1,57 @@
+<template id="example-index-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+			color:var(--grape);
+			position: relative;
+
+			width:100%;
+			box-sizing:border-box;
+			outline:none;
+
+			cursor: pointer;
+		}
+
+		[title]{
+			font-size:50px;
+			font-weight: 800;
+			text-align: center;
+			border:4px solid var(--berry);
+			padding:16px;
+			filter:saturate(0);
+		}
+		:host(:focus) [title]{
+			filter:saturate(1);
+		}
+	</style>
+	<div view gui horizontal center-center>
+		<div title>${title}</div>
+	</div>
+</template>
+<script>
+	(function (doc) {
+
+		const Example = wwi.element(doc,'a11y','data')
+		Example(class extends Example.Element {
+			a11y_connected(ally){
+				ally.on('keydown',e=>{
+					if(e.key.activates){
+						this.query('[title]').style.background = 'var(--lime)'
+					}
+				})
+				ally.on('click',()=>this.clicked())
+			}
+			clicked(){
+				this.query('[title]').style.background = this.one ? 'var(--night)':''
+				this.one = !this.one
+			}
+			connected(){
+				this.kind = 'button'
+				this.one = true
+				this.bind({title:'Example'})
+			}
+		})
+	})(document)
+</script>

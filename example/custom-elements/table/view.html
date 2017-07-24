@@ -1,0 +1,108 @@
+<template id="table-view">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+	        background-color: whitesmoke;
+	        position: relative;
+	        overflow:auto;
+	        max-width: 100%;
+	        max-height:100%;
+        }
+	    table{
+		    border:0;
+		    position: relative;
+		    height:100%;
+	    }
+
+	    th,td{
+		    background-color: white;
+		    padding:4px;
+	    }
+
+
+    </style>
+	<table view>
+		<thead>
+			<tr header-row></tr>
+		</thead>
+		<tbody body>
+
+		</tbody>
+	</table>
+</template>
+<script>
+    (function(doc){
+        const TableView = wwi.element(doc)
+        TableView(class extends TableView.Element{
+        	constructor(){
+        		super('routes',{
+        			headers(value){
+        				if(value !== null) set_headers(this,value)
+			        }
+		        })
+	        }
+	        add(element,type = 'item'){
+				switch(type){
+					case 'header':
+						let header = this.header_row
+						console.log({header})
+						this.header_row.appendChild(element)
+						break
+					case 'item':
+						if(!fxy.is.element(element)) element = create_item(this,element)
+						if(fxy.is.element(element)) this.body.appendChild(element)
+						break
+				}
+				return this
+	        }
+        	get body(){ return this.query('[body]') }
+        	get header_row(){ return this.query('[header-row]') }
+        	get rows(){ return this.all('[body] > tr') }
+
+        })
+		//shared actions
+
+        function create_cell(data){
+	    	let value = null
+	    	if(fxy.is.object(data)) value = JSON.stringify(data)
+	        else value = data
+	        let td = document.createElement('td')
+	        td.innerHTML = value
+	        return td
+        }
+
+	    function create_header(name){
+		    let th = document.createElement('th')
+		    th.innerHTML = name
+		    return th
+	    }
+
+	    function create_item(table,data){
+	    	let item = null
+	    	if(fxy.is.data(data)){
+	    		let headers = get_headers(table.headers)
+	    		item = document.createElement('tr')
+			    for(let name of headers){
+	    			if(name in data) item.appendChild(create_cell(data[name]))
+			    }
+		    }
+		    return item
+	    }
+
+	    function get_headers(headers){
+		    if(fxy.is.text(headers)) headers = headers.split(',')
+		    if(!fxy.is.array(headers)) headers = []
+		    return headers.map(header=>header.trim())
+	    }
+
+	    function set_headers(table,headers){
+        	headers = get_headers(headers)
+			for(let name of headers){
+        		let header = create_header(name)
+				table.add(header,'header')
+			}
+			return table
+	    }
+    })(document)
+</script>

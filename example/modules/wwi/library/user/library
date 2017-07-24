@@ -1,0 +1,5 @@
+library = {}
+library.logic = [
+	'schema.es6',
+	'user.es6'
+]

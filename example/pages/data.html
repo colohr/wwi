@@ -1,0 +1,56 @@
+<template id="data-page">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		data-form{
+			box-shadow:0 0 0 1px var(--gray);
+			border-radius: 7px;
+		}
+		[view]{
+			padding:10px;
+			max-height:calc(100% - 20px);
+			overflow-y: auto;
+		}
+	</style>
+	<div view>
+		<div gui relative horizontal center-center>
+			data-form
+		</div>
+		<div gui relative horizontal around wrap>
+			<data-form></data-form>
+		</div>
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const DataPage = wwi.page(doc)
+		DataPage(class extends DataPage.Element {
+			get form(){ return this.query('data-form') }
+			connected(){
+
+				this.form.items = {
+					email:{
+						type:'text',
+						placeholder:'Enter your name'
+					},
+					name:{
+						type:'text',
+						attributes:{
+							placeholder:'Enter your name'
+						}
+
+					}
+				}
+
+
+
+				this.form.on('valid',(e)=>{
+					console.log('valid event',e)
+				})
+
+				this.form.on('invalid',(e)=>{
+					console.log('invalid event',e)
+				})
+			}
+		})
+	})(document)
+</script>

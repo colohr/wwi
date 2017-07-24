@@ -1,0 +1,30 @@
+<template id="window-body-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		@import "/modules/wwi/component/design/ui/white.css";
+		:host {
+			display: block;
+			position: relative;
+		}
+
+		::slotted(*){
+			display: block;
+			position: relative;
+			min-height: 100%;
+			max-height: 100%;
+		}
+
+	</style>
+
+	<slot></slot>
+</template>
+<script>
+	(function (doc) {
+		const Body = wwi.element(doc)
+		Body(class extends Body.Element{
+			connected(){
+				this.at('ui-body')
+			}
+		})
+	})(document)
+</script>

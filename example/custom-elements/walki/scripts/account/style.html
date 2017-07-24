@@ -1,0 +1,211 @@
+
+<link rel="import" href="style/icons.html">
+<style is="custom-style">
+
+	:root{
+		--card-text-color:white;
+		--card-color:var(--blue);
+		--card-dark-color:var(--dark-blue);
+		--card-darker-color:var(--navy);
+		--card-icon-color:white;
+		--card-dark:rgba(255,255,255,0.24);
+		--card-border:white;
+		--card-radius:13px;
+		--card-shaded:var(--lightest-color);
+		--card-menu:{};
+		--card-action:{};
+		--card-option:{};
+		--card-option-color:var(--blue);
+		--card-option-icon-color:var(--card-icon-color);
+		--card-option-text-color:white;
+		--card-input:{};
+		--card-input-color:var(--card-text-color);
+		--card-light-placeholder:rgba(255,255,255,0.5);
+		--card-dark-placeholder:rgba(55,55,55,0.5);
+		--card-placeholder:rgba(255,255,255,0.5);
+		--card-focus:ghostwhite;
+
+	}
+</style>
+<dom-module id="kindle-account-card-styles">
+	<template>
+
+		<style>
+			:host {
+				--radius:var(--card-radius);
+				display: block;
+				position: relative;
+				@apply(--layout-vertical);
+				min-height:100px;
+				background-color:var(--card-color);
+				border-radius: var(--radius);
+				@apply(--shadow-container);
+				box-sizing: border-box;
+				border:0px solid var(--card-border);
+				margin:0 auto;
+			}
+			:host([light]){
+				--card-placeholder:var(--card-light-placeholder);
+			}
+			:host([dark]){
+				--card-placeholder:var(--card-dark-placeholder);
+			}
+			:host:before{
+				@apply(--shadow-sudo);
+			}
+
+			:host(:hover):before,
+			:host(:focus):before{
+				@apply(--shadow-animation);
+			}
+
+			.user-input-container{
+				padding:1em;
+				position: relative;
+				@apply(--layout-vertical);
+				background-color: inherit;
+				border-radius: inherit;
+				z-index: 0;
+			}
+			#provider #menu{
+				border-radius: var(--style-top-radius);
+			}
+			#submit{
+				border-radius: var(--style-bottom-radius);
+				top: 0px;
+			}
+			.avatar {
+				display: inline-block;
+				box-sizing: border-box;
+				height: 54px;
+				width: 54px;
+				border-radius: 50%;
+				text-align: center;
+				background-color: var(--card-icon-color);
+				box-shadow: 0 1px 10px -1px rgba(0, 0, 0, 0.15);
+				margin-right:15px;
+				@apply(--no-selection);
+			}
+			.user, .account{
+				@apply(--layout-horizontal);
+				@apply(--layout-around-aligned);
+			}
+			text-input{
+				@apply(--layout-flex);
+			}
+			.account{
+				margin-top:10px;
+				@apply(--layout-vertical);
+			}
+			#editLink{
+				position:absolute;
+				top:2px;
+				right:2px;
+				cursor: pointer;
+				color:var(--card-text-color);
+				outline:none;
+				opacity:0.5;
+			}
+			#editLink:hover{
+				opacity:0.8;
+			}
+			#editLink:active{
+				opacity:0.9;
+			}
+			:host([editing]) #editLink{
+				opacity:1;
+			}
+			.buttons{
+				display:none;
+				margin-top:10px;
+			}
+			:host([editing]) .buttons{
+				display:block;
+			}
+			.providers{
+				display:none;
+				position: relative;
+				background-color: var(--card-shaded);
+				border-radius: 6px;
+				margin-top:5px;
+				margin-bottom:7px;
+				color:var(--card-text-color);
+			}
+			.providers .linked-title{
+				font-weight: 700;
+				position: relative;
+				display: block;
+				text-align: center;
+				padding:6px 0px 0px 0px;
+			}
+			.providers #linked{
+				position: relative;
+				@apply(--layout-horizontal);
+				@apply(--layout-center-center);
+				padding:2px;
+				@apply(--no-selection);
+			}
+			.providers #linked .option-container{
+				@apply(--layout-inline);
+				position: relative;
+				height:74px;
+				width:74px;
+				@apply(--layout-vertical);
+				@apply(--layout-center-center);
+				padding-bottom:10px;
+				margin-left:4px;
+				margin-right:4px;
+				font-weight: 500;
+				@apply(--no-selection);
+			}
+			.providers #linked .option-container img{
+				display: inline-block;
+				position: relative;
+				height:50px;
+				width:50px;
+				margin:5px;
+				pointer-events: none;
+				@apply(--no-selection);
+			}
+			.license{
+				margin-bottom:0;
+			}
+			:host([editing]) .license{
+				margin-top:3px;
+				margin-bottom:4px;
+			}
+			:host([editing]) .providers{
+				@apply(--layout);
+				@apply(--layout-vertical);
+				@apply(--layout-center-center);
+				@apply(--no-selection);
+			}
+
+
+			text-input{
+				@apply(--card-input);
+				--input-color:var(--card-input-color);
+				--input-focus:var(--card-focus);
+				--input-placeholder:var(--card-placeholder);
+			}
+			select-menu{
+				@apply(--card-menu);
+				--option-color:var(--card-option-color);
+				--option-icon-color:var(--card-option-icon-color);
+				--option-text-color:var(--card-option-text-color);
+			}
+			select-option{
+				@apply(--card-option);
+				--option-color:var(--card-option-color);
+				--option-icon-color:var(--card-option-icon-color);
+				--option-text-color:var(--card-option-text-color);
+			}
+			tap-action{
+				@apply(--card-action);
+			}
+
+
+
+		</style>
+	</template>
+</dom-module>

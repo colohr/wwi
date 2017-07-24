@@ -1,0 +1,29 @@
+<template id="kindle-item-versions">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        @import "/custom-elements/kpi/elements/versions.css";
+
+
+    </style>
+    <div view gui horizontal>
+	    <kindle-tab type="original"></kindle-tab>
+	    <kindle-tab type="public"></kindle-tab>
+    </div>
+</template>
+<script>
+    (function(doc){
+        const KindleItemVersions = wwi.element(doc).extension({module:'kpi',name:'Versions'})
+	    KindleItemVersions(class extends KindleItemVersions.Element{
+		    constructor(){
+			    super({
+				    bank:true,
+				    ditl:true
+			    })
+		    }
+
+		    get original(){ return this.query('[type="original"]') }
+		    get public(){ return this.query('[type="public"]') }
+		    get tabs(){ return this.all('kindle-tab') }
+        })
+    })(document)
+</script>

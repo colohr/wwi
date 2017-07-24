@@ -1,0 +1,70 @@
+<template id="wwe-background-template">
+	<style>
+		@import "/custom-elements/wwe/ui/background/design.css";
+	</style>
+	<slot></slot>
+</template>
+<script>
+	(function (doc) {
+		const BG = wwi.element(doc)
+		const timer = Symbol('timer')
+		BG(class extends BG.Element {
+			constructor(){
+				super('routes',{
+					index(value){
+						this.set_background(value)
+					},
+					timer(value){set_timer(this,value)},
+					alpha(){
+						if(this.hasAttribute('color')) {
+							this.style.backgroundColor = this.mask_color
+						}
+					},
+					color(value){
+						if(value) this.style.backgroundColor = this.mask_color
+					}
+				})
+			}
+			get mask_alpha(){
+				let a = 0.5
+				if(this.hasAttribute('alpha')) a = parseFloat(this.alpha)
+				return a
+			}
+			get mask_color(){
+				return fxy.require('design/colors').transparent(this.color,this.mask_alpha)
+			}
+			connected(){
+				if(!this.hasAttribute('index')) this.index = app.help.numbers.random(0,11)
+			}
+			set_background(index){
+				index = parseInt(index)
+				if(index >= 0 && index <= 11){
+					let graphic = url.elements('wwe','ui',`background/graphics/white-${index}.jpg`)
+					this.style.backgroundImage = `url(${graphic})`
+					set_timer(this,this.timer)
+				}
+			}
+		})
+
+		function clear_timer(bg){
+			if(timer in bg && typeof bg[timer] === 'number'){
+				window.clearTimeout(bg[timer])
+				delete bg[timer]
+			}
+			return true
+		}
+		function change_bg(){
+			window.requestAnimationFrame(()=>this.set_background(app.help.numbers.random(0,11)))
+
+		}
+		function set_timer(bg,time){
+			if(clear_timer(bg)){
+				time = parseInt(time)
+				if(fxy.is.number(time)){
+					bg[timer] = window.setTimeout(change_bg.bind(bg),time)
+				}
+			}
+		}
+
+	})(document)
+</script>

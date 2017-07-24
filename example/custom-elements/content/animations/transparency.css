@@ -1,0 +1,47 @@
+@import "index.css";
+
+/* animation */
+@-webkit-keyframes transparency {
+    0% {
+        opacity:var(--opacity-from);
+    }
+    100%{
+        opacity:var(--opacity-to);
+    }
+}
+
+@-moz-keyframes transparency {
+    0% {
+        opacity:var(--opacity-from);
+    }
+    100%{
+        opacity:var(--opacity-to);
+    }
+}
+
+@-ms-keyframes transparency {
+    0% {
+        opacity:var(--opacity-from);
+    }
+    100%{
+        opacity:var(--opacity-to);
+    }
+}
+
+@-o-keyframes transparency {
+    0% {
+        opacity:var(--opacity-from);
+    }
+    100%{
+        opacity:var(--opacity-to);
+    }
+}
+
+@keyframes transparency {
+0% {
+    opacity:var(--opacity-from);
+}
+100%{
+    opacity:var(--opacity-to);
+}
+}

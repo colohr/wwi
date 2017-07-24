@@ -4,3 +4,7 @@ dev
 node_modules
 npm-debug.log
 next
+custom-elements-removed
+example-copy
+example-removed
+wwi-removed

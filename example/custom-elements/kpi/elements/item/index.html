@@ -1,0 +1,114 @@
+<template id="kindle-item-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		@import "/custom-elements/kpi/elements/item/design.css";
+
+		:host {
+			display: inline-block;
+			position: relative;
+			height:100%;
+			width: 100%;
+			overflow:hidden;
+			max-height: 100%;
+			outline: none;
+		}
+		:host([aria-disabled="true"]){
+			display:none;
+		}
+
+		[view]{
+			overflow: hidden;
+			overflow-y: auto;
+			position: relative;
+			max-height: 100%;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		[view] *{
+			box-sizing: border-box;
+			position:relative;
+		}
+
+		[item-head]{
+			background-color: rgba(255,255,255,0.8);
+			text-align: left;
+			font-size:20px;
+			padding-top:10px;
+			padding-bottom:10px;
+		}
+
+		[item-body]{  margin:10px;  }
+
+		[item-question]{  margin-top:10px;  }
+
+		[item-passage] > :first-child,
+		[item-question] > [item-text],
+		[item-choice],
+		[item-feedback]{  padding:10px;  }
+
+		[item-passage] > :first-child,
+		[item-text]{
+			border:1px solid var(--gray);
+			border-radius: 3px;
+		}
+
+		img{
+			margin:10px;
+			position: relative;
+			display: inline-block;
+			border-radius: 3px;
+			background-color: white;
+			max-width: calc(100vw - 20px);
+			height: auto;
+		}
+
+		[item-question] [item-text],
+		[item-feedback] [item-text],
+		[item-choice] [item-text]{
+			padding:10px;
+		}
+
+		[item-question]{
+			max-width: calc(100% - 40x);
+		}
+
+		[item-feedback] [item-text],
+		[item-choice] [item-text]{
+			margin-left:5px;
+			max-width: calc(100% - 40px);
+			margin-left:5px;
+		}
+
+		[item-label]{
+			height:30px;
+			width:30px;
+			max-height:30px;
+			max-width:30px;
+			padding:5px;
+			background-color: var(--gray);
+			border-radius: 100px;
+		}
+
+		[item-content-label]{
+			font-style: italic;
+			margin-top:10px;
+			margin-bottom:5px;
+		}
+
+
+
+	</style>
+	<div view></div>
+</template>
+<script>
+	(function (doc) {
+		const Item = wwi.element(doc).extension({module:'kpi',name:'Item'})
+		Item(class extends Item.Element {
+
+		})
+
+
+
+	})(document)
+</script>

@@ -1,0 +1,11 @@
+html, :root, :host{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-kerning: normal;
+    font-size: 16px;
+    font-weight: normal;
+
+    letter-spacing: normal;
+    line-height: normal;
+
+    text-rendering: geometricPrecision;
+}

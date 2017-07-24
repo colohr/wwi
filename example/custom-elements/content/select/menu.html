@@ -1,0 +1,238 @@
+<template id="select-menu-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			--bg: rgba(210, 211, 221, 0.7);
+			--border: 1px solid rgb(237, 239, 241);
+
+
+			background-color: var(--bg);
+			border-radius: 7px;
+			box-sizing: border-box;
+			color:var(--color,var(--blue));
+			display: block;
+			outline: none;
+			height: 100%;
+			-webkit-perspective: 800px;
+			perspective: 800px;
+			position: relative;
+			overflow: visible;
+			width: 100%;
+			z-index: 1000;
+		}
+
+		[container] {
+			display: block;
+			height: 44px;
+			position: relative;
+			transition: height 300ms cubic-bezier(0.5, -0.1, 0.05, -0.18);
+			transform-style: flat;
+			transform-origin: top center;
+			will-change: height;
+		}
+
+		[dropdown] {
+			position: absolute;
+			top:0;
+			width: 100%;
+			left:0;
+			right:0;
+			bottom: 0;
+			z-index: 0;
+			pointer-events: none;
+			max-width: calc(100% - 28px);
+			margin: 14px;
+			box-sizing: border-box;
+			overflow: hidden;
+			opacity:0;
+		}
+
+		:host([aria-expanded="true"]) [dropdown] {
+			opacity:1;
+			pointer-events: auto;
+		}
+
+		[selected-option] {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height:44px;
+		}
+
+		[selected-option] select-option{
+			color:currentColor;
+			border-radius: 7px;
+			transform: rotateX(0deg);
+			transition-duration: 500ms;
+			transition-property: transform, border-radius,background,color;
+			transition-timing-function: cubic-bezier(0.25, 0.1, 0, 1.03);
+			will-change: transform,border-radius,background,color;
+		}
+
+		[selected-option][opened] select-option,
+		[selected-option]:active select-option {
+			border-radius: 7px 7px 0 0;
+			transform: rotateX(45deg);
+		}
+
+		[name="select-option"]::slotted(select-option) { color:currentColor; }
+		[name="select-option"]::slotted(select-option:first-child) {  border-radius: 7px 7px 0 0;  }
+		[name="select-option"]::slotted(select-option:last-child) {  border-radius: 0 0 7px 7px; }
+
+	</style>
+	<div view gui vertical>
+		<div container>
+			<div gui vertical dropdown>
+				<slot name="select-option"></slot>
+			</div>
+			<div selected-option>
+				<select-option button name="Choose" wwi icon="provider/internet.svg">
+					<div class="chooseLabel" style="opacity:0.95;">Choose</div>
+				</select-option>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const Select = wwi.element(doc)
+		Select(class extends Select.Element {
+			constructor() {
+				super()
+				this.setAttribute('role', 'list')
+				this.setAttribute('tabindex', '0')
+				this.setAttribute('aria-expanded', 'false')
+				this.container.addEventListener('transitionend',(e)=>{
+					if(e.propertyName === 'height' && e.target === this.container){
+						if(!this.button.hasAttribute('opened')) {
+							this.setAttribute('aria-expanded', 'false')
+							this.query('[button]').focus()
+						}
+						this.dispatch('size changed',{event:e, opened:this.opened})
+					}
+				},false)
+			}
+
+			get button() { return this.query('[selected-option]') }
+
+			close() {
+				this.button.removeAttribute('opened')
+				this.container.style.height = ''
+				return clear_item_transform(this)
+			}
+
+			connected() {
+				wwi.when('select-option').then(() => {
+					this.container_height = get_container_height(this)
+					this.button.addEventListener('click',e=>{
+						if(this.opened) this.close()
+						else this.open()
+					})
+					let items = this.items
+					this.query('[button]').on('toggle',this.toggle.bind(this))
+					this.query('[button]').on('focus item',this.focus_item.bind(this))
+					items[0].focuses_item = true
+					items[0].on('focus button',this.focus_item.bind(this))
+					for (let item of items) item.on('selected', e => this.select(e.currentTarget))
+					this.close();
+				})
+			}
+
+			get container() {return this.query('[container]')}
+
+			focus_item(e){
+				let items = this.items
+				let key = e.detail
+				if(e.type === 'focus button') this.query('[button]').focus()
+				else if(key.action === 'down' || key.action === 'right') items[0].focus()
+				else if(key.action === 'up' || key.action === 'left') items[items.length-1].focus()
+			}
+
+			get items() { return this.slots['select-option'].items }
+
+			open() {
+				this.button.setAttribute('opened','')
+				this.setAttribute('aria-expanded', 'true')
+				this.container.style.height = this.container.dataset.height
+				this.focus()
+				set_item_open_transform(this)
+				this.query('[button]').focus()
+				return this
+			}
+
+			get opened(){ return this.getAttribute('aria-expanded') === "true" }
+
+			select(item) {
+				if(this.selected && this.selected !== item) this.selected.selected = false
+				this.selected = item
+				let button = this.query('[button]')
+				button.name = item.name
+				button.icon = item.icon
+				button.focus()
+				this.dispatchEvent(new CustomEvent('selected', {bubbles: true, detail: item}))
+				if(this.hasAttribute('toggles')) this.toggle()
+			}
+
+			toggle() {
+				if(this.opened) this.close()
+				else this.open()
+			}
+
+		})
+
+
+		function clear_item_transform(menu){
+			let items = menu.items
+			for(let item of items){
+				item.style.transitionTimingFunction = 'linear'
+				item.style.transform = `translate(0,0)`
+				item.setAttribute('tabindex', '-1')
+				item.style.opacity = '0'
+			}
+			return menu
+		}
+
+		function get_container_height(menu) {
+			let height = 45
+			set_item_transition(menu,height)
+			let h = (menu.items.length + 1) * height
+			h = h + 30
+			menu.container.dataset.height = h + 'px'
+			return h
+		}
+
+		function set_item_open_transform(menu){
+			let items = menu.items
+			for(let item of items){
+				item.style.transitionTimingFunction = 'cubic-bezier(0.18, 0.15, 0, 1.65)'
+				item.style.transform = item.dataset.transform
+				item.setAttribute('tabindex', '0')
+				item.style.opacity = 1
+			}
+			return menu
+		}
+
+		function set_item_transition(menu,height){
+			let items = menu.items
+			let count = items.length
+			for (let i = 0; i < count; i++) {
+				let item = items[i]
+				let y = (height * (i+1))
+				let transformation = `translate(0,${y}px)`
+				let duration = `${get_transition_duration(i)}ms`
+				item.dataset.transform = transformation
+				item.style.opacity = '0'
+				item.style.transitionDuration = duration
+			}
+			return menu
+		}
+
+		function get_transition_duration(i, duration) {
+			if (!fxy.is.number(duration)) duration = 280
+			return i * 30 + duration
+		}
+
+	})(document)
+</script>

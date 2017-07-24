@@ -1,0 +1,10 @@
+library = {}
+library.logic = [
+	'logic/library.es6'
+]
+library.elements = [
+	{
+		path:'tags/index.html',
+		wait:['walki-tag','walki-tags']
+	}
+]

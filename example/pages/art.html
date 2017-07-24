@@ -1,0 +1,32 @@
+<template id="art-page">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+
+        art-palette{
+            position:relative;
+            height:100%;
+            width:100%;
+        }
+    </style>
+    <art-palette></art-palette>
+</template>
+<script>
+    (function(doc){
+        const Art = wwi.page(doc)
+	    Art(class extends Art.Element{
+
+	        connected(){
+
+//		        this.unset = true
+//		        this.on('active',()=>{
+//			        if('unset' in this){
+//				        this.list.on('items',e=>{for(let item of e.detail) item.background = item.data.value})
+//				        this.list.set_items(...(get_transparent_items(5)))
+//				        delete this.unset
+//			        }
+//		        })
+	        }
+	        get palette(){ return this.query('art-palette') }
+        })
+    })(document)
+</script>

@@ -1,0 +1,165 @@
+<template id="content-pages">
+    <style>
+        @import "/custom-elements/content/animations.css";
+        [app-pages],
+        :host{
+            opacity: 1;
+            display: block;
+            position: relative;
+            height: 100%;
+            min-height: 100vh;
+            width: 100vw;
+            z-index: 1;
+        }
+
+        :host([loading]){
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #list::slotted(*){
+            display: none;
+            position: absolute;
+            top:39px;
+            left:0;
+            right:0;
+            bottom:0;
+            pointer-events: none;
+            box-sizing: border-box;
+            overflow: hidden;
+            background-color:var(--page-background-color,transparent);
+        }
+
+        [app-pages][animates] > *,
+        :host([animates][transparency]) #list::slotted(*){
+            will-change:opacity,transform;
+        }
+
+
+        [app-pages][animates][transparency] > *,
+        :host([animates][transparency]) #list::slotted(*){
+            -webkit-animation: transparency 500ms ease;
+            -moz-animation: transparency 500ms ease;
+            -ms-animation: transparency 500ms ease;
+            -o-animation: transparency 500ms ease;
+            animation: transparency 500ms ease;
+        }
+
+        [app-pages][animates][slide-from-top] > *,
+        :host([animates][slide-from-top]) #list::slotted(*){
+            -webkit-animation: slide-from-top 300ms ease;
+            -moz-animation: slide-from-top 300ms ease;
+            -ms-animation: slide-from-top 300ms ease;
+            -o-animation: slide-from-top 300ms ease;
+            animation: slide-from-top 300ms ease;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+        }
+
+        [app-pages][animates][slide-from-right] > *,
+        :host([animates][slide-from-right]) #list::slotted(*){
+            -webkit-animation: slide-from-right 300ms ease;
+            -moz-animation: slide-from-right 300ms ease;
+            -ms-animation: slide-from-right 300ms ease;
+            -o-animation: slide-from-right 300ms ease;
+            animation: slide-from-right 300ms ease;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+        }
+
+        [app-pages][animates][slide-from-bottom] > *,
+        :host([animates][slide-from-bottom]) #list::slotted(*){
+            -webkit-animation: slide-from-bottom 300ms ease;
+            -moz-animation: slide-from-bottom 300ms ease;
+            -ms-animation: slide-from-bottom 300ms ease;
+            -o-animation: slide-from-bottom 300ms ease;
+            animation: slide-from-bottom 300ms ease;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+        }
+
+        :host([animates][slide-from-left]) #list::slotted(*){
+            -webkit-animation: slide-from-left 300ms ease;
+            -moz-animation: slide-from-left 300ms ease;
+            -ms-animation: slide-from-left 300ms ease;
+            -o-animation: slide-from-left 300ms ease;
+            animation: slide-from-left 300ms ease;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+        }
+
+        [app-pages] > *[active],
+        #list::slotted([active]){
+            pointer-events: auto;
+            display:block;
+            z-index: 10;
+        }
+
+    </style>
+    <slot id="list"></slot>
+</template>
+<script>
+    (function(doc){
+        const ContentPages = wwi.element(doc)
+	    const app_page_index = Symbol('Position of page in sorted list')
+        ContentPages(class extends ContentPages.Element{
+            constructor(){
+            	super('routes',{
+            		appPages(value){
+            			if(value !== null) this.setAttribute('role','main')
+                        else this.removeAttribute('role','')
+		            },
+                    loading:true
+	            })
+            }
+	        get animates(){ return this.hasAttribute('animates') }
+	        connect_menu(e){
+		        let items = this.items.map(page=>{
+			        if(!page.hasAttribute('name')) page.setAttribute('name',page.localName.replace('-page',''))
+			        if(!page.hasAttribute('page-title')) page.setAttribute('page-title',fxy.id.proper(page.getAttribute('name')))
+			        return page
+		        }).sort((x,y)=>{
+			        let a = x.getAttribute('page-title')
+			        let b = y.getAttribute('page-title')
+			        if(a > b) return 1
+			        else if(a < b) return -1
+			        return 0
+		        }).map((page,index)=>{
+			        page[app_page_index] = index
+			        return page
+		        })
+
+		        set_menu_buttons(items,e)
+
+                return e
+	        }
+	        connected(){
+		        if(this.appPages) this.setAttribute('role','main')
+	        }
+	        get count(){ return this.items.length }
+	        get items(){ return this.slots.list.items }
+        })
+
+        //shared actions
+        function set_menu_buttons(pages,element){
+	        return pages.map(page=>{
+	        	return {
+		            name:page.getAttribute('name'),
+		            title:page.getAttribute('page-title')
+	            }
+	        }).map(({name,title})=>{
+		        if(!name) return null
+		        if(element.menu.has_item('hash',name)) return element.menu.get_item('hash',name)
+		        let button = document.createElement('wwe-button')
+		        button.setAttribute('hash',name)
+		        button.setAttribute('kind','item')
+		        button.setAttribute('tabindex','-1')
+		        button.setAttribute('role','option')
+		        button.innerHTML = title
+		        element.menu.appendChild(button)
+		        return button
+	        })
+        }
+
+    })(document)
+</script>

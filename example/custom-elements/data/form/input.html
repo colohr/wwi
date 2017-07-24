@@ -1,0 +1,119 @@
+<template id="form-input">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host{
+			--radius:4px;
+			--font-size:16px;
+			position:relative;
+			display:inline-block;
+			outline: none;
+			border-radius: var(--radius);
+			transition-property:filter;
+			transition-timing-function: ease;
+			transition-duration: 200ms;
+			will-change: filter;
+		}
+
+
+		input{
+			-webkit-appearance: none;
+			background-color: rgba(255, 255, 255, 0.92);
+			display: block;
+			border:none;
+			position: relative;
+			outline: none;
+			padding:5px 5px 5px 10px;
+			border-radius: var(--radius);
+			font-size:var(--font-size);
+			box-shadow:0 0 0 1px var(--gray-50);
+			transition-property: box-shadow,background-color;
+			transition-timing-function: ease;
+			transition-duration: 300ms;
+			will-change: box-shadow,background-color;
+		}
+
+		:host([shadow]),
+		:host(:hover){
+			-webkit-filter: drop-shadow(0 1px 6px rgba(16, 15, 20, 0.2));
+			filter: drop-shadow(0 1px 6px rgba(16, 15, 20, 0.2));
+		}
+
+		:host(:hover) input{
+			background-color: rgba(255, 255, 255, 1);
+		}
+
+		input:focus{
+			background-color: rgba(255, 255, 255, 1);
+			box-shadow: 0 1px 7px var(--grape), 0 0 0 2px var(--grape);
+		}
+
+		fieldset{
+			border:none;
+		}
+
+		label{
+			font-weight: 900;
+			text-transform:capitalize;
+			padding-bottom:5px;
+		}
+
+	</style>
+
+	<fieldset gui relative horizontal center-center>
+		<label></label>
+		<input tabindex="0" required>
+	</fieldset>
+
+
+</template>
+<script>
+	(function(doc){
+		const Input = wwi.element(doc,'a11y')
+		Input(class extends Input.Element{
+			constructor(){
+				super('routes',{
+					id(value){
+						this.input.id = value
+						this.label.for = value
+					},
+					name(value){
+						this.input.id = value
+						this.label.for = value
+						this.label.innerHTML = value
+					},
+					placeholder(value){
+						this.input.placeholder = value
+					},
+					required(value){
+						this.input.required = value
+					},
+					type(value){
+						this.input.type = value
+					},
+					value(value){
+						this.input.value = value
+					}
+				})
+
+				this.onfocus = e => {
+					this.input.focus()
+				}
+
+			}
+
+			connected(){
+				this.aria.tabindex = 0
+				this.aria.role = "combobox"
+			}
+
+			get fieldset(){ return this.query('fieldset') }
+			get input(){ return this.query('input') }
+			get label(){ return this.query('label') }
+
+		})
+
+
+
+	})(document)
+</script>

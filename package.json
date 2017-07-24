@@ -1,6 +1,6 @@
 {
   "name": "wwi",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "World Wide Internet Web Component Library",
   "main": "./lib/index.js",
   "repository": {
@@ -19,11 +19,13 @@
   },
   "homepage": "https://github.com/colohr/wwi#readme",
   "dependencies": {
+    "compression": "^1.6.2",
     "express": "^4.15.2",
-    "fxy": "0.0.9",
     "yargs": "^8.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "better-console": "^1.0.0"
+  },
   "scripts": {
     "test": "node ./lib/index.js -wwi --test 8888"
   }

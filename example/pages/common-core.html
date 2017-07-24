@@ -1,0 +1,132 @@
+<template id="common-core-page">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host{
+			--container-height:calc(100% - 35px);
+			--list-width:240px;
+		}
+
+		[view]{
+			background-color: whitesmoke;
+		}
+
+		type-dash{
+			--toolbar-button:var(--berry);
+		}
+
+		[api-title]{
+			color:var(--berry);
+			font-size:22px;
+			font-weight: 900;
+			padding:3px;
+			display: inline-block;
+			position: relative;
+		}
+
+		[content]{
+			width: 100%;
+			position: relative;
+			min-height:100%;
+		}
+
+		[box]{
+			position: relative;
+			min-height:100%;
+			max-height: 100%;
+			width: 300px;
+			background-color: var(--emerald);
+		}
+
+		browser-list{
+			--item-color:var(--berry);
+			width:var(--list-width);
+			display: inline-block;
+			min-height:var(--container-height);
+			max-height: var(--container-height);
+			height:var(--container-height);
+		}
+
+		kindle-item{
+			position: absolute;
+			left:var(--list-width);
+			width:calc(100% - var(--list-width));
+			height:var(--container-height);
+			top:35px;
+		}
+
+		content-menu{
+			color:var(--berry);
+			width:var(--list-width);
+			display: inline-block;
+			min-height:var(--container-height);
+			max-height: var(--container-height);
+			height:var(--container-height);
+			overflow-y:auto;
+		}
+
+		content-menu a{
+			display: block;
+			width:100%;
+			cursor:pointer;
+			border-bottom:1px solid lightgray;
+			padding:5px;
+		}
+		content-menu a[aria-selected="true"]{
+			background-color: var(--berry);
+			color:white;
+		}
+	</style>
+
+	<!--<kpi-dash host="http://localhost" port="2223" paths="api,kindle-publishing,graph"></kpi-dash>-->
+
+
+	<div view fit gui vertical>
+		<type-dash name="common-core">
+			<div api-title slot="tool">Common Core</div>
+		</type-dash>
+		<content-menu></content-menu>
+	</div>
+
+
+</template>
+<script>
+	(function (doc) {
+		const Page = wwi.page(doc)
+		Page(class extends Page.Element{
+
+			connected(){
+				let dash = this.query('type-dash')
+				dash.container = this
+				dash.api.control = {
+					container:this,
+					queries:{
+						jurisdictions:`{jurisdictions{id title type}}`
+					}
+				}
+				this.list.on('select',(e)=>{
+					console.log({e})
+				})
+					dash.load('jurisdictions').then(data=>{
+						for(let i of data){
+							let item = document.createElement('a')
+							item.setAttribute('role','option')
+							item.setAttribute('item-id',i.id)
+							item.innerHTML = `
+								<div>${i.title}</div>
+								<small>${i.type}</small>`
+							this.list.appendChild(item)
+						}
+						this.list.update_items()
+					})
+
+			}
+			get dash(){ return this.query('type-dash') }
+			get list(){ return this.query('content-menu') }
+//			get navigator(){ return fxy.require('type/navigator')(this) }
+
+
+		})
+
+	})(document)
+</script>

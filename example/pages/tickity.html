@@ -1,0 +1,79 @@
+<template id="tickity-page-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+			contain: content;
+			backface-visibility: hidden;
+			-webkit-backface-visibility: hidden;
+			-webkit-overflow-scrolling: touch;
+		}
+		[view]{
+			max-width: calc(100%);
+			overflow:hidden;
+			overflow-y:auto;
+			max-height:100%;
+		}
+		[view] > div{
+			padding:9px;
+		}
+		tickity-tock{
+			margin-bottom:30px;
+			margin-left:5px;
+			margin-right:5px;
+		}
+	</style>
+	<div view gui>
+		<div gui relative horizontal center-center>tickity-button - tickity-tock</div>
+		<div gui relative horizontal around wrap>
+			<tickity-button></tickity-button>
+			<tickity-tock id="two" frame="250px,250px" white></tickity-tock>
+			<tickity-tock id="one" frame="200px,200px"></tickity-tock>
+		</div>
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const Tickity = wwi.page(doc).extension('behavior','Scroll')
+		Tickity(class extends Tickity.Element {
+			constructor(){
+				super('routes',{
+					active(value){ this.tick(value !== null) },
+					scrolling(value){
+						this.tick(false)
+						if(fxy.is.number(this.is_ticking)){
+							window.clearTimeout(this.is_ticking)
+							delete this.is_ticking
+						}
+						this.is_ticking = window.setTimeout(()=>{
+							this.tick(!this.scrolling)
+							delete this.is_ticking
+						},500)
+					}
+				})
+			}
+			get one(){ return this.query('#one') }
+			get two(){ return this.query('#two') }
+			get button(){ return this.query('tickity-button') }
+			get tickers(){
+				let tickers = []
+				if(this.one.start) tickers.push(this.one)
+				if(this.two.start) tickers.push(this.two)
+				if(this.button.tickity) tickers.push(this.button.tickity)
+				return tickers
+			}
+
+			tick(active){
+				let tickers = this.tickers
+				for(let ticker of tickers){
+					if(active) ticker.start()
+					else ticker.stop()
+				}
+			}
+			connected(){
+				this.watch_scroll = this.view
+			}
+		})
+	})(document)
+</script>

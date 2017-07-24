@@ -1,0 +1,42 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-localstorage/iron-localstorage.html">
+<dom-module id="avatar-data">
+	<template>
+		<iron-localstorage name="kindle-avatar-data"
+		                   on-iron-localstorage-load-empty="_initAvatar"
+		                   value="{{data}}"></iron-localstorage>
+	</template>
+	<script>
+		Polymer({
+			is: 'avatar-data',
+			properties: {
+				avatar:{
+					type:Object,
+					notify:true,
+					observer:'_onLocalAvatar'
+				},
+				data:{
+					type:Object,
+					observer:'_onLocalData'
+				}
+			},
+			_onLocalData(data,old){
+				if(typeof data !== 'object' || data === null){
+					return;
+				}
+				else if(data.value){
+					this.avatar=data.value;
+				}
+			},
+			_onLocalAvatar(avatar,old){
+				if(typeof avatar === 'object' && avatar !== null){
+					this.set('data.value',avatar);
+				}
+			},
+			_initAvatar(){
+				this.data={value:false};
+			}
+
+		});
+	</script>
+</dom-module>

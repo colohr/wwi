@@ -1,0 +1,50 @@
+@import "host.css";
+
+:host {
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    contain: style;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+
+tickity-date{
+    background: var(--background,var(--sea-emerald-bg));
+}
+
+slot[name="top-title"]::slotted(*){
+    top: -100%;
+}
+
+:host([is-button]) tickity-time{
+    display: none;
+}
+
+:host([is-button]) tickity-date {
+    vertical-align: bottom;
+    border: 0px solid rgba(255, 45, 105, 0);
+    -webkit-box-reflect: below -10px -webkit-linear-gradient(bottom, rgba(255, 255, 255, 0.3) 0%, transparent 50%, transparent 100%);
+    box-reflect: below 0px linear-gradient(to top, rgba(255, 255, 255, 0.3) 0%, transparent 50%, transparent 100%);
+    background:transparent;
+}
+
+
+
+:host([is-button]) tickity-date:before {
+    content: '';
+    position: absolute;
+    top: 13px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: #eaeaea;
+    z-index: -1;
+    border-radius: 0 0 6px 6px;
+}
+
+
+

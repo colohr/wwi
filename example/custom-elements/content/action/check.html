@@ -1,0 +1,71 @@
+<template id="content-action-check">
+    <style>
+	    @import "/custom-elements/content/action/check.css";
+    </style>
+    <div view gui horizontal center-center>
+	    <div checkbox-container gui horizontal center-center>
+		    <fieldset>
+			    <label for="input"><slot></slot></label>
+			    <input id="input" type="checkbox">
+		    </fieldset>
+	    </div>
+
+	    <div icon-container gui vertical end></div>
+    </div>
+</template>
+<script>
+    (function(doc){
+        const ContentActionCheck = wwi.element(doc,'a11y').extension({name:'Action',module:'content'})
+        ContentActionCheck(class extends ContentActionCheck.Element{
+        	constructor(){
+        		super()
+		        this.define('routes',{
+		        	checked(value){
+		        		if(value !== null) this.input.setAttribute('checked','')
+				        else this.input.removeAttribute('checked')
+		        		this.do_action('checked')
+			        },
+			        name(value){
+		        		if(value !== null){
+		        			this.label.innerHTML = value
+					        this.input.setAttribute('name',value)
+				        }
+			        },
+			        icons(value){ this.set_icons(value) }
+		        })
+	        }
+			connected(){
+
+				this.kind = 'button'
+        		this.on('click',e=>{
+			        this.checked = !this.checked
+			        this.aria.checked = this.checked !== null
+		        })
+
+			}
+			get fields(){ return this.query('fieldset') }
+
+	        get icon_container(){ return this.query('[icon-container]') }
+			get icon_elements(){ return this.all('content-icon') }
+
+			get input(){ return this.query('input')}
+			get label(){ return this.query('label') }
+			set_icons(value){
+				this.icon_elements.forEach(icon=>icon.remove())
+				if(fxy.is.text(value)){
+					let icons = value.split(',').filter(item=>item.trim())
+					if(icons.length === 1) icons[1] = icons[0]
+					icons.forEach((name,index)=>{
+						let icon = document.createElement('content-icon')
+						icon.setAttribute('name',name)
+						let type = index === 0 ? 'checked-icon':'unchecked-icon'
+						icon.setAttribute(type,'')
+						this.icon_container.appendChild(icon)
+					})
+
+				}
+				return this
+			}
+        })
+    })(document)
+</script>

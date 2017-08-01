@@ -1,31 +1,40 @@
 wwi.exports('element',(element,fxy) => {
 	const ally_triggers =  [13,32]
-	const ElementSymbols = fxy.symbols
 	const pointers = Symbol.for('pointers data')
-	const Memory = fxy.require('element/memory')
 	
 	class Listener {
-		
-		static get Pointer() {
-			return ElementSymbols.Pointer
+		static Callbacks(listener) {
+			if (!this.HasCallbacks(listener)) this.Memory[fxy.symbols.Callbacks].set(listener, new Map())
+			return this.Memory[fxy.symbols.Callbacks].get(listener)
 		}
-		
+		static Delete(element) {
+			if (!this.Memory[fxy.symbols.Listener].has(element)) return element
+			this.Memory[fxy.symbols.Listener].get(element).disconnect(element)
+			this.Memory[fxy.symbols.Listener].delete(element)
+			return element
+		}
 		static get Events() {
-			return Memory.Events
+			return this.Memory.Events
 		}
-		
+		static Has(element) {
+			return this.Memory[fxy.symbols.Listener].has(element)
+		}
+		static HasCallbacks(listener) {
+			return this.Memory[fxy.symbols.Callbacks].has(listener)
+		}
+		static Listener(element) {
+			if (!this.Memory[fxy.symbols.Listener].has(element)) this.Memory[fxy.symbols.Listener].set(element, new Listener())
+			return this.Memory[fxy.symbols.Listener].get(element)
+		}
+		static get Memory(){
+			return fxy.require('element/memory')
+		}
 		static get Methods() {
-			return ElementSymbols.Methods
+			return fxy.symbols.Methods
 		}
-		
-		static get Pointable() {
-			return ElementSymbols.Pointable
+		static get Pointer() {
+			return fxy.symbols.Pointer
 		}
-		
-		static get Restyle() {
-			return ElementSymbols.Restyle
-		}
-		
 		static Pointers(element) {
 			return new Proxy({
 				element,
@@ -40,30 +49,11 @@ wwi.exports('element',(element,fxy) => {
 				}
 			})
 		}
-		
-		static Has(element) {
-			return Memory[ElementSymbols.Listener].has(element)
+		static get Pointable() {
+			return fxy.symbols.Pointable
 		}
-		
-		static Listener(element) {
-			if (!Memory[ElementSymbols.Listener].has(element)) Memory[ElementSymbols.Listener].set(element, new Listener())
-			return Memory[ElementSymbols.Listener].get(element)
-		}
-		
-		static Delete(element) {
-			if (!Memory[ElementSymbols.Listener].has(element)) return element
-			Memory[ElementSymbols.Listener].get(element).disconnect(element)
-			Memory[ElementSymbols.Listener].delete(element)
-			return element
-		}
-		
-		static HasCallbacks(listener) {
-			return Memory[ElementSymbols.Callbacks].has(listener)
-		}
-		
-		static Callbacks(listener) {
-			if (!this.HasCallbacks(listener)) Memory[ElementSymbols.Callbacks].set(listener, new Map())
-			return Memory[ElementSymbols.Callbacks].get(listener)
+		static get Restyle() {
+			return fxy.symbols.Restyle
 		}
 		
 		static event(type,detail){
@@ -378,12 +368,3 @@ wwi.exports('element',(element,fxy) => {
 
 
 })
-
-
-//on(key, callback) {
-//	if(a11y_type(key)){
-//		if(!this.listener.has('a11y')) this.listener.on('a11y', this.a11y_callback, this)
-//		return this.listener.on(key, a11y_callback(this,callback), this)
-//	}
-//	return this.listener.on(key, callback, this)
-//}

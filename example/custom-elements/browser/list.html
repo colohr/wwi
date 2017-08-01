@@ -50,12 +50,8 @@
 <script>
 	(function (doc) {
 
-		const Browser = wwi.element(doc).extension('behavior','Scroll')
+		const Browser = wwi.element(doc)
 		const Mix = fxy.require('browser/Mix')
-		Browser(class extends Mix(Browser.Element) {
-			connected(){
-				if(!this.hasAttribute('sublist')) this.watch_scroll=this.query('[view]')
-			}
-		})
+		Browser(class extends Mix(Browser.Element) {})
 	})(document)
 </script>

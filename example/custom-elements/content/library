@@ -1,13 +1,17 @@
 library = {}
 
-library.logic = []
+library.logic = [
+	'control/action.es6'
+]
 
 library.elements = [
 	'action/index.html',
+	'action/check.html',
 	'icon/index.html',
 	'bar/index.html',
 	'drawer/index.html',
 	'expand/index.html',
+	'link/index.html',
 	'menu/index.html',
 	'select/index.html',
 	'pages/index.html'

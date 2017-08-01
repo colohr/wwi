@@ -9,7 +9,9 @@ wwi.exports('kpi',(kpi,fxy)=>{
 			if(!fxy.is.data(value)) return null
 			value.item = (bank,ditl)=>{
 				let query = this.api.control.queries.item(bank,ditl)
-				return this.api.graph.get(query).then(res => res.item_versions_by_ditl)
+				return this.api.graph.get(query)
+				           .then(res => res.item_versions_by_ditl)
+				           .catch(e=>this.error.show(e))
 			}
 			return this[item_api] = value
 		}
@@ -58,62 +60,52 @@ wwi.exports('kpi',(kpi,fxy)=>{
 			let tabs = this.tabs
 			let promises = []
 			for(let tab of tabs) {
+				let will_set = false
 				if(tab.type in data) {
-					let template = get_template(data[tab.type])
-					promises.push(tab.update(template))
+					let item_data = data[tab.type]
+					if(fxy.is.data(item_data)){
+						let template = get_template(item_data)
+						if(template){
+							let updater = tab.update(template)
+							promises.push(updater)
+							will_set = true
+						}
+					}
 				}
+				if(will_set !== true) tab.clear()
 			}
 			
-			fxy.all(promises).then(_=>this.loading=false)
+			fxy.all(...promises).then(_=>this.loading=false)
 			return this
 		}
 		
 	}
 	
 	const Item = Base => class extends Base{
-		
-		get graphics(){ return this.query('[item-graphics]') }
-		
-		graphics_update(){
-			this.all('img').forEach(img=>{
-				//					if(!img.hidden && !img.classList.contains('hidden') && !img.classList.contains('unused')){
-				//						if(img.width >= this.view.clientWidth - 20){
-				//							img.style.width = `${this.view.clientWidth - 20}px`
-				//							img.style.height = 'auto'
-				//						}
-				//						else{
-				//							img.style.width = img.width+'px'
-				//							img.style.height = img.height +'px'
-				//						}
-				//					}
-			})
+		clear(){
+			this.view.innerHTML = ''
 			return this
 		}
-		
+		get graphics(){ return this.query('[item-graphics]') }
 		hide(){
 			this.aria.disabled=true
 			return this
 		}
-		
 		update(data){
-			return new Promise((success,error)=>{
+			return new Promise((success)=>{
 				if(data){
 					this.view.innerHTML = data.html
-					if(has_graphics(data) !== true) this.graphics.style.display="none"
-					if('data_timeout' in this && fxy.is.number(this.data_timeout)){
-						window.clearTimeout(this.data_timeout)
-						delete this.data_timeout
+					let choice = this.query(`[item-choice][name="${data.answer}"]`)
+					if(choice){
+						choice.setAttribute('correct','')
+						let feedback = this.query(`[item-feedback][name="${data.answer}"]`)
+						if(feedback) feedback.setAttribute('correct','')
 					}
-					window.requestAnimationFrame(()=>{
-						this.data_timeout = window.setTimeout(()=>{
-							success(this.graphics_update().show())
-						},50)
-					})
+					return success(this.show())
 				}
 				else success(this.hide())
 			})
 		}
-		
 		show(){
 			this.aria.disabled=false
 			return this

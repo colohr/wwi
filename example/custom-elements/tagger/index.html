@@ -1,0 +1,39 @@
+<template id="tagger-element">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+	        height:30vh;
+	        width:30vw;
+	        border:11px solid var(--cyan);
+	        border-radius: 7px;
+	        background-color: white;
+	        min-width:200px;
+        }
+        [view]{
+	        text-overflow: ellipsis;
+	        overflow: hidden;
+        }
+	    [title]{
+		    font-size:30px;
+		    font-weight: 900;
+		    color:var(--bubblegum);
+	    }
+    </style>
+    <div view gui horizontal center-center>
+		<div title>Tagger</div>
+	    <div message></div>
+    </div>
+</template>
+<script>
+    (function(doc){
+        const Tagger = wwi.element(doc).extension({
+	        module:'control',
+	        name:'Tag'
+        })
+
+        Tagger(class extends Tagger.Element{
+			get message(){ return this.query('[message]')}
+        })
+    })(document)
+</script>

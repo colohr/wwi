@@ -12,6 +12,7 @@
 			max-height: 100%;
 			outline: none;
 		}
+
 		:host([aria-disabled="true"]){
 			display:none;
 		}
@@ -63,7 +64,15 @@
 			height: auto;
 		}
 
-		[item-question] [item-text],
+		[item-question],
+		[item-graphics]{
+			display: inline-block;
+		}
+		[item-question] img{
+			float: right;
+		}
+
+		[item-question][item-text],
 		[item-feedback] [item-text],
 		[item-choice] [item-text]{
 			padding:10px;
@@ -77,8 +86,11 @@
 		[item-choice] [item-text]{
 			margin-left:5px;
 			max-width: calc(100% - 40px);
-			margin-left:5px;
 		}
+		[item-inline-text]{
+			display: inline;
+		}
+
 
 		[item-label]{
 			height:30px;
@@ -94,6 +106,11 @@
 			font-style: italic;
 			margin-top:10px;
 			margin-bottom:5px;
+		}
+
+		[item-choice][correct] [item-label],
+		[item-feedback][correct] [item-label]{
+			background-color:var(--grass);
 		}
 
 

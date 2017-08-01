@@ -1,17 +1,51 @@
 (function(root,factory,dom_factory){ return factory(root,dom_factory) })(window, function(window,doms){
+	
+	let folders = [
+		'element',
+		'dom',
+		'design'
+	]
+	
+	return get_loader().then(loader=>{
+		let loads = folders.map(folder=>{
+			return {
+				name:folder,
+				get index(){ return `${this.folder}/index.es6` },
+				get folder(){ return window.url.component(this.name) }
+			}
+		}).map(folder_module=>{
+			return window.app.port.eval(folder_module.index).then(folder_items=>{
+				//let folder_items = get_folder()
+				return loader(folder_module.folder,folder_items)
+			}).catch(e=>{
+				console.error('error loading folder: ',folder_module)
+				console.error(e)
+				throw e
+			})
+		})
+		
+		return window.fxy.all(...loads)
+	})
+	
+	//shared actions
+	function get_loader(){
+		return window.app.port.eval(window.url.component('loader.es6'))
+	}
+	
+	
 	let element_files = [
 		'memory.es6',
 		'actions.es6',
 		'a11y.es6',
 		'aria.es6',
 		'attributes.es6',
-		'classes.es6',
+		//'classes.es6',
 		'focus.es6',
-		'data.es6',
+		//'data.es6',
 		'define.es6',
 		'design.es6',
-		'detector.es6',
-		'io.es6',
+		//'detector.es6',
+		//'io.es6',
 		'slots.es6',
 		'template.es6',
 		'tricycle.es6'
@@ -38,9 +72,8 @@
 		function get_element_items(list){
 			for(let i=loaded;i<count;i++){
 				let item = get_evaluation('element',list[i])
-				return item.then((file)=>{
+				return item.then(_=>{
 					loaded++
-					//console.log(`${loaded}/${count} : ${file}`)
 					return get_element_items(list)
 				}).catch(error)
 			}
@@ -52,7 +85,6 @@
 },
 function(get_evaluation){
 	let loads = {
-		behavior:[],
 		dom:['module.es6','app.es6','page.es6','creator.es6'],
 		design:['design.es6'],
 		dom2:['button.es6']

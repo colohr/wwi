@@ -5,14 +5,12 @@
             display:block;
         }
         optimus-prime{
-            background-color: #f3f3f3;
+            background-color: #dedede;
             border-radius: 9px;
             border:5px solid var(--blue);
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
             height:calc(70vh - 40px);
             width: calc(70vh - 40px);
-            /*transition: transform 50ms linear;*/
-            /*will-change:transform;*/
             box-sizing: border-box;
         }
         [travel]{
@@ -21,13 +19,14 @@
             left:7px;
             right:7px;
             height:40px;
-            background-color: #f3f3f3;
+            /*background-color: #f3f3f3;*/
             z-index: 100;
             padding:5px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             border-radius: 7px;
             border:3px solid var(--blue);
             box-sizing: border-box;
+            background-color: #dedede;
 
         }
         [travel] > div{
@@ -63,6 +62,20 @@
         [title] > [sub-title]:nth-child(3){
             font-size:24px;
             font-weight: 700;
+        }
+        remote-control{
+            position: absolute;
+            left:0;
+            right:0;
+            bottom:0;
+            z-index: 100;
+
+            --shadow: 0 2px 10px rgba(0,0,0,0.2);
+            --radius: 7px;
+            --border:3px solid var(--blue);
+            --background: #dedede;
+            --color:var(--blue);
+
         }
     </style>
     <div view gui horizontal center-center>

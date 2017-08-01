@@ -8,7 +8,7 @@ wwi.exports('element',(element,fxy)=>{
 	}
 	
 	//exports
-	element.Focus = Focus
+	element.focus = Focus
 	
 	//shared actions
 	function get_top_element(element){

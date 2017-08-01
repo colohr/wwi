@@ -9,14 +9,14 @@
 	        perspective: 1000px;
 	        transform-origin: bottom center;
 
-	        min-height: 100%;
+	        /*min-height: 100%;*/
         }
 
         [container]{
 	        background: rgb(255, 82, 82);
 	        position: relative;
-	        width:100%;
-	        height:100%;
+	        /*width:100%;*/
+	        /*height:100%;*/
         }
 
 
@@ -91,8 +91,17 @@
 	        filter: drop-shadow(0 0 4px);
 	        background: rgba(31, 31, 31, 0.46);
         }
+	    tagger-element{
+		    margin-top:calc(120vh + 50px);
+		    margin-bottom:50px;
+	    }
+
+	    [view]{
+		    overflow-y:auto;
+		    max-height:100%;
+	    }
     </style>
-    <div container gui vertical center-center>
+    <div container view gui vertical center-center>
 	    <div box gui>
 		    <div title vertical>
 			    <div>World</div>
@@ -121,12 +130,19 @@
 <script>
     (function(doc){
         const Start = wwi.page(doc)
+
+
         Start(class extends Start.Element{
-            transitioned(){}
             connected(){
 				app.cloud.edus('modules/wwi/os/browser/compatability/progress_report.es6').then(result=>{
 					this.query('[score]').innerHTML = (result.value.grade.toFixed(2))+'%'
 				})
+
+	            app.port(url.elements('tagger/index.html')).then(_=>fxy.when('tagger-element')).then(_=>{
+	            	let tagger = document.createElement('tagger-element')
+		            tagger.message.innerHTML = tagger.tag.element({tag:'div',html:`<h1>Hello</h1>`})
+		            this.view.appendChild(tagger)
+	            })
 
             }
         })

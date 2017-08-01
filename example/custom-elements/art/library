@@ -1,4 +1,7 @@
 library = {}
 library.elements = [
-	'palette.html'
+	{
+		path:'palette.html',
+		wait:['sticky-list']
+	}
 ]

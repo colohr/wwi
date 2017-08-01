@@ -1,0 +1,54 @@
+<template id="content-link">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            --hover-color:var(--teal-bright);
+            --active-color:var(--teal-dark);
+            --focus-color:var(--teal);
+
+            --hover-shadow:inset 0 0 0 1px var(--hover-color);
+            --focus-shadow:inset 0 0 0 1px var(--focus-color);
+            --active-shadow:inset 0 0 0 1px var(--active-color);
+            --visited-shadow: 0 0 4px 5px var(--active-color);
+
+            display:inline-block;
+            box-sizing: border-box;
+            position: relative;
+            pointer-events: auto;
+            cursor: pointer;
+            outline:none;
+
+	        transform:scale(1,1);
+	        transform-style:flat;
+	        backface-visibility: visible;
+            transition-property: box-shadow,transform;
+            transition-duration: 180ms;
+            transition-timing-function: ease-in-out;
+            will-change: box-shadow,transform;
+        }
+        :host(:hover){
+            box-shadow:var(--hover-shadow);
+        }
+        :host(:focus){
+            box-shadow:var(--focus-shadow);
+	        transform:scale(1.02,1.02);
+        }
+        :host(:active){
+            box-shadow:var(--active-shadow);
+            transform:scale(0.99,0.99);
+        }
+        :host(:visited){
+            box-shadow:var(--visited-shadow);
+        }
+
+
+    </style>
+    <slot></slot>
+</template>
+<script>
+    (function(doc){
+        const ContentLink = wwi.element(doc).extension({module:'behavior',name:'AriaTrigger'})
+        ContentLink(class extends ContentLink.Element{
+        })
+    })(document)
+</script>

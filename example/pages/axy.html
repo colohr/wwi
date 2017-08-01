@@ -1,0 +1,24 @@
+<template id="axy-page">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+        }
+
+    </style>
+    <div view gui vertical center-center>
+        <user-account api-name="firebase" available-providers="Google,Visitor"></user-account>
+	    <!--<user-calendar></user-calendar>-->
+    </div>
+</template>
+<script>
+    (function(doc){
+        const Axy = wwi.page(doc)
+        Axy(class extends Axy.Element{
+        	get account(){ return this.query('user-account') }
+            connected(){
+
+            }
+        })
+    })(document)
+</script>

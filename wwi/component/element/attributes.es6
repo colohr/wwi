@@ -6,7 +6,6 @@ wwi.exports('element',(element_module,fxy)=>{
 	element_module.attributes = Base => class extends Base {
 		get aria() { return fxy.require('element/aria')(this) }
 		get at(){ return element_at(this) }
-		//set at(value){ return element_attributes(this)(value) }
 	}
 	
 	//----------shared actions---------

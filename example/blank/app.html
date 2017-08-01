@@ -1,0 +1,45 @@
+<template id="blank-app">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+            background-color: var(--emerald);
+        }
+
+        blank-button{
+            width:calc(100% - 60px);
+            background: purple;
+        }
+    </style>
+    <div view gui vertical center-center>
+        <blank-button pointer="letterify">
+
+            Blank
+        </blank-button>
+
+
+
+    </div>
+</template>
+<script>
+    (function(doc){
+        const BlankApp = wwi.element(doc)
+        BlankApp(class extends BlankApp.Element{
+            connected(){
+            	this.at('gui','fit')
+                this.id='app'
+                app.port(url('blank/button.html')).then(_=>{
+	                fxy.when('blank-button').then(_=>{
+	                	this.button.letterify = 'Go to hell'
+		                this.button.on('click',()=>{
+
+		                })
+	                })
+                })
+
+
+            }
+            get button(){ return this.query('blank-button') }
+        })
+    })(document)
+</script>

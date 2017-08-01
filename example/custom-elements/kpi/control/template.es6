@@ -21,22 +21,25 @@ wwi.exports('kpi', (kpi, fxy) => {
 									</div>
 									<div item-stem gui horizontal wrap >
 										
-										<div item-question gui inline flex>
-											<div item-text>${'question'}</div>
-										</div>
-										<div item-graphics gui question-graphics inline self-sart>
+										<div item-question item-text>
 											${'graphics'}
+											<div item-inline-text>
+												
+												${'question'}
+												
+											</div>
+										</div>
+										<div item-graphics question-graphics>
+										
 										</div>
 										
 									</div>
 									<div item-content-label><u>Choices</u></div>
 									<div item-choices gui horizontal wrap start>
-										
 										${'choices'}
 									</div>
 									<div item-content-label><u>Feedback</u></div>
 									<div item-feedbacks gui vertical>
-										
 										${'feedback'}
 									</div>
 								</div>`;
@@ -54,29 +57,27 @@ wwi.exports('kpi', (kpi, fxy) => {
 		}).join('')
 	}
 	
-	Template.feedback = function choices(feedbacks) {
+	Template.feedback = function feedback(feedbacks) {
 		return feedbacks.map(feedback => {
-			return `<div item-feedback gui horizontal>
-						<div item-label  gui inline center-center self-start>
-							${feedback.name}
-						</div>
-						<div item-text gui inline self-center>
-							<div>${feedback.text}</div>
-						</div>
-					</div>`;
+			return `<div name="${feedback.name}" item-feedback gui horizontal>
+					<div item-label  gui inline center-center self-start>
+						${feedback.name}
+					</div>
+					<div item-text gui inline self-center>
+						<div>${feedback.text}</div>
+					</div>
+				</div>`;
 		}).join('')
 	}
 	
 	Template.graphics = function graphics_template(graphics) {
 		if (!Array.isArray(graphics)) return ''
-		return graphics.map(graphic => {
-			if(!graphic_is_hidden(graphic)){
-				var atts = ''
-				if ('as-question' in graphic) atts += `as-question="${graphic['as-question']}"`;
-				return `<img ${atts} src="${graphic.src}" />`;
-			}
-			return ''
-		}).join('')
+		return graphics.filter(graphic=>fxy.is.data(graphic))
+		               .map(graphic=>graphic_data(graphic))
+		               .map(graphic=>{
+							if(graphic.hidden !== true) return `<img ${graphic.attributes} src="${graphic.src}" />`
+							return ''
+		               }).join('')
 	}
 	
 	Template.info = function item_info(info){
@@ -130,23 +131,24 @@ wwi.exports('kpi', (kpi, fxy) => {
 			let html = {}
 			let keys = new Set(['question', 'passage', 'choices', 'feedback', 'graphics'])
 			for (let key of keys) {
-				if (key in Template) {
-					html[key] = Template[key](data[key])
-				}
+				if (key in Template) html[key] = Template[key](data[key])
 			}
-			this.html = Template.article(html)
+			
+			this.answer = get_answer(data)
 			this.info = Template.info(data.info)
+			this.html = Template.article(html)
 		}
-		
 		get model() { return this.html }
 	}
 
+	//exports
 	kpi.template = {
 		get template() { return Template },
 		Item,
 		item(data){ return new Item(data) }
 	}
-	//----------shared actions--------
+	
+	//shared actions
 	function combine_item_content(item, itemKey, language) {
 		let i = {}
 		let props = Object.keys(item)
@@ -175,13 +177,6 @@ wwi.exports('kpi', (kpi, fxy) => {
 		return i
 	}
 	
-	function graphic_is_hidden(graphic){
-		if(fxy.is.data(graphic) && 'class' in graphic && (fxy.is.text(graphic.class) || fxy.is.array(graphic.class))){
-			if(graphic.class.includes('hidden') || graphic.class.includes('unused')) return true
-		}
-		return false
-	}
-	
 	function check_if_graphic_count_matches(english, spanish) {
 		let egraphics = Array.isArray(english) ? english : []
 		let sgraphics = Array.isArray(spanish) ? spanish : []
@@ -190,10 +185,47 @@ wwi.exports('kpi', (kpi, fxy) => {
 	}
 	
 	function fix_item_text(text) {
-		Fixes.forEach(part => {
-			text = window._.replace(text, part, '')
-		})
+		Fixes.forEach(part =>text=window._.replace(text, part, ''))
 		return text
+	}
+	
+	function get_answer(data){
+		let answer = fxy.is.text(data.answer) ? data.answer:null
+		if(answer) return answer
+		let info = data.info
+		if(fxy.is.array(info)) info = info[0]
+		if(fxy.is.data(info)) answer = info.Answer
+		return answer
+	}
+	
+	function graphic_data(graphic){
+		
+		let data = {}
+		data.src = graphic.src
+		data.class = graphic_classes(graphic)
+		data.attributes = graphic_attributes(data,graphic['as-question'])
+		data.hidden = graphic_is_hidden(data)
+		return data
+		
+		//shared actions
+		function graphic_attributes(graphic,as_question){
+			let attributes = ''
+			if (as_question) attributes += `as-question="${as_question}"`;
+			if('class' in graphic) attributes += `class="${graphic.class.join(' ')}"`
+			return attributes
+		}
+		
+		function graphic_classes(graphic){
+			let classes = graphic.class
+			if(fxy.is.text(classes)) classes = classes.split(' ')
+			if(fxy.is.array(classes)) return classes
+			return []
+		}
+		
+		function graphic_is_hidden(graphic){
+			return graphic.class.includes('hidden') || graphic.class.includes('unused')
+		}
+		
 	}
 	
 	function template_item_model(model) {

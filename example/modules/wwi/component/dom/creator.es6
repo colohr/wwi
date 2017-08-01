@@ -1,16 +1,14 @@
 wwi.exports('dom',(dom,fxy)=>{
 	
-	//const custom_element_holder = Symbol.for('Custom Element')
 	const is = fxy.is
-	const Memory = fxy.require('element/memory')
 	const Symbols = fxy.symbols
 	const Basic = {
 		get A11y(){
 			return fxy.require('element/a11y')
 		},
-		get Aria() {
-			return fxy.require('element/aria')
-		},
+		//get Aria() {
+		//	return fxy.require('element/aria')
+		//},
 		get Actions() {
 			return fxy.require('element/actions')
 		},
@@ -20,9 +18,9 @@ wwi.exports('dom',(dom,fxy)=>{
 		get Callback() {
 			return this.Actions.Callback
 		},
-		get Classes() {
-			return fxy.require('element/classes')
-		},
+		//get Classes() {
+		//	return fxy.require('element/classes')
+		//},
 		get Changed() {
 			return this.Routes.Changed
 		},
@@ -35,25 +33,25 @@ wwi.exports('dom',(dom,fxy)=>{
 		get Design() {
 			return fxy.require('element/design')
 		},
-		get Detector(){
-			return fxy.require('element/detector')
-		},
+		//get Detector(){
+		//	return fxy.require('element/detector')
+		//},
 		get Disconnected() {
 			return this.Routes.Disconnected
 		},
 		get Element(){ return get_element() },
 		get Events() {
-			return Memory.Events
+			return fxy.require('element/memory').Events
 		},
 		get Focus(){
-			return fxy.require('element/Focus')
+			return fxy.require('element/focus')
 		},
 		get Memorize(){
 			return fxy.require('element/memorize')
 		},
-		get Mixins(){
-			return fxy.require('element/mixins')
-		},
+		//get Mixins(){
+		//	return fxy.require('element/mixins')
+		//},
 		get Pointer() {
 			return Symbols.Pointer
 		},
@@ -73,10 +71,9 @@ wwi.exports('dom',(dom,fxy)=>{
 			return fxy.require('element/tricycle')
 		},
 		get Types(){
-			return Memory.Types
+			return fxy.require('element/memory').Types
 		}
 	}
-	
 	
 	//----------------dom exports---------------
 	const basics = new Proxy({
@@ -300,14 +297,9 @@ wwi.exports('dom',(dom,fxy)=>{
 		Base = Basic.Focus(Base)
 		Base = Basic.Slots(Base)
 		Base = Basic.Template(Base)
-		
-		
 		return get_element_class(Base, properties)
 		//shared actions
 		function get_element_class(Base, properties){
-			if (!Base) Base = HTMLElement
-			//if (!Array.isArray(properties)) properties = []
-			//if ('observedAttributes' in Base) properties = properties.concat(Base.observedAttributes.filter(prop=>!properties.includes(prop)))
 			properties = observed_attributes(properties)
 			class ElementClassDefinition extends Basic.Tricycle(Base) {
 				static get observedAttributes() { return this[Symbols.Properties] }
@@ -383,106 +375,5 @@ wwi.exports('dom',(dom,fxy)=>{
 	}
 	
 	
-	
-	
-	
-	
-	
-	//------------wwi elements-----------
-	//wwi.define('dom-template', class extends Basic.Element{
-	//	render( data, tagger, styles){
-	//		let html = tagger(data)
-	//		return this.shadow.innerHTML = `
-	//			<style>
-	//				:host{ display:block; }
-	//			</style>
-	//			${styles || ''}
-	//			${html}
-	//		`
-	//	}
-	//})
-	
-	
-	
 })
 
-//definitions.push(x[0])
-//definitions.push(x[1])
-//return {definitions,template}
-//if(is.nothing(definitions)) definitions = {}
-//function old_wwi_app_export(doc, ...mixes){
-//	let template_query = get_template_selector(doc)
-//	let template = doc.currentScript.ownerDocument.querySelector(template_query)
-//	const identity = get_element_identity({ template })
-//	const not_mix_names = []
-//	mixes = mixes.filter(value=>{
-//		let is_mix = value && typeof value === 'string'
-//		if(!is_mix) not_mix_names.push(value)
-//		return is_mix
-//	})
-//	const creator = create_basic_element(get_mixed_base_element(...not_mix_names))
-//	creator.Element = fxy.require('dom/app')(get_element_with_require_mixes( creator.Element, ...mixes ))
-//
-//	function wwi_element_create(base,extension,...observed){
-//		base.template = template
-//		if(observed.length && Symbols.Properties in base){
-//			let base_properties = base[Symbols.Properties]
-//			observed = observed.filter(observed_name=>{ return !base_properties.includes(observed_name) })
-//			base[Symbols.Properties] = base[Symbols.Properties].concat(observed)
-//		}
-//		let args = [identity.element_name,base]
-//		if(extension) args.push(extension)
-//		return wwi.define(...args)
-//	}
-//	wwi_element_create.creator = creator
-//	Object.defineProperty(wwi_element_create,'Element',{ get(){ return this.creator.Element } })
-//	return wwi_element_create
-//}
-
-//function old_wwi_button_export( doc, ...mixes ){
-//	let template_query = get_template_selector(doc)
-//	let template = doc.currentScript.ownerDocument.querySelector(template_query)
-//	const identity = get_element_identity({ template })
-//	const creator = create_basic_element(basics.Button)
-//	creator.Element = get_element_with_require_mixes( creator.Element, ...mixes )
-//	creator.Element = Basic.Memorize(Basic.A11y(creator.Element))
-//	function wwi_element_create(base,extension){
-//		base.template = template
-//		let args = [identity.element_name,base]
-//		if(extension) args.push(extension)
-//		return wwi.define(...args)
-//	}
-//	wwi_element_create.creator = creator
-//	Object.defineProperty(wwi_element_create,'Element',{ get(){ return this.creator.Element } })
-//	return wwi_element_create
-//}
-
-//function wwi_component_export(doc, base, properties){
-//	const template = doc.currentScript.ownerDocument.querySelector('template')
-//	const identity = get_element_identity({template})
-//
-//	function wwi_component_create(CustomWebComponent){ return wwi.define(identity.element_name,CustomWebComponent) }
-//	Object.defineProperty(wwi_component_create,'basics',{ get(){ return basics } })
-//
-//	base = is.nothing(base) ? HTMLElement : base
-//	base = Basic.Attributes(base)
-//	base = Basic.Template(base)
-//	base = Basic.Define(base)
-//
-//	wwi_component_create.Element = class extends base { constructor(definitions) { super(); this.attach_template().define(definitions); } }
-//	wwi_component_create.Element.observedAttributes = get_observed_attributes(wwi_component_create.Element,properties)
-//	wwi_component_create.Element.template = template
-//	return wwi_component_create
-//}
-
-//wwi.template = wwi_template_export
-//function wwi_template_export(doc){
-//	const template = doc.currentScript.ownerDocument.querySelector('template')
-//	return function(...x){
-//		let creator = create_basic_element(...x)
-//		creator.Element.template = template
-//		return creator
-//	}
-//}
-
-//wwi.component = wwi_component_export

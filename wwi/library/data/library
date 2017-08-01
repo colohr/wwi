@@ -1,4 +1,0 @@
-library = {}
-library.logic = [
-	'firebase-control.es6'
-]

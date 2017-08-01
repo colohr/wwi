@@ -3,8 +3,9 @@
 		@import "/modules/wwi/component/design/host.css";
 
 		:host {
-			--bg: rgba(210, 211, 221, 0.7);
+			--bg: var(--background,rgba(210, 211, 221, 0.7));
 			--border: 1px solid rgb(237, 239, 241);
+			--expanded-menu-filter:var(--expanded-filter,drop-shadow(0 2px 15px rgba(0,0,0,0.4)));
 
 
 			background-color: var(--bg);
@@ -20,6 +21,10 @@
 			overflow: visible;
 			width: 100%;
 			z-index: 1000;
+		}
+
+		:host([aria-expanded="true"]){
+			filter:var(--expanded-menu-filter);
 		}
 
 		[container] {
@@ -77,15 +82,15 @@
 			transform: rotateX(45deg);
 		}
 
-		[name="select-option"]::slotted(select-option) { color:currentColor; }
-		[name="select-option"]::slotted(select-option:first-child) {  border-radius: 7px 7px 0 0;  }
-		[name="select-option"]::slotted(select-option:last-child) {  border-radius: 0 0 7px 7px; }
+		[id="select-option"]::slotted(select-option) { color:currentColor; }
+		[id="select-option"]::slotted(select-option:first-child) {  border-radius: 7px 7px 0 0;  }
+		[id="select-option"]::slotted(select-option:last-child) {  border-radius: 0 0 7px 7px; }
 
 	</style>
 	<div view gui vertical>
 		<div container>
 			<div gui vertical dropdown>
-				<slot name="select-option"></slot>
+				<slot id="select-option"></slot>
 			</div>
 			<div selected-option>
 				<select-option button name="Choose" wwi icon="provider/internet.svg">
@@ -123,21 +128,35 @@
 				return clear_item_transform(this)
 			}
 
+
 			connected() {
-				wwi.when('select-option').then(() => {
-					this.container_height = get_container_height(this)
-					this.button.addEventListener('click',e=>{
-						if(this.opened) this.close()
-						else this.open()
-					})
-					let items = this.items
-					this.query('[button]').on('toggle',this.toggle.bind(this))
-					this.query('[button]').on('focus item',this.focus_item.bind(this))
-					items[0].focuses_item = true
-					items[0].on('focus button',this.focus_item.bind(this))
-					for (let item of items) item.on('selected', e => this.select(e.currentTarget))
-					this.close();
+				this.button.addEventListener('click',e=>{
+					if(this.opened) this.close()
+					else this.open()
 				})
+
+				this.query('[button]').on('toggle',this.toggle.bind(this))
+				this.query('[button]').on('focus item',this.focus_item.bind(this))
+
+
+				window.wwi.when('select-option').then(()=>{
+					let items = this.items
+					if(items.length){
+						items[0].focuses_item = true
+						items[0].on('focus button',this.focus_item.bind(this))
+					}
+
+					let option_slot = this.slots.select_option.item
+					if(option_slot){
+						option_slot.addEventListener('slotchange',e=>{
+							console.log(e)
+							this.update_items()
+						})
+					}
+
+					this.update_items()
+				})
+
 			}
 
 			get container() {return this.query('[container]')}
@@ -171,13 +190,25 @@
 				button.name = item.name
 				button.icon = item.icon
 				button.focus()
-				this.dispatchEvent(new CustomEvent('selected', {bubbles: true, detail: item}))
+				this.dispatchEvent(new CustomEvent('change', {bubbles: false, detail: item}))
 				if(this.hasAttribute('toggles')) this.toggle()
 			}
 
 			toggle() {
 				if(this.opened) this.close()
 				else this.open()
+			}
+
+			update_items(){
+				this.container_height = get_container_height(this)
+				let items = this.items
+				for (let item of items) {
+					if(item.is_menu_option !== true) {
+						item.is_menu_option = true
+						item.on('selected', e => this.select(e.currentTarget))
+					}
+				}
+				return this.close()
 			}
 
 		})

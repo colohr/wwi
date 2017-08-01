@@ -1,44 +1,6 @@
 <template id="content-action">
     <style>
-        @import "/modules/wwi/component/design/host.css";
-        :host{
-            --default-transitions: color, background-color, box-shadow, filter;
-            --default-duration:180ms;
-            --default-transition:ease-in-out;
-            --default-hover-shadow:inset 0 0 0 1px currentColor;
-            --default-radius:4px;
-            display:inline-block;
-	        cursor: pointer;
-	        color:var(--color,var(--grape));
-            background-color:var(--background,transparent);
-            padding:var(--padding,4px 10px 4px 10px);
-            filter:brightness(100%);
-            box-shadow:inset 0 0 0 1px transparent;
-            border-radius:var(--radius,var(--default-radius));
-            transition-property: var(--transitions,var(--default-transitions));
-            transition-duration: var(--duration,var(--default-duration));
-            transition-timing-function: var(--transition,var(--default-transition));
-            will-change: var(--transitions,var(--default-transitions));
-            outline:none;
-        }
-	    :host([aria-selected="true"]){
-            color:var(--background,var(--day));
-            background-color:var(--color,var(--grape));
-	    }
-        :host([aria-disabled="true"]){
-            opacity:0.5;
-            pointer-events: none;
-            cursor: not-allowed;
-        }
-        :host(:hover),
-        :host(:active),
-        :host(:focus){
-            box-shadow:var(--hover-shadow,var(--default-hover-shadow));
-        }
-        :host(:active){
-            filter:brightness(80%);
-        }
-
+        @import "/custom-elements/content/action/design.css";
     </style>
 
     <div view gui horizontal>
@@ -48,46 +10,50 @@
 </template>
 <script>
     (function(doc){
-        const ContentAction = wwi.element(doc,'a11y')
+        const ContentAction = wwi.element(doc,'a11y').extension({name:'Action',module:'content'})
         ContentAction(class extends ContentAction.Element{
-            constructor(){
-            	super('routes',{
-            		centered(value){
-            			if(value !== null) this.view.setAttribute('center-center','')
-                        else this.view.removeAttribute('center-center')
-                    },
-            		disabled(value){
-            			if(value !== null) this.aria.disabled=true
-                        else this.aria.disabled=false
-			            this.do_action('disabled')
-                    },
-            		selected(value){
-            			if(value !== null) this.aria.selected=true
-                        else this.aria.selected=false
-			            this.do_action('selected')
-                    },
-		            toggles:true
-                })
-            }
-            a11y_connected(ally){
-                ally.on('click',e=>{
-	                if(this.toggles) this.selected = !this.selected
-                })
-                ally.on('keypress',e=>{
-	                if(e.activates){
-		                if(this.toggles) this.selected = !this.selected
-	                }
-                })
-            }
-            connected(){
-            	if(!this.hasAttribute('kind')) this.kind = 'button'
-            	if(!this.hasAttribute('aria-disabled')) this.aria.disabled = false
-            }
-            do_action(name){
-            	if(this.has_listener) this.dispatch(name,this)
-                if(`${name}_action` in this) this[`${name}_action`](this)
-                return this
-            }
+	        connected(){
+		        if(!this.hasAttribute('kind')) this.kind = 'button'
+		        if(!this.hasAttribute('aria-disabled')) this.aria.disabled = false
+	        }
+//            constructor(){
+//            	super('routes',{
+//            		centered(value){
+//            			if(value !== null) this.view.setAttribute('center-center','')
+//                        else this.view.removeAttribute('center-center')
+//                    },
+//            		disabled(value){
+//            			if(value !== null) this.aria.disabled=true
+//                        else this.aria.disabled=false
+//			            this.do_action('disabled')
+//                    },
+//            		selected(value){
+//            			if(value !== null) this.aria.selected=true
+//                        else this.aria.selected=false
+//			            this.do_action('selected')
+//                    },
+//		            toggles:true
+//                })
+//            }
+//            a11y_connected(ally){
+//                ally.on('click',e=>{
+//	                if(this.toggles) this.selected = !this.selected
+//                })
+//                ally.on('keypress',e=>{
+//	                if(e.activates){
+//		                if(this.toggles) this.selected = !this.selected
+//	                }
+//                })
+//            }
+//            connected(){
+//            	if(!this.hasAttribute('kind')) this.kind = 'button'
+//            	if(!this.hasAttribute('aria-disabled')) this.aria.disabled = false
+//            }
+//            do_action(name){
+//            	if(this.has_listener) this.dispatch(name,this)
+//                if(`${name}_action` in this) this[`${name}_action`](this)
+//                return this
+//            }
         })
     })(document)
 </script>

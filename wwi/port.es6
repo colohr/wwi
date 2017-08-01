@@ -126,7 +126,7 @@ function wwi_port_base( port_module, window  ){
 		}
 	}
 	function query(selector){
-		var el = window.document.head.querySelector(selector)
+		let el = window.document.head.querySelector(selector)
 		if(el === null) el = window.document.body.querySelector(selector)
 		return el
 	}
@@ -206,7 +206,7 @@ function wwi_port_base( port_module, window  ){
 		}
 		
 		function element_tag( type ){
-			var tag = 'script'
+			let tag = 'script'
 			switch(type){
 				case 'css':
 				case 'html':
@@ -242,7 +242,7 @@ function wwi_port_base( port_module, window  ){
 					break
 				case 'link':
 					options.href = identity.path
-					if( identity.type === 'css' ) options.rel = 'styesheet'
+					if( identity.type === 'css' ) options.rel = 'stylesheet'
 					else options.rel = 'import'
 					break
 				case 'script':
@@ -284,7 +284,9 @@ function wwi_port_base( port_module, window  ){
 function wwi_port_module( base, element, find, file, query, resource, source, window ){
 	
 	const world_wide_internet = {
-		items:new Map([['poly','poly'], ['fxy',''], ['wwi',''], ['app', ''],['os','os']]),
+		top_items:new Map([['poly','poly'], ['fxy','fxy']]),
+		//items:new Map([['poly','poly'], ['fxy','fxy'], ['wwi',''], ['app', ''],['os','os']]),
+		items:new Map([['wwi',''], ['app', ''],['os','os']]),
 		folder:'wwi',
 		components(kit){
 			let user_elements = kit.has('import') ? kit.get('import') : false
@@ -294,7 +296,12 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 			return components
 		},
 		resources(kit){
-			if(this.has) return this.items
+			if(this.has) {
+				return {
+					top:this.top_items,
+					items:this.items
+				}
+			}
 			for(let info of this.items){
 				let item = {
 					name:info[0],
@@ -302,9 +309,20 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 					url: source.url( kit.host, kit.path, kit.modules, this.folder, info[1], `${info[0]}.es6`)
 				}
 				this.items.set( item.name,  item )
-				this.has = true
 			}
-			return this.items
+			for(let info of this.top_items){
+				let item = {
+					name:info[0],
+					folder:info[1],
+					url: source.url( kit.host, kit.path, kit.modules, this.folder, info[1], `${info[0]}.es6`)
+				}
+				this.top_items.set( item.name,  item )
+			}
+			this.set = true
+			return {
+				top:this.top_items,
+				items:this.items
+			}
 		}
 	}
 	const kit = {
@@ -339,6 +357,12 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 		}
 	}
 	const kit_components = {
+		account:{
+			get firebase(){
+				if(kit.has('firebase-account')) return kit.get('firebase-account')
+				return 'firebase-account.js'
+			}
+		},
 		get bower_components(){
 			if(kit.has('bower')) return kit.get('bower')
 			return 'bower_components'
@@ -351,9 +375,9 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 				if(firebase_file) return firebase_file
 				return 'https://www.gstatic.com/firebasejs/4.1.1/firebase.js'
 			},
-			//graph:'os/graph.es6',
 			graph:'library/graph/load.es6',
-			socket:'poly/socket.io.js'
+			socket:'poly/socket.io.js',
+			//graph:'os/graph.es6'
 		}
 	}
 	
@@ -444,7 +468,7 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 		
 		function window_firebase(){
 			return new Promise((success,error)=>{
-				if(kit.has('firebase')) return get_eval(window.url.site('firebase-account.js')).then(success).catch(error)
+				if(kit.has('firebase')) return get_eval(window.url.site(kit_components.account.firebase)).then(success).catch(error)
 				return success()
 			})
 		}
@@ -504,12 +528,18 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 		}
 		
 		function window_resources(){
+			
 			let resources = world_wide_internet.resources(kit)
-			return promise_all()
+			//let top_resources = resources.top
+			return promise_all(resources.top).then(top_results=>{
+				return promise_all(resources.items).then(results=>{
+					return results
+				})
+			})
 			//return Promise.all(Array.from(resources.values()).map(resource_promise)).then(responses=>resources)
 			
 			//shared actions
-			function promise_all(){
+			function promise_all(resources){
 				let sources = {}
 				Array.from(resources).forEach(item=>sources[item[0]] = item[1])
 				return new Promise((success,error)=>promise_next(()=>success(resources),error))
@@ -553,8 +583,6 @@ function wwi_port_module( base, element, find, file, query, resource, source, wi
 				}
 			}
 		}
-		
-		
 	}
 	
 }, this)

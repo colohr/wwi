@@ -20,13 +20,18 @@
             width: 100%;
             height: 100%;
         }
+
     </style>
     <slot id="content"></slot>
     <canvas canvas-view></canvas>
 </template>
 <script>
     (function(doc){
-        const OptimusPrime = wwi.element(doc).extension({module:'behavior',name:'Draw'},{module:'behavior',name:'Timeout'},{module:'behavior',name:'Transformer'})
+        const OptimusPrime = wwi.element(doc).extension(
+                                	{module:'behavior',name:'Draw'},
+                                    {module:'behavior',name:'Timeout'},
+                                    {module:'behavior',name:'Transformer'})
+
 	    OptimusPrime(class extends OptimusPrime.Element{
 	    	constructor(){
 	    		super('routes',{
@@ -43,6 +48,11 @@
                 })
 		    }
 		    connected(){
+
+	    		if(fxy.is.defined('remote-control')) set_remote_control(this)
+                else load_remote_control(this)
+
+
 			    this.on('mousedown',e=>this.down(e))
 			    this.on('mouseenter',e=>this.enter(e))
 			    this.on('mouseleave',e=>this.leave(e))
@@ -105,6 +115,21 @@
 		    }
 
         })
+
+        function set_remote_control(prime){
+        	let remote = document.createElement('remote-control')
+	        remote.id = fxy.uid.generate()
+            let view = prime.supermodel
+            if(view && 'shadowRoot' in view && view.shadowRoot) view = view.shadowRoot
+            if(!view) view = window.document.body
+	        view.appendChild(remote)
+            prime.rc = remote
+            remote.prime = prime
+            return prime
+        }
+        function load_remote_control(prime){
+	        return window.app.port(window.url.elements('optimus-prime/remote-control.html')).then(_=>set_remote_control(prime)).catch(console.error)
+        }
 
     })(document)
 </script>

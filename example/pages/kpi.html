@@ -54,7 +54,7 @@
 			height:var(--container-height);
 			top:35px;
 		}
-		:host([banks-loaded]) wwe-button[load-banks]{
+		:host([banks-loaded]) content-action[load-banks]{
 			display: none;
 		}
 	</style>
@@ -65,7 +65,6 @@
 	<div view fit gui vertical>
 		<type-dash name="kindle-publishing" navigation>
 			<content-action slot="tool" load-banks centered>Load Banks</content-action>
-			<div api-title slot="tool">KPI</div>
 		</type-dash>
 		<browser-list id="banks"></browser-list>
 		<kindle-item-versions></kindle-item-versions>

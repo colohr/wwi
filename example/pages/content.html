@@ -69,30 +69,30 @@
 			margin:10px;
 		}
 
+		[links]{
+			padding:10px;
+		}
+
+		[links] content-link{
+			border-radius: 4px;
+			padding:5px 10px 5px 10px;
+			font-family: serif;
+			font-size:16px;
+			background-color: rgba(205,55,105,0.7);
+
+		}
+
 	</style>
 	<div view gui horizontal center-center wrap>
-		<div box-view gui horizontal center-center>
-			<div flex-1></div>
-			<div menu-container flex-5>
-				<code>select-menu toogles</code>
-				<select-menu toggles>
-					<select-option name="Google" wwi icon="provider/google.png"></select-option>
-					<select-option name="Facebook" wwi icon="provider/facebook.png"></select-option>
-					<select-option name="Twitter" wwi icon="provider/twitter.png"></select-option>
-					<select-option name="Email" wwi icon="provider/email.png"></select-option>
-					<select-option name="Create" wwi icon="provider/sunny.svg"></select-option>
-				</select-menu>
+		<div box>
+			<div title gui horizontal around>
+				content-link[trigger="*"][url="*"]
 			</div>
-			<div flex-1></div>
-			<div menu-container flex-5>
-				<code>select-menu</code>
-				<select-menu>
-					<select-option name="Hi"></select-option>
-
-					<select-option name="Bye"></select-option>
-				</select-menu>
+			<div item links>
+				<content-link trigger="open" url="https://www.google.com">[trigger="open"][url=""]</content-link>
+				<content-link trigger="link" url="https://www.google.com">[trigger="link"][url=""]</content-link>
+				<content-link trigger="hash" url="art">[trigger="hash"][url="art"]</content-link>
 			</div>
-			<div flex-1></div>
 		</div>
 		<div box>
 			<div title gui horizontal around>
@@ -195,11 +195,34 @@
 				</content-action>
 			</div>
 		</div>
+		<div box-view gui horizontal center-center>
+			<div flex-1></div>
+			<div menu-container flex-5>
+				<code>select-menu toogles</code>
+				<select-menu toggles>
+					<select-option name="Google" wwi icon="provider/google.png"></select-option>
+					<select-option name="Facebook" wwi icon="provider/facebook.png"></select-option>
+					<select-option name="Twitter" wwi icon="provider/twitter.png"></select-option>
+					<select-option name="Email" wwi icon="provider/email.png"></select-option>
+					<select-option name="Create" wwi icon="provider/sunny.svg"></select-option>
+				</select-menu>
+			</div>
+			<div flex-1></div>
+			<div menu-container flex-5>
+				<code>select-menu</code>
+				<select-menu>
+					<select-option name="Hi"></select-option>
+
+					<select-option name="Bye"></select-option>
+				</select-menu>
+			</div>
+			<div flex-1></div>
+		</div>
+
+
 		<div footer></div>
 	</div>
-	<wwe-position offset-y="40">
-		<div description></div>
-	</wwe-position>
+
 
 </template>
 <script>

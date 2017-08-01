@@ -1,5 +1,6 @@
 .idea
 test
+docs
 dev
 node_modules
 npm-debug.log

@@ -1,13 +1,10 @@
-WWI
+wwi
 =============
-
-Install `wwi` 
--------------
 ```
-  npm i wwi
+  npm uninstall wwi
 ```
 
-World Wide Internet HTML Page & Loading
+World Wide Internet Setup
 -------------
 ```html
 <!DOCTYPE html>
@@ -16,44 +13,19 @@ World Wide Internet HTML Page & Loading
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 	<title>World Wide Internet</title>
-  <!--Define the source of wwi/port.es6 in the folder you have your static modules-->
-  <!--path defines a subpath for the website-->
-  <!--import defines the file to be imported for you custom elements-->
-	<script src="modules/wwi/port.es6" import="custom-elements.html" modules="modules" path="/"></script>
+        <!--Load main wwi file-->
+	<script src="http://localhost:8888/modules/wwi/port.es6" 
+	        import="custom-elements.html" 
+	        modules="modules" 
+	        path="/"></script>
 </head>
-
 <body>
-
-  <list-element id=list>
-    <a slot=item href=a.html>A Item</a>
-    <a slot=item href=b.html>B Item</a>
-    <a slot=item href=c.html>C Item</a>
-  </list-element>
-
-	<script>
-    //the app event is triggered once all wwi files have been loaded
-		window.addEventListener('app',function(e){
-
-      let list = app.query('#list')
-      list.bg = 'skyblue'
-
-
-		})
-	</script>
+    <list-element></list-element>
 </body>
-</html>
 ```
 
 
-Sample custom-elements.html file
--------------
-```html
-<link rel="import" href="elements/list-element.html">
-```
-
-
-
-Creating an element with wwi library
+Create an element
 -------------
 ```html
 <template id="list-element-template">

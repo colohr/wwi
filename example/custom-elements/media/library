@@ -6,7 +6,8 @@ library.logic = [
 	'control/sound.es6',
 	'control/playlist.es6',
 	'control/seek.es6',
-	'control/icons.es6'
+	'control/icons.es6',
+	'control/Video.es6'
 ]
 library.elements = [
 	'button.html',
@@ -14,6 +15,7 @@ library.elements = [
 	{path:'seek/index.html',wait:['media-seek','media-volume']},
 	{path:'track/index.html',wait:['track-time','track-lyrics','track-item']},
 	'audio.html',
-	{path:'player.html',wait:['content-menu','media-player']}
+	{path:'player.html',wait:['content-menu','media-player']},
+	'video.html'
 ]
 

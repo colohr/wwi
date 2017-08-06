@@ -1,0 +1,107 @@
+@import "Selector.css";
+:host{
+    --bg-color:rgba(100, 101, 103, 0.7);
+}
+[view]{
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 100%;
+    background: var(--apple-mandarine-bg);
+}
+
+[box]{
+    position: relative;
+    width: 300px;
+    border:1px solid rgba(255,255,255,0.4);
+    box-sizing: border-box;
+    border-radius: 4px;
+    margin:5px;
+    background-color:rgba(255,255,255,0.4);
+    backface-visibility: hidden;
+
+}
+
+[box] > [title]{
+    padding:8px 10px 8px 10px;
+    margin-bottom:5px;
+    border-radius: 4px 4px 0 0;
+    border-bottom:1px solid rgba(255,255,255,0.4);
+    background-color:rgba(255,255,255,0.4);
+}
+
+[item]{
+    position: relative;
+    height:200px;
+    overflow: hidden;
+}
+
+[item] > content-drawer{
+    width:50%;
+    border-radius: 4px;
+    background-color: rgba(255,255,255,0.4);
+}
+
+content-menu{
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    padding:5px;
+}
+
+[box-view]{
+    position: relative;
+    width: 100%;
+    padding:50px;
+    background-color: rgba(255,255,255,0.5);
+    margin-bottom:15px;
+    box-sizing: border-box;
+    border-bottom:1px solid var(--gray);
+}
+
+[footer]{
+    position: relative;
+    display: block;
+    height:50px;
+    width: 100%;
+}
+
+[description]{
+    position: relative;
+    width:300px;
+    padding:10px;
+}
+
+#action{
+    width:calc(80% - 20px);
+
+}
+
+[links]{
+    padding:10px;
+}
+
+[links] content-link{
+    border-radius: 4px;
+    padding:5px 10px 5px 10px;
+    font-family: serif;
+    font-size:16px;
+    margin-top:5px;
+
+
+}
+content-action{
+    margin:10px;
+    --background:var(--clean);
+    --color:var(--berry);
+}
+
+content-expand{
+    box-shadow:0 0 0 3px white;
+    border-radius:100px;
+    overflow:hidden;
+    backface-visibility: visible;
+}
+content-expand > *{
+    border-radius: 100px;
+    overflow:hidden;
+    background:transparent;
+}

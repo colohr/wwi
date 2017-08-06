@@ -1,0 +1,183 @@
+:root, html {
+
+	/*crayons*/
+	--silver-light:whitesmoke;
+	--silver-bright:rgb(245, 255, 250);
+	--silver:lightgray;
+	--silver-dark:silver;
+
+	--clean-bright:rgb(230, 230, 230);
+	--clean:rgba(237, 239, 241,1);
+	--clean-50:rgba(237, 239, 241,0.7);
+
+	--day: ghostwhite;
+	--day-50:rgba(255, 255, 255,0.7);
+
+	--gray: #ddd;
+	--gray-50: rgba(211,211,211,0.39);
+	--gray-dark: #5f646e;
+
+	--dusk: lightslategray;
+
+	--night-light: #3c4450;
+	--night: #383e51;
+	--night-black: #292b37;
+
+	--black-bright:rgb(41, 42, 43);
+
+	--dark-light: rgb(67, 72, 86);
+	--dark-bright: rgb(69, 76, 90);
+	--dark: #3b3e46;
+	--dark-50: rgba(59, 62, 70, 0.76);
+
+	--chocolate:rgb(89, 73, 81);
+	--chocolate-bright-50: rgba(108, 90, 100,0.96);
+	--chocolate-bright: rgb(108, 90, 100);
+	--chocolate-dark: rgb(73, 57, 65);
+
+	--cream-light: rgb(250, 240, 230);
+	--cream-bright:rgb(250, 235, 215);
+	--cream-tone: rgb(253, 254, 243);
+	--cream: rgb(253, 245, 230);
+	--cream-dark: #f0dcc7;
+
+	--rose-light: rgba(253, 238, 217,1);
+	--rose-bright:mistyrose;
+	--rose:rgb(220,195,190);
+	--rose-dark:rosybrown;
+	--rose-50:rgba(220,195,190,0.4);
+
+	--pink-light:rgb(216, 191, 216);
+
+	--navy-bright: rgb(4, 88, 150);
+	--navy: rgb(4, 64, 120);
+	--navy-dark: rgb(9, 47, 87);
+
+	--azul-bright: #1f91e1;
+	--azul: rgb(0, 133, 255);
+	--azul-dark: #1E6DAF;
+	--azul-dark-50: rgba(31, 91, 154, 0.85);
+
+	--blue-bright:#498bff;
+	--blue: dodgerblue;
+	--blue-dark: rgb(29, 98, 240);
+	--blue-50: rgba(30, 144, 255, 0.51);
+
+	--cyan:rgba(26, 214, 253, 1);
+
+
+	--teal-bright:#2abfce;
+	--teal: #22a6b5;
+	--teal-dark:#2d9097;
+
+	--aqua-bright:rgb(25, 249, 216);
+
+	--turquoise-bright: #2cccaa;
+	--turquoise:rgb(0, 207, 181);
+
+	--sea-bright: rgb(26, 193, 194);
+	--sea: #00aba4;
+	--sea-50: rgba(0, 171, 164, 0.47);
+
+	--mint:#40fba5;
+
+	--emerald-light: #5BCC8B;
+	--emerald-bright: #06E07F;
+	--emerald:rgb(0, 192, 138);
+
+	--grass: rgb(49, 221, 117);
+	--grass-50: rgba(49, 221, 117, 0.53);
+
+	--leaf: rgb(97, 209, 87);
+
+	--lime-bright: #99e719;
+	--lime: #7ED321;
+
+	--lima: #94c66e;
+
+	--squash: #ffe272;
+
+	--cantaloupe:rgb(255, 184, 108);
+
+	--gold-bright:#E6BB46;
+	--gold: #ffb72e;
+	--gold-50:rgba(255, 213, 27, 0.87);
+
+	--yellow-bright: #ece735;
+	--yellow:rgba(255, 205, 2, 1);
+
+	--tangerine-bright:rgb(255, 149, 0);
+	--tangerine: #ff7300;
+
+	--orange-bright: #ff8d38;
+	--orange: rgb(243, 131, 32);
+
+	--mandarine:rgba(255, 94, 58, 1);
+
+	--karrot: #ff5e4c;
+
+	--tomato:#de4747;
+
+	--pepper-bright:rgb(255, 82, 82);
+	--pepper: #dc3b3b;
+
+	--berry-light:#DF7065;
+	--berry: #ff5074;
+
+	--watermelon-bright: rgb(250, 69, 96);
+	--watermelon: #fb4062;
+
+	--cherry: crimson;
+	--cherry-50: rgba(220, 20, 60, 0.51);
+
+	--lily-dark:rgb(255, 117, 181);
+
+	--apple: rgb(255, 42, 104);
+
+	--bubblegum-bright:#ff28a9;
+	--bubblegum: #f02eb1;
+
+	--fuchsia-bright:rgb(198, 67, 252);
+	--fuchsia: #a240fb;
+	--fuchsia-dark: #9b34e7;
+
+	--purple-bright: rgb(152, 63, 255);
+	--purple:rgb(131, 90, 252);
+
+	--indigo:rgb(85, 65, 236);
+
+	--grape: rgba(110, 100, 250, 1);
+	--grape-dark: #464ba5;
+	--grape-50: rgba(110, 100, 250, 0.53);
+
+	--lavender-bright: #8884c5;
+	--lavender: #9181c8;
+	--lavender-dark:#8367ce;
+	--lavender-50: rgba(136, 132, 197, 0.49);
+
+
+
+
+	/*gradients*/
+	--blue-cyan-bg:linear-gradient(135deg, var(--blue-dark) 0%, var(--cyan) 100%);
+
+	--tangerine-yellow-bg: linear-gradient(135deg, var(--tangerine-bright) 0%, var(--yellow) 100%);
+
+	--apple-mandarine-bg: linear-gradient(135deg, var(--apple) 0%, var(--mandarine) 100%);
+
+	--purple-fuchsia-bg: linear-gradient(135deg, var(--purple) 0%, var(--purple-bright) 49%, var(--fuchsia-bright) 100%);
+
+	--sea-emerald-bg:linear-gradient(135deg, var(--sea-bright) 0%, var(--turquoise) 49%, var(--emerald) 100%);
+
+	--marine-bg:radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
+
+	/*system*/
+	--app-color:var(--blue);
+	--app-text:var(--dark);
+
+	--focus-color: var(--gold-50);
+
+	--page-background-color:var(--day-50);
+
+
+}

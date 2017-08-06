@@ -1,114 +1,38 @@
-<template id="wwi-app-template">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+	<title>World Wide Internet</title>
+	<link rel="stylesheet" href="/modules/wwi/component/design/css/index.css"/>
+
+	<script src="modules/wwi/code.es6"
+	        import="custom-elements.html"
+	        modules="modules"
+	        path="/"></script>
+
 	<style>
-		@import "modules/wwi/component/design/host.css";
-		@import "modules/wwi/component/design/app.css";
-
-		:host {
-			--bar-color:white;
-			--text:var(--dark-bright);
-			--bar-height: 20px;
-			display: block;
-			position: relative;
-			min-height: 100vh;
-			width: 100vw;
+		body {
 			overflow: hidden;
-			z-index: 1;
-			color:var(--app-text);
+			max-width: 100vw;
+			opacity: 0;
+			transition: 300ms opacity 100ms;
+			will-change:opacity;
 		}
-
-		[app-drawer] {
-			background-color: white;
-			position: absolute;
-			top: 40px;
-			width: 260px;
-			z-index: 10;
+		body[components-ported] {  opacity: 1;  }
+		wwi-app {
+			opacity: 0 !important;
+			transition: 400ms opacity 700ms;
+			will-change:opacity;
 		}
-
-		[menu-title] {
-			display: block;
-			padding: 4px;
-			margin: 10px;
-		}
-
-		content-bar {
-			--bar-text:var(--text);
-			top: 0;
-			color:var(--text);
-		}
-
-		wwe-button[kind="item"] {
-			width: 100%;
-			text-align: left;
-			font-size: 16px;
-			font-weight: bold;
-			margin: 5px 14px 5px 14px;
-			background-color: rgb(237, 237, 237);
-			--title-color: var(--text);
-			--focus-color: var(--text);
-		}
-
-
+		body[components-ported] [id="app"] {  opacity: 1 !important;  }
 	</style>
-
-	<content-bar app-title="World Wide Internet" hash="wwe" pug>
-		<wwe-button drawer slot="aside" icon="pug"></wwe-button>
-	</content-bar>
-
-	<content-drawer app-drawer left>
-		<content-menu slot="content">
-			<div menu-title slot="title">
-				<slot name="menu-title"></slot>
-			</div>
-		</content-menu>
-	</content-drawer>
-
-	<content-pages app-pages>
-
-		<start-page></start-page>
-
-		<wwe-page page-title="WWE" load="custom-elements/wwe/ui/card/index.html"></wwe-page>
-
-		<sticky-page page-title="Sticky List" load="custom-elements/sticky/index.html" wait="sticky-list"></sticky-page>
-
-		<browser-page page-title="Browser List" load="custom-elements/browser/index.html" wait="browser-list"></browser-page>
-
-		<code-page  page-title="Code Editor" load="custom-elements/code/index.html" wait="code-library"></code-page>
-
-		<content-page page-title="Content Components"></content-page>
-
-		<player-page page-title="Media Player" load="custom-elements/window/index.html,custom-elements/media/index.html" wait="window-frame media-player"></player-page>
-
-		<tickity-page page-title="Tickity Tock" load="custom-elements/tickity/index.html" wait="tickity-tock tickity-button"></tickity-page>
-
-		<window-page page-title="Window Frame" load="custom-elements/window/index.html" wait="window-frame"></window-page>
-
-		<walki-page name="walki" load="custom-elements/walki/index.html" wait="walki-tag"></walki-page>
-
-		<transformer-page load="custom-elements/optimus-prime/index.html" wait="optimus-prime"></transformer-page>
-
-		<data-page load="custom-elements/data/index.html" wait="data-library"></data-page>
-
-		<modules-page load="custom-elements/code/index.html" wait="code-library"></modules-page>
-
-		<art-page load="custom-elements/sticky/index.html,custom-elements/art/index.html" wait="sticky-list,art-library"></art-page>
-	</content-pages>
-
-</template>
-
-<script>
-	(function (doc) {
-		const App = wwi.app(doc)
-		App(class extends App.Element {
-			show() {
-				app.port(url.elements('wwe/ui/background/index.html'))
-				   .then(wwi.when('wwe-background'))
-				   .then(() => {
-					   this.bg = document.createElement('wwe-background')
-					   this.bg.setAttribute('timer', 800000)
-					   this.bg.setAttribute('color', 'white')
-					   app.body.appendChild(this.bg)
-				   })
-			}
-		})
-	})(document)
-</script>
+</head>
+<body gui vertical>
+<wwi-app></wwi-app>
+<noscript>
+	World Wide Internet
+	Please enable JavaScript to view this website.
+</noscript>
+</body>
+</html>

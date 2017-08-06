@@ -5,14 +5,17 @@ library.logic = [
 ]
 
 library.elements = [
+	'button/index.html',
+	'bar/index.html',
+	'menu/index.html',
+	'drawer/index.html',
+	{
+		path:"pages/index.html",
+		wait:['content-bar','content-button','content-menu','content-drawer']
+	},
 	'action/index.html',
 	'action/check.html',
 	'icon/index.html',
-	'bar/index.html',
-	'drawer/index.html',
 	'expand/index.html',
-	'link/index.html',
-	'menu/index.html',
-	'select/index.html',
-	'pages/index.html'
+	'link/index.html'
 ]

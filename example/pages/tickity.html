@@ -23,9 +23,17 @@
 			margin-left:5px;
 			margin-right:5px;
 		}
+		[title-view]{
+			box-shadow:0 0 0 1px var(--gray);
+			border-radius: 7px;
+			padding:15px;
+			font-size:20px;
+			font-weight: 900;
+			margin:20px;
+		}
 	</style>
 	<div view gui>
-		<div gui relative horizontal center-center>tickity-button - tickity-tock</div>
+		<div gui relative horizontal center-center title-view>tickity-button & tickity-tock</div>
 		<div gui relative horizontal around wrap>
 			<tickity-button></tickity-button>
 			<tickity-tock id="two" frame="250px,250px" white></tickity-tock>

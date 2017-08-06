@@ -1,33 +1,64 @@
 <template id="data-page">
 	<style>
 		@import "/modules/wwi/component/design/host.css";
-		data-form{
+		data-form,
+		drop-box,
+		[drop-view]{
 			box-shadow:0 0 0 1px var(--gray);
 			border-radius: 7px;
+			padding:15px;
 		}
+		drop-box{
+			background: var(--sea-emerald-bg);
+		}
+
 		[view]{
-			padding:10px;
 			max-height:calc(100% - 20px);
 			overflow-y: auto;
+			background: var(--sea-emerald-bg);
+		}
+		[title-view],
+		[drop-view]{
+			padding:15px;
+			font-size:20px;
+			font-weight: 900;
+			margin:20px;
+		}
+		[drop-view] > *{
+			position: relative;
+			max-width: calc(100% - 20px);
+			border-radius: 7px;
+			display: block;
+			margin:10px auto;
 		}
 	</style>
 	<div view>
-		<div gui relative horizontal center-center>
-			data-form
+		<div gui relative horizontal center-center title-view>
+			data-form & drop-box
 		</div>
 		<div gui relative horizontal around wrap>
 			<data-form></data-form>
+			<drop-box  big-title>
+				Drop A Graphic
+			</drop-box>
+
 		</div>
+		<div drop-view></div>
 	</div>
 </template>
 <script>
 	(function (doc) {
 		const DataPage = wwi.page(doc)
 		DataPage(class extends DataPage.Element {
-			get form(){ return this.query('data-form') }
+			get box(){ return this.query('drop-box') }
 			connected(){
 
-
+				this.box.on('data',e=>{
+					let data = e.detail
+					let img = document.createElement('img')
+					img.src = data.value
+					this.query('[drop-view]').appendChild(img)
+				})
 
 				this.form.items = {
 					email:{
@@ -43,8 +74,6 @@
 					}
 				}
 
-
-
 				this.form.on('valid',(e)=>{
 					console.log('valid event',e)
 				})
@@ -52,7 +81,11 @@
 				this.form.on('invalid',(e)=>{
 					console.log('invalid event',e)
 				})
+
+
 			}
+			get form(){ return this.query('data-form') }
+
 		})
 	})(document)
 </script>

@@ -1,0 +1,15 @@
+[bold-font-button],
+[bold-font-title]{
+    color: white;
+    font-weight: 900;
+    text-shadow:0 1px 3px var(--dark);
+}
+[bold-font-button]{
+    --width:auto;
+    --box-shadow-weight:2px;
+    display: inline-block;
+    min-width: 100px;
+    background: transparent;
+    font-size:20px;
+    cursor: pointer;
+}

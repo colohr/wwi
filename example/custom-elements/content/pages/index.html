@@ -1,6 +1,5 @@
 <template id="content-pages">
     <style>
-        @import "/custom-elements/content/animations.css";
         [app-pages],
         :host{
             opacity: 1;
@@ -19,6 +18,7 @@
 
         #list::slotted(*){
             display: none;
+            visibility: hidden;
             position: absolute;
             top:39px;
             left:0;
@@ -27,7 +27,6 @@
             pointer-events: none;
             box-sizing: border-box;
             overflow: hidden;
-            background-color:var(--page-background-color,transparent);
         }
 
         [app-pages][animates] > *,
@@ -91,7 +90,8 @@
         [app-pages] > *[active],
         #list::slotted([active]){
             pointer-events: auto;
-            display:block;
+            display:initial;
+            visibility: visible;
             z-index: 10;
         }
 
@@ -150,7 +150,7 @@
 	        }).map(({name,title})=>{
 		        if(!name) return null
 		        if(element.menu.has_item('hash',name)) return element.menu.get_item('hash',name)
-		        let button = document.createElement('wwe-button')
+		        let button = document.createElement('content-button')
 		        button.setAttribute('hash',name)
 		        button.setAttribute('kind','item')
 		        button.setAttribute('tabindex','-1')

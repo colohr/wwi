@@ -1,86 +1,6 @@
 <template id="content-page-template">
 	<style>
-		@import "/modules/wwi/design/Selector.css";
-		[view]{
-			overflow: hidden;
-			overflow-y: auto;
-			max-height: 100%;
-		}
-
-		[box]{
-			position: relative;
-			width: 300px;
-			border:1px solid var(--berry);
-			box-sizing: border-box;
-			border-radius: 4px;
-			margin:5px;
-		}
-
-		[box] > [title]{
-			padding:8px 10px 8px 10px;
-			margin-bottom:5px;
-			border-bottom:1px solid var(--berry);
-			background-color:rgba(255,255,255,0.4);
-		}
-
-		[item]{
-			position: relative;
-			height:200px;
-			overflow: hidden;
-		}
-
-		[item] > content-drawer{
-			width:50%;
-			border-radius: 4px;
-			background-color: var(--berry);
-		}
-
-		content-menu{
-			width: calc(100% - 10px);
-			height: calc(100% - 10px);
-			padding:5px;
-		}
-
-		[box-view]{
-			position: relative;
-			width: 100%;
-			padding:50px;
-			background-color: rgba(255,255,255,0.5);
-			margin-bottom:15px;
-			box-sizing: border-box;
-			border-bottom:1px solid var(--gray);
-		}
-
-		[footer]{
-			position: relative;
-			display: block;
-			height:50px;
-			width: 100%;
-		}
-
-		[description]{
-			position: relative;
-			width:300px;
-			padding:10px;
-		}
-
-		#action{
-			width:calc(80% - 20px);
-			margin:10px;
-		}
-
-		[links]{
-			padding:10px;
-		}
-
-		[links] content-link{
-			border-radius: 4px;
-			padding:5px 10px 5px 10px;
-			font-family: serif;
-			font-size:16px;
-			background-color: rgba(205,55,105,0.7);
-
-		}
+		@import "/modules/wwi/design/boxes.css";
 
 	</style>
 	<div view gui horizontal center-center wrap>
@@ -161,10 +81,10 @@
 		<div box>
 			<div title gui horizontal around>content-expand</div>
 			<div item expand gui center around horizontal style="cursor: pointer">
-				<div style="height:40px;width:40px;background-color: var(--sea)">
+				<div style="height:40px;width:40px;">
 					<content-expand></content-expand>
 				</div>
-				<div style="height:40px;width:40px;background-color: var(--grass)">
+				<div style="height:40px;width:40px;">
 					<content-expand open></content-expand>
 				</div>
 			</div>
@@ -173,7 +93,7 @@
 			<div title gui horizontal around>
 				content-action
 			</div>
-			<div item>
+			<div item gui vertical center>
 				<content-action id="action" centered>Content Action</content-action>
 			</div>
 		</div>
@@ -181,7 +101,7 @@
 			<div title gui horizontal around>
 				content-action[toggles]
 			</div>
-			<div item>
+			<div item gui vertical center>
 				<content-action id="toggle-action" toggles>Content Action</content-action>
 			</div>
 		</div>
@@ -189,35 +109,13 @@
 			<div title gui horizontal around>
 				content-icon in content-action
 			</div>
-			<div item>
-				<content-action toggles style="margin:10px;" centered>
+			<div item gui vertical center>
+				<content-action toggles centered>
 					<content-icon name="puzzle" style="margin-right:5px;"></content-icon>Puzzle
 				</content-action>
 			</div>
 		</div>
-		<div box-view gui horizontal center-center>
-			<div flex-1></div>
-			<div menu-container flex-5>
-				<code>select-menu toogles</code>
-				<select-menu toggles>
-					<select-option name="Google" wwi icon="provider/google.png"></select-option>
-					<select-option name="Facebook" wwi icon="provider/facebook.png"></select-option>
-					<select-option name="Twitter" wwi icon="provider/twitter.png"></select-option>
-					<select-option name="Email" wwi icon="provider/email.png"></select-option>
-					<select-option name="Create" wwi icon="provider/sunny.svg"></select-option>
-				</select-menu>
-			</div>
-			<div flex-1></div>
-			<div menu-container flex-5>
-				<code>select-menu</code>
-				<select-menu>
-					<select-option name="Hi"></select-option>
 
-					<select-option name="Bye"></select-option>
-				</select-menu>
-			</div>
-			<div flex-1></div>
-		</div>
 
 
 		<div footer></div>

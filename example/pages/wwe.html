@@ -1,13 +1,27 @@
 <template id="wwe-page-template">
 	<style>
-		@import "/modules/wwi/component/design/host.css";
-
+		/*@import "/modules/wwi/component/design/host.css";*/
+		@import "/modules/wwi/design/boxes.css";
+		@import "/modules/wwi/design/bold-font-button.css";
+		/*:host {*/
+			/*display: block;*/
+		/*}*/
+		/*[view]{*/
+			/*max-height: 100%;*/
+			/*overflow-y: auto;*/
+		/*}*/
 		:host {
 			display: block;
+			contain: content;
+			backface-visibility: hidden;
+			-webkit-backface-visibility: hidden;
+			-webkit-overflow-scrolling: touch;
 		}
 		[view]{
-			max-height: 100%;
-			overflow-y: auto;
+			max-width: 100%;
+			overflow:hidden;
+			overflow-y:auto;
+			max-height:100%;
 		}
 		[title]{
 			font-weight: 900;
@@ -122,89 +136,136 @@
 			background-color: green;
 
 		}
-
+		tickity-tock{
+			margin-bottom:30px;
+			margin-left:5px;
+			margin-right:5px;
+		}
+		[title-view]{
+			box-shadow:0 0 0 1px var(--gray);
+			border-radius: 7px;
+			padding:15px;
+			font-size:20px;
+			font-weight: 900;
+			margin:0px 20px 20px 20px;
+		}
 
 	</style>
-	<div view gui vertical center-center  around-justified>
-		<wwe-card>
-			<wwe-background index="4" color="white" alpha="0.79"></wwe-background>
-			<div slot="title" spin-title gui horizontal center-center wrap>
-				<div mini>
-					<small>wwe-card</small>
+	<div view >
+		<div box-view>
+			<div gui relative horizontal center-center title-view>Explode Button + WWE Card</div>
+			<wwe-card>
+				<wwe-background index="4" color="white" alpha="0.79"></wwe-background>
+				<div slot="title" spin-title gui horizontal center-center wrap>
+					<div mini>
+						<small>wwe-card</small>
+					</div>
+					<div mini>
+						<small>wwe-background</small>
+					</div>
+					<div mini>
+						<small>wwe-button</small>
+					</div>
+					<div mini>
+						<small>wwe-spinner</small>
+					</div>
+					<div mini>
+						<small>shiny-button</small>
+					</div>
+					<div mini>
+						<small>explode-button</small>
+					</div>
 				</div>
-				<div mini>
-					<small>wwe-background</small>
-				</div>
-				<div mini>
-					<small>wwe-button</small>
-				</div>
-				<div mini>
-					<small>wwe-spinner</small>
-				</div>
-				<div mini>
-					<small>shiny-button</small>
-				</div>
-				<div mini>
-					<small>explode-button</small>
-				</div>
-			</div>
 
-			<div title gui horizontal style="margin:0 15px 5px 15px;padding-bottom:5px;">
-				<div relative block>
-					World<br>Wide<br>
-					<div style="font-size:60%;">Elements</div>
+				<div title gui horizontal style="margin:0 15px 5px 15px;padding-bottom:5px;">
+					<div relative block>
+						World<br>Wide<br>
+						<div style="font-size:60%;">Elements</div>
+					</div>
 				</div>
-			</div>
 
-			<div footer slot="footer" gui horizontal center-center>
-				<div buttons gui horizontal>
-					<explode-button id="letters" pointer="letterify">Letters</explode-button>
-					<explode-button id="explode">Explode</explode-button>
-					<explode-button id="silly" pointer="letterify">Silly</explode-button>
+				<div footer slot="footer" gui horizontal center-center>
+					<div buttons gui horizontal>
+						<explode-button id="letters" pointer="letterify">Letters</explode-button>
+						<explode-button id="explode">Explode</explode-button>
+						<explode-button id="silly" pointer="letterify">Silly</explode-button>
+					</div>
 				</div>
-			</div>
-		</wwe-card>
-
-		<div shinys gui horizontal around-justified>
-			<shiny-button gui horizontal center-center onclick="act.popup(event)">shiny</shiny-button>
-			<shiny-button onclick="act.spin(event)">
-				<wwe-spinner loading paused color="var(--grape)"></wwe-spinner>
-			</shiny-button>
-			<shiny-button gui horizontal center-center>button</shiny-button>
+			</wwe-card>
 		</div>
 
-		<!--<wwe-position offset-y="40">-->
-			<!--<div description>-->
-				<!--<div mini>-->
-					<!--<small>wwe-position</small>-->
-				<!--</div>-->
-			<!--</div>-->
-		<!--</wwe-position>-->
+		<div box-view>
+			<div gui relative horizontal center-center title-view>Shiny Button</div>
+			<div shinys gui horizontal around-justified>
+				<shiny-button gui horizontal center-center onclick="act.popup(event)">shiny</shiny-button>
+				<shiny-button onclick="act.spin(event)">
+					<wwe-spinner loading paused color="var(--grape)"></wwe-spinner>
+				</shiny-button>
+				<shiny-button gui horizontal center-center>button</shiny-button>
+			</div>
+		</div>
+
+		<div box-view gui horizontal center-center>
+			<div gui relative horizontal center-center title-view>Select Menu</div>
+			<div flex-1></div>
+			<div menu-container flex-5>
+				<code>select-menu toggles</code>
+				<select-menu toggles>
+					<select-option name="Google" wwi icon="provider/google.png"></select-option>
+					<select-option name="Facebook" wwi icon="provider/facebook.png"></select-option>
+					<select-option name="Twitter" wwi icon="provider/twitter.png"></select-option>
+					<select-option name="Email" wwi icon="provider/email.png"></select-option>
+					<select-option name="Create" wwi icon="provider/sunny.svg"></select-option>
+				</select-menu>
+			</div>
+			<div flex-1></div>
+			<div menu-container flex-5>
+				<code>select-menu</code>
+				<select-menu>
+					<select-option name="Hi"></select-option>
+					<select-option name="Bye"></select-option>
+				</select-menu>
+			</div>
+			<div flex-1></div>
+		</div>
+
+		<div box-view gui>
+			<div gui relative horizontal center-center title-view>Tickity Button + Tickity Tock</div>
+			<div gui relative horizontal around wrap>
+				<tickity-button></tickity-button>
+				<tickity-tock id="two" frame="250px,250px" white></tickity-tock>
+				<tickity-tock id="one" frame="200px,200px"></tickity-tock>
+			</div>
+		</div>
+
+		<div box-view gui horizontal wrap backgrounds justified>
+
+		</div>
+		<div footer></div>
 	</div>
-
-
-
 </template>
 <script>
 	(function (doc) {
-		const WWE = wwi.page(doc)
+		const WWE = wwi.page(doc).extension('behavior','Scroll')
 		WWE(class extends WWE.Element {
+			get backgrounds(){ return this.query('[backgrounds]')}
+			get button(){ return this.query('tickity-button') }
 			connected(){
+				this.watch_scroll = this.view
 				let buttons = this.all('[buttons] > explode-button')
 				this.colors = fxy.require('design/colors')
 				buttons.forEach((item)=>{
 					let id = item.id
 					item.on('click',(e)=>this[id](e.currentTarget))
 				})
-
 				this.popup = e=>{
 					let popup = document.querySelector('#popup')
 					popup.present(e.target)
 					this.content.present(e.target)
 				}
 				this.on.close = e => alert('close')
+				set_backgrounds(this)
 			}
-
 			explode(i){
 				if(typeof i.opacity !== 'number' || i.opacity <= 0){
 					i.opacity = 1
@@ -219,6 +280,7 @@
 				i.color = this.colors.random()
 				i.style.color = this.colors.random()
 			}
+			get one(){ return this.query('#one') }
 			spin(e){
 				let spinner = e.currentTarget.slots.title.item
 				if(spinner){
@@ -233,6 +295,72 @@
 				else i.silly = true
 			}
 			get spinner(){ return this.query('ui-spinner') }
+			tick(active){
+				let tickers = this.tickers
+				for(let ticker of tickers){
+					if(active) ticker.start()
+					else ticker.stop()
+				}
+			}
+			get tickers(){
+				let tickers = []
+				if(this.one.start) tickers.push(this.one)
+				if(this.two.start) tickers.push(this.two)
+				if(this.button.tickity) tickers.push(this.button.tickity)
+				return tickers
+			}
+			get two(){ return this.query('#two') }
 		})
+
+		function set_backgrounds(element){
+			let types = {
+				effects:['overlay','panorama','pattern'],
+				wallpapers:['art','columns','scene','white'],
+				collections:['gradient','organic','quantum'],
+			}
+			let list = []
+			for(let type in types){
+				let data = types[type]
+				let bg = null
+				if(fxy.is.array(data)){
+					for(let item of data){
+						bg = get_background()
+						bg.setAttribute('type',type)
+						bg.setAttribute('name',item)
+						bg.title = `${fxy.id.proper(type)} ${fxy.id.proper(item)}`
+						list.push(bg)
+					}
+				}else{
+					bg = get_background()
+					bg.setAttribute('type',type)
+					bg.title = `${fxy.id.proper(type)}`
+					list.push(bg)
+				}
+			}
+			for(let bg of list){
+				let card = document.createElement('wwe-card')
+
+
+
+				card.innerHTML = `<div title gui horizontal style="margin:0 15px 5px 15px;padding-bottom:35px;">
+					<div relative block bold-font-title>
+						WWE<br>
+						<div style="font-size:60%;">${bg.title}</div>
+					</div>
+				</div>`
+				let title = card.query('[title]')
+				card.insertBefore(bg,title)
+//				card.style.width = '40vw'
+				card.style.margin = "10px"
+				element.backgrounds.appendChild(card)
+			}
+		}
+		function get_background(){
+			let bg = document.createElement('wwe-background')
+			bg.setAttribute('timer', 9000)
+//			bg.setAttribute('color', 'white')
+			return bg
+		}
+
 	})(document)
 </script>

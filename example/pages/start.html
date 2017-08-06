@@ -6,23 +6,21 @@
 	        display: block;
 	        position: relative;
 	        max-width: 100vw;
+	        height:100%;
+	        width:100%;
 	        perspective: 1000px;
-	        transform-origin: bottom center;
-
-	        /*min-height: 100%;*/
+	        background: rgb(42,51,66);
+	        background: -moz-radial-gradient(center, ellipse cover, rgba(42,51,66,1) 18%, rgba(39,47,61,1) 61%, rgba(42,48,61,1) 100%);
+	        background: -webkit-radial-gradient(center, ellipse cover, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
+	        background: radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
         }
 
         [container]{
-	        background: rgb(255, 82, 82);
 	        position: relative;
-	        /*width:100%;*/
-	        /*height:100%;*/
         }
-
 
         [box]{
 	        display:block;
-	        resize: both;
 	        box-sizing: border-box;
 	        overflow: hidden;
 	        border: 10px solid #de4747;
@@ -32,7 +30,6 @@
 	        transition-duration: 600ms;
 	        transform-origin: bottom center;
 	        transition-property: transform, opacity;
-	        will-change: transform, opacity;
 	        position: absolute;
 	        bottom:20%;
 	        width:70%;
@@ -43,16 +40,13 @@
 
         [box]:nth-of-type(1){
 	        transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,-40px);
-	        /*z-index: 1;*/
         }
 
         [box]:nth-of-type(2){
 	        transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,0px);
-	        /*z-index: 2;*/
         }
         [box]:nth-of-type(3){
 	        transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,40px);
-	        /*z-index: 1;*/
         }
 
         [box]:nth-of-type(1):hover{
@@ -75,31 +69,39 @@
 	        transform: rotateX(45deg) scale(0.8,0.8) rotateY(0deg) translate3d(0px,20vh,45vh);
         }
 
-
-
-        :host(:active) [box]{
-	        transform: rotateX(55deg) scale(1,1) rotateY(0) translate3d(0,5px,-50px);
+        :host([scored]:active) [box]{
+	        transform: rotateX(55deg) scale(1,1) rotateY(0) translate3d(0,5px,-50px) !important;
         }
-
 
         [title]{
 	        line-height:0.88;
 	        font-weight: 900;
 	        padding:20px;
-	        font-size:120px;
+	        font-size:100px;
 	        color: #464551;
 	        filter: drop-shadow(0 0 4px);
 	        background: rgba(31, 31, 31, 0.46);
         }
+
 	    tagger-element{
 		    margin-top:calc(120vh + 50px);
 		    margin-bottom:50px;
+
 	    }
+
+        content-action{
+	        -webkit-text-stroke: 0;
+        }
+        [box]:nth-of-type(3):hover content-action{
+	        color:var(--turquoise);
+        }
 
 	    [view]{
 		    overflow-y:auto;
 		    max-height:100%;
 	    }
+
+
     </style>
     <div container view gui vertical center-center>
 	    <div box gui>
@@ -122,7 +124,7 @@
 			    <div>World</div>
 			    <div>Wide</div>
 			    <div>Internet</div>
-			    <div score></div>
+			    <content-action style="font-size:60px" score onclick="act.load(event)">Web Score</content-action>
 		    </div>
 	    </div>
     </div>
@@ -134,16 +136,15 @@
 
         Start(class extends Start.Element{
             connected(){
-				app.cloud.edus('modules/wwi/os/browser/compatability/progress_report.es6').then(result=>{
-					this.query('[score]').innerHTML = (result.value.grade.toFixed(2))+'%'
-				})
 
-	            app.port(url.elements('tagger/index.html')).then(_=>fxy.when('tagger-element')).then(_=>{
-	            	let tagger = document.createElement('tagger-element')
-		            tagger.message.innerHTML = tagger.tag.element({tag:'div',html:`<h1>Hello</h1>`})
-		            this.view.appendChild(tagger)
+				this.define({scored:true})
+            }
+            load(event){
+            	if(this.scored) return
+	            app.cloud.edus('modules/wwi/os/browser/compatability/progress_report.es6').then(result=>{
+		            this.query('[score]').innerHTML = (result.value.grade.toFixed(2))+'%'
+		            this.scored=true
 	            })
-
             }
         })
     })(document)

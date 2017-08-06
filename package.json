@@ -22,6 +22,7 @@
     "compression": "^1.6.2",
     "express": "^4.15.2",
     "fxy": "^0.1.5",
+    "wxy": "0.0.2",
     "yargs": "^8.0.1"
   },
   "devDependencies": {

@@ -111,17 +111,20 @@
 
 			color:white;
 
-			-webkit-filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15)) contrast(120%);
-			filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15)) contrast(120%);
+			/*-webkit-filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15)) contrast(120%);*/
+			/*filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.15)) contrast(120%);*/
 
 			font-weight:900;
 			font-size:20px;
+			text-rendering:geometricPrecision;
 
 			padding:18px;
 
-			text-shadow:0 0 8px rgba(40,40,60,0.15);
+			text-shadow:0 0 5px rgba(40,40,60,0.2);
 
 			text-transform: capitalize;
+
+			/*letter-spacing: 0.5px;*/
 		}
 
 		:host-context([page="banks"]) #contentTitle::slotted(*){

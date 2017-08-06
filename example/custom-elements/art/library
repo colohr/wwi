@@ -1,7 +1,12 @@
 library = {}
+library.logic = [
+	'control/css.es6',
+	'control/css/gradient.es6'
+]
 library.elements = [
+	'gradients.html',
 	{
 		path:'palette.html',
-		wait:['sticky-list']
+		wait:['wwe-position','content-menu']
 	}
 ]

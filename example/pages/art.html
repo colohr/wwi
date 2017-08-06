@@ -3,12 +3,18 @@
         @import "/modules/wwi/component/design/host.css";
 
         art-palette{
-            position:relative;
             height:100%;
-            width:100%;
+	        width:50vw;
         }
+        art-gradients{
+            width:50vw;
+        }
+
     </style>
+
     <art-palette></art-palette>
+    <art-gradients></art-gradients>
+
 </template>
 <script>
     (function(doc){
@@ -16,15 +22,7 @@
 	    Art(class extends Art.Element{
 
 	        connected(){
-
-//		        this.unset = true
-//		        this.on('active',()=>{
-//			        if('unset' in this){
-//				        this.list.on('items',e=>{for(let item of e.detail) item.background = item.data.value})
-//				        this.list.set_items(...(get_transparent_items(5)))
-//				        delete this.unset
-//			        }
-//		        })
+                this.at('gui','horizontal')
 	        }
 	        get palette(){ return this.query('art-palette') }
         })

@@ -7,6 +7,7 @@
 		}
 		[view]{
 
+			background: var(--purple-fuchsia-bg);
 			transition-timing-function: linear;
 			transition-property: filter;
 			transition-duration: 500ms;
@@ -21,9 +22,12 @@
 		}
 
 	</style>
-	<div view gui fit vertical center-center style="filter:opacity(0);">
+	<!--<media-video src="/media/video/pa_ya_pa_ca.mp4"></media-video>-->
+	<div view gui fit  vertical center-center style="filter:opacity(0);">
 		<media-player ></media-player>
 	</div>
+
+
 
 
 </template>
@@ -38,6 +42,7 @@
 						this.player = populate_music_player(this.query('media-player'))
 						this.player.on('items updated',()=>{
 							this.view.style.filter = 'opacity(1)'
+							this.player.drag=true
 						})
 					}
 				})

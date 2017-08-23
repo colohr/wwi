@@ -1,0 +1,71 @@
+<template id="content-pages">
+    <style>
+        @import "/modules/wwi/design/pages.css";
+    </style>
+    <slot id="pages"></slot>
+</template>
+<script>
+	(function(doc){
+		const ContentPages = wwi.element(doc)
+		const app_page_index = Symbol('Position of page in sorted list')
+		ContentPages(class extends ContentPages.Element{
+			constructor(){
+				super('routes',{
+					appPages(value){
+						if(value !== null) this.setAttribute('role','main')
+						else this.removeAttribute('role','')
+					},
+					loading:true
+				})
+			}
+			get animates(){ return this.hasAttribute('animates') }
+			connect_menu(e){
+				let items = this.items.map(page=>{
+					if(!page.hasAttribute('name')) page.setAttribute('name',page.localName.replace('-page',''))
+					if(!page.hasAttribute('page-title')) page.setAttribute('page-title',fxy.id.proper(page.getAttribute('name')))
+					return page
+				}).sort((x,y)=>{
+					let a = x.getAttribute('page-title')
+					let b = y.getAttribute('page-title')
+					if(a > b) return 1
+					else if(a < b) return -1
+					return 0
+				}).map((page,index)=>{
+					page[app_page_index] = index
+					return page
+				})
+
+				set_menu_buttons(items,e)
+
+				return e
+			}
+			connected(){
+				if(this.appPages) this.setAttribute('role','main')
+			}
+			get count(){ return this.items.length }
+			get items(){ return this.slots.pages.items }
+		})
+
+		//shared actions
+		function set_menu_buttons(pages,element){
+			return pages.map(page=>{
+				return {
+					name:page.getAttribute('name'),
+					title:page.getAttribute('page-title')
+				}
+			}).map(({name,title})=>{
+				if(!name) return null
+				if(element.menu.has_item('hash',name)) return element.menu.get_item('hash',name)
+				let button = document.createElement('content-button')
+				button.setAttribute('hash',name)
+				button.setAttribute('kind','item')
+				button.setAttribute('tabindex','-1')
+				button.setAttribute('role','option')
+				button.innerHTML = title
+				element.menu.appendChild(button)
+				return button
+			})
+		}
+
+	})(document)
+</script>

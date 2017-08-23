@@ -1,0 +1,8 @@
+:host{
+    --bar-color:white;
+    --text:var(--blue-dark);
+    --focus-color:var(--blue-dark);
+    --menu-background-color: var(--bar-color);
+    --menu-item-color: var(--blue-dark);
+    --menu-item-focus-color: var(--blue-dark);
+}

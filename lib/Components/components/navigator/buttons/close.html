@@ -1,0 +1,16 @@
+<template id="navigator-close">
+	<style>
+		@import "/library/components/navigator/buttons/design.css";
+	</style>
+	<div box gui vertical center-center>
+		<svg height="24" width="24" viewBox="0 0 24px 24px" preserveAspectRatio="xMidYMid meet" >
+			<g id="close"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></g>
+		</svg>
+	</div>
+</template>
+<script>
+	(function(doc){
+		const NavigatorClose = wwi.element(doc).extension(...components.navigator.mix('Button'))
+		NavigatorClose(class extends NavigatorClose.Element{})
+	})(document)
+</script>

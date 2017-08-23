@@ -1,0 +1,46 @@
+<template id="content-icon">
+    <style>
+        :host{
+            display:inline-block;
+	        position:relative;
+            color:var(--color,inherit);
+        }
+	    svg{
+		    position:relative;
+		    display:block;
+		    height:100%;
+		    width:100%;
+            fill:currentColor;
+	    }
+    </style>
+
+</template>
+<script>
+    (function(doc){
+        const ContentIcon = wwi.element(doc)
+	    ContentIcon(class extends ContentIcon.Element{
+            constructor(){
+            	super('routes',{
+            		name(value){
+			            if(value !== null) this.set_icon(value)
+                    },
+            		set:true
+	            })
+            }
+            get svg(){ return this.query('svg') }
+	        set_icon(value){
+            	let svg = this.svg
+		        if(svg) svg.remove()
+		        if(value !== null){
+            		let set = this.set === null ? 'app':this.set
+			        let icon_set = fxy.require('design/icons')[set]
+                    if(icon_set){
+			        	let icon = icon_set[value]
+	                    if(icon) this.shadow.appendChild(icon)
+                    }
+
+		        }
+            }
+        })
+    })(document)
+</script>

@@ -1,0 +1,13 @@
+:host{
+    --bar-color:white;
+    --text:var(--tangerine-bright);
+    --focus-color:var(--tangerine-bright);
+    --menu-item-background-color: var(--tangerine-yellow-bg);
+    --menu-item-color: var(--cream-bright);
+    --menu-item-focus-color: var(--tangerine-bright);
+}
+content-button{
+    border-radius: 100px;
+    font-weight:900;
+    text-indent:5px;
+}

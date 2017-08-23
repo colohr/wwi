@@ -1,0 +1,8 @@
+library = {}
+library.id = 'components-search-library'
+library.logic = [
+	'logic/Controller.es6'
+]
+library.elements = [
+	'component.html'
+]

@@ -1,5 +1,6 @@
 //main
-const wwi = ((window)=>{
+(function(get_wwi,window){ return get_wwi(window) })
+(function(window){
 	
 	const world_wide_actions = Symbol('world wide actions')
 	
@@ -27,6 +28,7 @@ const wwi = ((window)=>{
 		get define(){ return fxy.define }
 		get exports(){ return fxy.exports.bind(fxy) }
 		get external(){ return fxy.external }
+		get library(){ return fxy.library }
 		get off(){ return off_broadcast_action }
 		get on(){ return on_broadcast_action }
 		get require(){ return fxy.require.bind(fxy) }
@@ -149,7 +151,8 @@ const wwi = ((window)=>{
 	}
 	
 	function update_broadcast_actions(){ return world_wide_actions in WorldWideInternet && WorldWideInternet.actions.size === 0 ? delete WorldWideInternet[world_wide_actions]:true }
+	
+},this)
 
-})(window)
 
 

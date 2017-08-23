@@ -1,0 +1,68 @@
+<template id="window-footer-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		@import "/modules/wwi/component/design/ui/white.css";
+		:host {
+			position: absolute;
+			padding:7px 9px 7px 9px;
+			left:0;
+			right: 0;
+			z-index: 4;
+		}
+		div, button{
+			box-sizing: border-box;
+		}
+		[title-bar]{
+			padding-left: 5px;
+		}
+	</style>
+	<div flex-1></div>
+	<div container ui-box gui inline horizontal center flex-8>
+		<div title-bar ui-action inline></div>
+	</div>
+	<div flex-1></div>
+</template>
+<script>
+	(function (doc) {
+		const Footer = wwi.element(doc)
+		Footer(class extends Footer.Element{
+			constructor(){super({title:true})}
+			changed(name,old,value){
+				switch(name){
+					case 'title':
+						let title = fxy.is.data(value) && 'title' in value ? value.title:value
+						let label = fxy.is.data(value) && 'label' in value ? value.label:title
+						if(fxy.is.text(title) !== true) title = ''
+						this.aria.label = fxy.is.text(label) ? label:title
+						this.query('[title-bar]').innerHTML = title
+						this.toggle_type('container')
+						break
+				}
+			}
+			get container(){ return this.query('[container]')}
+			toggle_type(...x){
+				let contents = x.map(type=>toggle_type(this,type)).filter(type=>type !== null)
+				if(contents.length) this.setAttribute('has-content','')
+				else this.removeAttribute('has-content')
+				let detail = {size:this.size,name:this.localName}
+				let event = new CustomEvent('content size',{bubbles:true,composed:true,detail})
+				this.dispatchEvent(event)
+				return this
+			}
+			connected(){
+				this.at('ui-footer','gui', 'horizontal', 'between-aligned','self-end')
+				this.toggle_type('container')
+			}
+		})
+
+		function toggle_type(container,type){
+			let type_name = fxy.id._(type)
+			let target = container[type_name]
+			if(!target) return null
+			let text = target.textContent.trim()
+			if(text.length) target.style.display = ''
+			else target.style.display = 'none'
+			return text.length ? true:null
+		}
+	})(document)
+</script>

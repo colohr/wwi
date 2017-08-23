@@ -1,0 +1,14 @@
+library = {}
+library.logic = [
+	'control/css.es6',
+	'control/css/gradient.es6',
+	'control/detector.es6'
+]
+library.elements = [
+	'gradients.html',
+	'color-detector.html',
+	{
+		path:'palette.html',
+		wait:['content-menu']
+	}
+]

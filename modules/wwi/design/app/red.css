@@ -1,0 +1,14 @@
+:host{
+    --bar-color:var(--apple);
+    --drawer-background:var(--apple-mandarine-bg);
+    --text:var(--pink-light);
+    --focus-color:var(--pink);
+    --menu-item-background-color: rgba(255,255,255,0.14);
+    --menu-item-color: var(--pink-light);
+    --menu-item-focus-color: var(--pink-bright);
+}
+content-button{
+    border-radius: 100px;
+    font-weight:900;
+    text-indent:5px;
+}

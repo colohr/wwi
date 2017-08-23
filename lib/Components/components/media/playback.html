@@ -1,0 +1,168 @@
+<template id="media-playback-template">
+	<style>
+		@import "modules/wwi/component/design/gui.css";
+		:host {
+			display: block;
+			position: relative;
+			height: 100%;
+			contain: paint;
+			box-sizing: border-box;
+			padding-left:2px;
+			padding-right:2px;
+		}
+
+
+		media-button#back,
+		media-button#next{
+			border:none;
+			--w:26px;
+			--h:26px;
+			--size:20px;
+			transform:scale(0,0);
+			transition-duration: 300ms;
+			transition-property: transform;
+			transition-timing-function: ease-in-out;
+			will-change:transform;
+		}
+
+
+		:host([show-controls]) media-button#back,
+		:host([show-controls]) media-button#next{
+			transform:scale(1,1);
+		}
+
+		:host-context(media-player) media-button#back,
+		:host-context(media-player) media-button#next,
+		:host([hide-controls]) media-button#back,
+		:host([hide-controls]) media-button#next{
+			display: none !important;
+		}
+
+
+		:host-context(media-player) media-button#play{
+			border:none;
+			--w:26px;
+			--h:26px;
+			--size:26px;
+			display: block;
+			position: relative;
+			z-index: 1000;
+			padding-left:0;
+			padding-right:0;
+			margin:0;
+		}
+
+		:host-context(media-player){
+			padding:0;
+		}
+
+		:host-context(media-player) media-button#play[icon-state="pause"]{
+			--size:20px;
+		}
+
+
+	</style>
+	<div view gui horizontal center-center>
+		<media-button id=back class="ap__controls ap__controls--prev"></media-button>
+		<media-button id=play icons="play,pause"></media-button>
+		<media-button id=next class="ap__controls ap__controls--next"></media-button>
+	</div>
+
+</template>
+<script id="media-playback">
+	(function (doc) {
+		const Playback = wwi.element(doc)
+		const connected_events = ['back', 'play', 'next']
+		const connected_elements = Symbol.for('connected elements')
+		Playback(class extends Playback.Element{
+			constructor(){super({fill:true,showControls:true})}
+			get back(){ return this.query('#back') }
+			get button(){ return this.query('#play')}
+			changed(name,old,value){
+				switch(name){
+					case 'fill':
+						if(value){
+							this.all('media-button').forEach(button=>{
+								button.fill = value
+							})
+							this.all('svg').forEach(svg=>{
+								svg.setAttribute('fill',value)
+							})
+						}
+						break
+				}
+			}
+			connected(){
+				this[connected_elements] = new Set()
+				for (let type of connected_events) {
+					let element = this[type]
+					if (element.isConnected) {
+						this.connected_element({type: `${type} connected`, currentTarget: element})
+					} else {
+						element.on(`${type} connected`, this.connected_element.bind(this))
+					}
+				}
+			}
+			connected_element(e) {
+				if(fxy.is.data(e) && 'type' in e) this[connected_elements].add(e.type)
+				let element = e.currentTarget
+				if(element){
+					if(element === this.button){
+						this.button.a11y_callback = (e)=>{
+							let detail = e.detail
+							if('key' in detail){
+								let key = detail.key
+								if(key.activates) return this.dispatch('play')
+							}
+						}
+
+//						this.button.on('enter',(e)=>{
+//							clear_hide_timer()
+//							this.showControls = true
+//						})
+//						this.button.on('leave',()=>{
+//							set_hide_timer()
+//						})
+					}
+					if(element === this.button || element === this.next || element === this.back){
+//						this.next.on('enter',()=>{
+//							clear_hide_timer()
+//							this.showControls = true
+//						})
+//						this.next.on('leave',()=>{
+//							set_hide_timer()
+//						})
+						element.onmouseenter = (e)=>{
+							clear_hide_timer()
+							this.showControls = true
+						}
+						element.onmouseleave= (e)=>{
+							set_hide_timer()
+						}
+					}
+
+					let playback = this
+					function clear_hide_timer(){
+						if(typeof playback.button.hide_timer === 'number'){
+							window.clearTimeout(playback.button.hide_timer)
+							delete playback.button.hide_timer
+						}
+					}
+					function set_hide_timer(){
+						clear_hide_timer()
+						playback.button.hide_timer = window.setTimeout(()=>{
+							playback.showControls = null
+							delete playback.button.hide_timer
+						},320)
+					}
+				}
+				if (this[connected_elements].size === connected_events.length) {
+
+				}
+			}
+			get next(){ return this.query('#next') }
+			get play(){ return this.button }
+		})
+
+	})(document)
+</script>

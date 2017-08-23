@@ -1,0 +1,204 @@
+<template id="browser-item-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		:host {
+			--item-content-padding:4px 10px 4px 10px;
+			--item-content-border-top:solid 1px #dededf;
+			--item-font-size:var(--font-size,14px);
+			display: block;
+			position: relative;
+			width: 100%;
+			box-sizing: border-box;
+			color:var(--item-color,var(--grape));
+			background:var(--item-background,var(--gray-50));
+			height:var(--item-height,40px);
+			cursor: default;
+			outline: none;
+			z-index:0;
+			font-size:var(--item-font-size);
+			transition:opacity 0.3s linear;
+			opacity:1;
+		}
+
+		:host(:hover){
+			text-decoration: underline;
+			filter: contrast(160%) brightness(1.1);
+		}
+		:host(:active){  filter: brightness(0.8);  }
+		:host(:focus) [title]{  text-decoration: underline;  }
+
+		[background]{
+			display: block;
+			position: absolute;
+			box-sizing: border-box;
+			backgound-color:var(--gray);
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			z-index: 0;
+			border-radius: var(--item-radius,0);
+		}
+		[background]{  border-top:var(--item-border-top,var(--item-content-border-top));  }
+
+		[expand]{
+			position: absolute;
+			top:0;
+			right:0;
+			bottom:0;
+			width:40px;
+			z-index: 1;
+			box-sizing: border-box;
+			opacity: 0.5;
+			padding:10px;
+			overflow:hidden;
+		}
+
+
+		[expand] content-expand{
+			--height:2px;
+			--width:12px;
+			max-height:40px;
+			max-width:40px;
+			background:white;
+			border-radius: 100px;
+			color:rgb(180,180,180);
+			left:6px;
+
+		}
+
+
+		:host(:hover) [expand],
+		:host(:active) [expand],
+		:host(:focus) [expand]{
+			opacity: 1;
+		}
+
+		:host(:hover) [expand],
+		:host(:active) [expand]{
+			color:var(--sea);
+		}
+
+
+
+
+		:host(:active) [background]{  box-shadow:inset 0 1px 4px 0 rgba(41,43,55,0.2);  }
+
+		:host([aria-selected="true"]){
+			z-index:1;
+			opacity: 1;
+		}
+
+		 content-expand[open][expanded],
+		:host([aria-selected="true"]) content-expand[open]{
+			color:var(--sea);
+			 opacity:0.9;
+		}
+
+		:host(:hover) content-expand[expanded]{
+			color:var(--berry);
+		}
+
+		:host([aria-disabled="true"]){
+			opacity:0.7;
+			-webkit-filter:saturate(0);
+			filter:saturate(0);
+			cursor:not-allowed;
+		}
+
+		[content]{
+			position: relative;
+			height: 100%;
+			padding-left:9px;
+			z-index: 5;
+			box-sizing: border-box;
+		}
+		[content] *{
+			position: relative;
+			box-sizing: border-box;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			max-width: calc(100% - 25px);
+		}
+
+
+
+
+	</style>
+	<div background></div>
+	<div content gui vertical center-justified select-text>
+		<div title no-select></div>
+	</div>
+	<div expand gui vertical center-center>
+		<content-expand style="display:none"></content-expand>
+	</div>
+
+
+</template>
+<script>
+	(function (doc) {
+		const Item = wwi.element(doc,'a11y')
+		const Memory = fxy.require('browser/memory').Mix
+
+		Item(class extends Memory(Item.Element) {
+
+			constructor(){
+
+				super('routes',{
+					selected(value){
+						this.aria.selected = value !== null
+						this.expanded = value !== null
+					},
+					expanded(value){
+						if(value === null){
+							this.expand.expanded = false
+						}else{
+							this.expand.expanded = true
+						}
+					},
+					item(value){
+						if(value === null) this.expand.removeAttribute('open')
+						else this.expand.setAttribute('open','')
+					}
+				})
+
+			}
+			get expand(){ return this.query('content-expand') }
+			connected(){
+				this.kind="item"
+				this.aria.role = "option"
+				this.aria.tabindex = "0"
+				this.aria.selected = "false"
+				this.aria.disabled = "false"
+				this.onclick = e => this.select()
+
+				window.requestAnimationFrame(()=>{
+					setTimeout(()=>{
+						this.html('title',this.data.title)
+						this.expand.style.display = ''
+						this.style.opacity="1"
+					},200)
+				})
+			}
+			diconnected(){
+				this.style.opacity="0"
+			}
+
+			html(attribute,value){
+				this.query(`[${attribute}]`).innerHTML = value
+				return this
+			}
+			select(){
+				if(this.item) {
+
+					this.dispatch(new CustomEvent('select',{bubbles:true,composed:true,detail:this}))
+				}
+				else{
+					this.data.toggle()
+				}
+				return this
+			}
+		})
+	})(document)
+</script>

@@ -8,12 +8,12 @@
 					break
 				case 'cloud':
 					return  'app' in window &&
-							'cloud' in window.app  ?
-							 window.app.cloud : null
+					'cloud' in window.app  ?
+						window.app.cloud : null
 				case 'edus':
 					return  'app' in window &&
-							'cloud' in window.app  ?
-							 window.app.cloud.edus : null
+					'cloud' in window.app  ?
+						window.app.cloud.edus : null
 				case 'io':
 					return 'io' in window ? window.io:null
 				case 'graph':
@@ -27,15 +27,15 @@
 		has(o,name){ return o.get(name) !== null }
 	})
 	
-	return function( { kit, port, source  } ){
+	return function(){
 		return Promise.all( [
-				//'io.es6',
-				//'browser.es6',
-				//'database.es6',
-				//'module.es6',
-				'cloud.es6', // doc.es6, edus.es6
-				'library.es6'
-			].map( file => source.url( kit.dir, 'os', file ) )
-		     .map( url => port.eval(url) ) )
+			//'io.es6',
+			//'browser.es6',
+			//'database.es6',
+			//'module.es6',
+			'cloud.es6' // doc.es6, edus.es6
+			//'library.es6'
+		].map( file => window.fxy.file.url( window.kit.dir, 'os', file ) )
+		 .map( url => window.fxy.port.eval(url) ) )
 	}
 })

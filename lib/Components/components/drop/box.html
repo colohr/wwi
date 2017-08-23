@@ -1,0 +1,82 @@
+<template id="drop-box">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+
+            display: block;
+            background:white;
+            position:relative;
+        }
+        :host([pops]){
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+        }
+        :host(:hover){
+            background: black;
+        }
+
+        :host([big-title]) [drop-title]{
+            font-size:40px;
+        }
+
+        [drop-input]{
+            position: absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background: transparent;
+            -webkit-appearance: none;
+            appearance:none;
+            visibility: hidden;
+            display:none;
+        }
+        [list]{
+            width:60%;
+            position: relative;
+        }
+    </style>
+    <div view gui vertical center-center>
+        <div drop-title><slot></slot></div>
+        <div list></div>
+    </div>
+</template>
+<script>
+    (function(doc){
+        const DropBox = wwi.element(doc).extension(
+        	{module:'behavior',name:'Drop'},
+            {module:'control',name:'Files'})
+
+        DropBox(class extends DropBox.Element{
+        	connected(){
+
+		        this.drop.on('dropped',(e)=>{
+			        let items = this.files.read(...e.detail.files).items
+                    for(let file of items) this.add(file)
+		        })
+
+                this.on('file data',e=>{
+                	this.dispatch('data',e.detail)
+                })
+
+            }
+
+            get_read_as(file){
+        		let type = file.type
+                if(type.includes('image') || type.includes('video') || type.includes('audio')) return 'url'
+                else if(type.includes('json')) return 'json'
+                return 'text'
+            }
+            add(file){
+                let item = document.createElement('drop-file')
+                item.as = this.get_read_as(file)
+                item.file = file
+                this.on(file.id,(e)=>{item.route(e.detail)})
+                this.list.appendChild(item)
+                return this
+            }
+	        get list(){ return this.query('[list]') }
+
+        })
+    })(document)
+</script>

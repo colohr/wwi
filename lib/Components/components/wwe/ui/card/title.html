@@ -1,0 +1,48 @@
+<template id="wwe-title-template">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+			position: relative;
+			width: 100%;
+			background: rgba(255, 255, 255, 1);
+			overflow: hidden;
+		}
+
+		[title-content] {
+			display: block;
+			position: relative;
+			font-weight: 900;
+			height:20px;
+			max-height:20px;
+			border-radius: 100px;
+		}
+
+		[title-bar]{
+			position: relative;
+		}
+
+		[title-content] [text] {
+			font-size: 1em;
+			padding: 2px;
+			margin-left: 14px;
+			text-align: left;
+			text-overflow: ellipsis;
+			max-width: 120px;
+		}
+
+	</style>
+	<div title-content>
+		<div title-bar>
+			<div text></div>
+		</div>
+		<wwe-close-button red corner="top right" xy="1,1"></wwe-close-button>
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const Title = wwi.element(doc)
+		Title(class extends Title.Element {})
+	})(document)
+</script>

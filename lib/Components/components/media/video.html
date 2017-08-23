@@ -1,0 +1,14 @@
+<template id="media-video">
+
+</template>
+<script>
+    (function(doc){
+        const MediaVideo = wwi.element(doc).extension({
+            module:'media',
+            name:'Video'
+        })
+        MediaVideo(class extends MediaVideo.Element{
+        	static get observedAttributes(){return ['src']}
+        })
+    })(document)
+</script>

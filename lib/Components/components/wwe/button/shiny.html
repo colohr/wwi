@@ -1,0 +1,212 @@
+<template id="shiny-button">
+	<style>
+		@import "modules/wwi/component/design/host.css";
+
+		:host {
+			--back: var(--blue);
+			--color: white;
+			--icon: var(--color);
+			--ripple: white;
+			--radius: 100px;
+			--shadow: var(--ripple);
+			--height: 13px;
+			--width: 13px;
+			--focus: var(--focus-color);
+			--icon-size: calc(var(--height) - 20.15%);
+			--focus-filter: contrast(105%) brightness(1.4) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+			--drop-shadow: drop-shadow(0 0px 2px var(--shadow));
+
+			background-color: var(--back);
+			border-radius: var(--radius);
+			box-sizing: border-box;
+
+			color: var(--color);
+			cursor: pointer;
+
+			display: inline-block;
+
+			min-height: var(--height);
+
+			outline: none;
+			overflow: visible;
+
+			position: relative;
+
+			min-width: var(--width);
+			transition: filter 300ms ease-in!important;
+
+			/*background: linear-gradient(135deg, rgba(249,249,249,0.45) 0%,rgba(239,246,249,0.51) 28%,rgba(218,225,228,0.53) 35%,rgba(172,179,183,0.55) 50%,rgba(108,118,127,0.58) 77%,rgba(76,84,94,0.6) 100%);*/
+
+			/*background: radial-gradient(ellipse at center, rgba(249,249,249,0.45) 0%,rgba(239,246,249,0.51) 28%,rgba(218,225,228,0.53) 35%,rgba(172,179,183,0.55) 50%,rgba(108,118,127,0.58) 77%,rgba(76,84,94,0.6) 100%);;*/
+
+		}
+
+
+
+		/*states*/
+		:host:before,:host:after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			display: block;
+			border-radius: inherit;
+			box-sizing: inherit;
+			z-index: 1;
+
+			transition: opacity 500ms ease-in, background 1000ms ease-in !important;
+			opacity:0.1;
+			background: radial-gradient(ellipse at center, rgba(76,84,94,0.3) 0%,rgba(108,118,127,0.29) 23%,rgba(172,179,183,0.28) 50%,rgba(218,225,228,0.28) 65%,rgba(239,246,249,0.29) 72%,rgba(249,249,249,0.31) 100%);
+		}
+		:host(:hover):before{
+			opacity:0.5;
+		}
+		:host(:focus):before {
+			box-shadow: 0 0 1px 1px var(--focus);
+			border: 2px solid var(--focus);
+		}
+		:host:after{
+			transition: opacity 300ms ease-in, background 500ms ease-in !important;
+		}
+		:host(:active):after{
+			background: radial-gradient(ellipse at center, rgba(249,249,249,0.31) 0%,rgba(239,246,249,0.29) 28%,rgba(218,225,228,0.28) 35%,rgba(172,179,183,0.28) 50%,rgba(108,118,127,0.29) 77%,rgba(76,84,94,0.3) 100%);
+			opacity:0.7;
+		}
+		:host(:hover):after,
+		:host(:focus):after{
+			opacity:0.65;
+			background: radial-gradient(ellipse at center, rgba(76,84,94,0.3) 0%,rgba(108,118,127,0.29) 23%,rgba(172,179,183,0.28) 50%,rgba(218,225,228,0.28) 65%,rgba(239,246,249,0.29) 72%,rgba(249,249,249,0.31) 100%);
+			box-shadow: 0 0 1px 1px var(--focus);
+		}
+
+
+
+
+		:host(:focus) {
+			-webkit-filter: var(--focus-filter);
+			filter: var(--focus-filter);
+			/*background: linear-gradient(135deg, rgba(76,84,94,0.3) 0%,rgba(108,118,127,0.29) 23%,rgba(172,179,183,0.28) 50%,rgba(218,225,228,0.28) 65%,rgba(239,246,249,0.32) 72%,rgba(249,249,249,0.5) 100%);*/
+
+		}
+
+		:host([no-filter]:focus) {
+			-webkit-filter: none;
+			filter: none;
+		}
+
+		:host([opened]) {
+			-webkit-filter: var(--focus-filter);
+			filter: var(--focus-filter);
+		}
+
+		:host([no-filter][opened]) {
+			-webkit-filter: none;
+			filter: none;
+		}
+
+		:host(:hover) svg {
+			-webkit-filter: var(--drop-shadow);
+			filter: var(--drop-shadow);
+		}
+
+		:host([no-filter]:hover) svg {
+			-webkit-filter: none;
+			filter: none;
+		}
+
+		:host([disabled]) icon,
+		:host([disabled]) svg {
+			-webkit-filter: saturate(0%);
+			filter: saturate(0%);
+			opacity: 0.9;
+			pointer-events: none;
+			cursor: default;
+		}
+
+		/*polymers*/
+		::slotted(iron-icon) {
+			--iron-icon-fill-color: var(--icon);
+			--iron-icon-stroke-color: var(--accent, none);
+			--iron-icon-width: 100%;
+			--iron-icon-height: 100%;
+		}
+
+		icon, ::slotted(iron-icon), svg {
+			position: relative;
+			display: inline-block;
+			text-align: center;
+			vertical-align: middle;
+			box-sizing: content-box;
+		}
+
+		svg {
+			height: 70%;
+			width: 70%;
+			pointer-events: none;
+			display: block;
+			fill: var(--icon);
+		}
+
+		paper-ripple {
+			color: var(--ripple);
+			--paper-icon-button-ink-color: var(--ripple);
+		}
+
+		icon {
+			backface-visibility: visible;
+			-webkit-transform: scale(1.68, 1.68) translateY(-1%);
+			transform: scale(1.68, 1.68) translateY(-1%);
+			text-rendering: geometricPrecision;
+		}
+
+		[button-view] {
+			display: block;
+			position: relative;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+			border-radius: inherit;
+			box-sizing: inherit;
+		}
+
+		[title] {
+			position: relative;
+			display: block;
+			text-align: center;
+			z-index: 2;
+			color: var(--color);
+			padding:var(--padding,3px 18px 3px 18px);
+			font-weight:var(--font-weight,900);
+			font-size:var(--font-size,16px);
+		}
+		[title] > span{
+			transition:filter 550ms ease-out;
+		}
+
+		:host(:focus) [title] > span,
+		:host(:active) [title] > span{
+			text-shadow: 0 1px 3px rgba(50,50,50,0.8);
+			filter:invert(74%) opacity(0.76) contrast(1.4);
+		}
+
+	</style>
+
+	<div button-view gui horizontal center-center>
+		<div title gui horizontal center-center>
+			<span>
+				<slot name="icon"></slot>
+				<slot id="title"></slot>
+			</span>
+
+		</div>
+	</div>
+
+</template>
+<script>
+	(function (doc) {
+		const Shiny = wwi.button(doc)
+		Shiny(class extends Shiny.Element {})
+	})(document)
+</script>

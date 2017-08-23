@@ -1,0 +1,205 @@
+<template id="content-bar-template">
+	<style>
+		@import "/modules/wwi/component/design/gui.css";
+		:host{
+			--bar-padding: 10px;
+			--bar-width: calc(100% - (var(--bar-padding) * 2));
+			--bar-height: 40px;
+			--bar-z: 10;
+
+			display: block;
+			height: var(--bar-height);
+			position: fixed;
+			left:0;
+			right:0;
+			width:100%;
+
+			transform: translate3d(0,0,0);
+			transform-style: preserve-3d;
+
+			animation-duration: 500ms;
+			animation-name:show;
+			animation-fill-mode: forwards;
+
+			will-change: transform;
+
+			z-index: var(--bar-z);
+		}
+
+		:host([hide]){
+			animation-duration: 300ms;
+			animation-name:hide;
+			animation-timing-function: ease-in-out;
+			animation-fill-mode: forwards;
+		}
+
+		:host:before{
+			content: '';
+			display:block;
+			position: absolute;
+			box-sizing: border-box;
+			height:inherit;
+			left:0;
+			right:0;
+			background-color: var(--bar-color,var(--blue));
+			z-index: 1;
+			box-shadow: 0 2px 5px -1px rgba(0,0,0,0.15);
+		}
+
+
+
+		[view]{
+			padding-left: var(--bar-padding);
+			padding-right: var(--bar-padding);
+			width: calc(100% - (var(--bar-padding) * 2));
+			z-index: 2;
+		}
+		[view] > div{
+			position: relative;
+		}
+
+		/*aside*/
+		[name="aside"]::slotted([role="button"]){
+			top: -0.005em;
+		}
+		[name="nav"]::slotted(*){
+			position: relative;
+			top: -0.005em;
+		}
+
+		[name="aside"]::slotted([drawer]){
+			--back:var(--tool-item-bg,transparent);
+			--icon:var(--bar-text,white);
+		}
+
+		/*title*/
+		[left-title]{
+			display: inline-block;
+			font-size:23px;
+			font-weight: 900;
+			top: -0.01em;
+			text-indent: 3px;
+			/*text-rendering: geometricPrecision;*/
+			/*-webkit-backface-visibility: hidden;*/
+			/*backface-visibility: hidden;*/
+			cursor: pointer;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			position: relative;
+			max-width: 80%;
+			text-align: left;
+		}
+
+		/*nav*/
+		[name="nav"]::slotted([role="button"]){
+			margin-left:3px;
+			margin-right:3px;
+		}
+
+		[name="bg"]::slotted(*){
+			display: block;
+			position: absolute;
+			height: var(--bar-height);
+			left:0;
+			top:0;
+			width:100%;
+			z-index: 0;
+			overflow: hidden;
+		}
+
+		[nav]{
+			max-height: 100%;
+		}
+
+		@keyframes show {
+			0%   { opacity: 0.5; transform: translateY(-70px); }
+			100% { opacity: 1; transform: translateY(0px); }
+		}
+		@keyframes hide {
+			100%   {  opacity: 0.5; transform: translateY(-70px); }
+			0% {  opacity: 1; transform: translateY(0px); }
+		}
+
+	</style>
+
+	<slot name="bg"></slot>
+	<div view gui horizontal fit>
+		<div aside gui horizontal center flex>
+			<div gui horizontal start-aligned>
+				<slot name="aside"></slot>
+				<div left-title gui horizontal center></div>
+			</div>
+
+		</div>
+		<!--<div gui flex></div>-->
+		<div nav gui horizontal center-center around-aligned flex-5>
+			<div gui horizontal>
+				<slot name="nav"></slot>
+				<slot name="popups"></slot>
+			</div>
+
+		</div>
+		<!--<div gui flex></div>-->
+		<div aside gui horizontal center-center flex>
+			<div right-title gui relative vertical center-center></div>
+			<slot name="right-aside"></slot>
+		</div>
+	</div>
+
+</template>
+<script>
+	((doc)=>{
+		const Bar = wwi.element(doc)
+		Bar(class extends Bar.Element{
+			constructor(){
+				super('routes',{
+					['app-title'](value){
+						if(value !== null){
+							this.at('app-bar')
+							this.aside.left.title.innerHTML = value
+						}
+					},
+					['bar-title'](value){
+						if(value !== null) this.aside.left.title.innerHTML = value
+					},
+					hash:true,
+					hide:true
+				})
+			}
+
+			get aside(){
+				let bar = this
+				return {
+					get left(){
+						return {
+							get slot(){ return bar.slots.aside },
+							title:bar.query('[left-title]')
+						}
+					},
+					get right(){
+						return {
+							get slot(){ return bar.slots['right-aside'] },
+							title:bar.query('[right-title]')
+						}
+					}
+				}
+			}
+			get drawer_button(){ return this.aside.left.slot.target }
+			connected(...x){
+				if(this.hasAttribute('app-title')) this.at('app-bar')
+				this.setAttribute('role','navigation')
+				this.at('gui', 'horizontal', 'center')
+				let left_title = this.aside.left.title
+				if(left_title){
+					left_title.onclick = e => this.hash ? window.location.hash = this.hash:window.location.reload()
+				}
+
+			}
+		})
+
+	})(document)
+
+</script>
+
+

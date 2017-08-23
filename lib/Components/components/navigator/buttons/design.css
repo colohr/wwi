@@ -1,0 +1,85 @@
+@import "/library/modules/wwi/component/design/host.css";
+:host{
+    --color:var(--watermelon);
+    --background:rgba(255,255,255,0.1);
+    --focus-shadow:inset 0 -1px 3px rgba(0,0,0,0.35), 0 0 0 1px var(--color);
+    display:inline-block;
+    position: relative;
+    color:var(--color);
+    pointer-events: auto;
+    cursor: pointer;
+
+    height:30px;
+    width: 30px;
+    border-radius: 100px;
+    box-shadow: inset 0 0px 0px rgba(0,0,0,0.2);
+    filter:none;
+    transition:box-shadow 100ms linear;
+    will-change:box-shadow;
+    outline: none;
+}
+
+
+:host:before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;bottom:0;
+    border-radius: inherit;
+    background-color: transparent;
+    transition:filter 200ms ease;
+    will-change:filter;
+    filter:brightness(100%);
+}
+
+:host([no-shadow]){
+    --focus-shadow:none;
+}
+
+:host(:focus),
+:host(:active),
+:host([aria-selected="true"]){
+    box-shadow: var(--focus-shadow);
+    background-color: var(--background);
+}
+
+:host(:active):before,
+:host(:focus):before{
+    background-color: var(--background);
+    filter:brightness(80%);
+}
+
+:host([aria-selected="true"]){
+
+    box-shadow:0 0 0 2px var(--color);
+}
+[box]{
+    position: relative;
+    height:100%;
+    width: 100%;
+
+    transition:filter 200ms ease;
+    will-change:filter;
+    filter:brightness(100%);
+}
+
+
+:host(:active) [box],
+:host([aria-selected="true"]) [box]{
+
+    filter:brightness(80%);
+    background-color: var(--background);
+    border-radius: inherit;
+}
+
+svg{
+    position: relative;
+    fill:var(--color);
+    min-height:20px;
+    min-width: 20px;
+    max-height: 24px;
+    max-width: 24px;
+}
+
+#title::slotted(*){
+    font-size:12px;
+}

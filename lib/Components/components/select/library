@@ -1,0 +1,8 @@
+library = {}
+library.elements = [
+	'option.html',
+	{
+		path:'menu.html',
+		wait:['select-option']
+	}
+]

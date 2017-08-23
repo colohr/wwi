@@ -1,0 +1,64 @@
+<template id="explode-button-template">
+	<style>
+		@import "/custom-elements/wwe/button/design.css";
+		@import "/modules/wwi/component/design/host.css";
+		:host{
+			position:relative;
+			display: inline-block;
+		}
+		[title-container]{
+			position: relative;
+			height:100%;
+			width:100%;
+		}
+
+		:host([silly]){  animation: silly 3500ms infinite;  }
+
+		@keyframes silly{
+			0%{  filter:hue-rotate(0deg);  }
+			100%{  filter:hue-rotate(-456deg);  }
+		}
+	</style>
+
+	<div title-container gui horizontal center-center>
+		<slot></slot>
+	</div>
+
+</template>
+
+<script>
+	((doc)=>{
+		const Explode = wwi.element(doc,'a11y')
+		const hash_event = Symbol.for('hash event')
+		Explode(class extends Explode.Element{
+			constructor(){super({hash:true,color:true})}
+			a11y_connected(ally){
+				ally.on('keydown',e=>{
+					if(!this.disabled && e.key.activates) if(this.hash) this.go_to_hash()
+				})
+				ally.on('click',e=>{
+					if(!this.disabled) if(this.hash) this.go_to_hash()
+				})
+			}
+			changed(name,old,value){
+				switch(name){
+					case 'hash':
+						if(!this[hash_event] && value) this.disabled=false
+						else if(this[hash_event] && value === null) this.disabled=true
+						break
+					case 'color':
+						if(value) this.style.backgroundColor = value
+						else this.style.backgroundColor = ''
+						break
+				}
+			}
+			connected(){
+				this.define({pointer:true,silly:true})
+				if(!this.hasAttribute('kind')) this.kind = 'button'
+				if(!this.hasAttribute('pointer')) this.pointer = 'explode'
+			}
+			go_to_hash(){ window.requestAnimationFrame(_=>window.app.hash=this.hash,500) }
+		})
+	})(document)
+
+</script>

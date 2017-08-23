@@ -1,0 +1,91 @@
+@import "/modules/wwi/component/design/host.css";
+@import "theme.css";
+
+
+[clock] {
+    position: relative;
+    display: block;
+    height: 100%;
+    width: 100%;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+[seconds], [minutes], [hours] {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 1000ms linear;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 100px;
+}
+
+[seconds] {
+    width: 49%;
+    height: 2px;
+    border-radius: 170px;
+    background-color: var(--second-color,var(--turquoise));
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -1px;
+    margin-left: -1px;
+    -webkit-transform-origin: 1px 1px;
+    -moz-transform-origin: 1px 1px;
+    -ms-transform-origin: 1px 1px;
+    -o-transform-origin: 1px 1px;
+    transform-origin: 1px 1px;
+
+}
+
+
+[minutes] {
+    width: 46%;
+    height: 6px;
+
+    background-color: var(--second-color,var(--sea));
+    margin-top: -3px;
+    margin-left: -3px;
+    -webkit-transform-origin: 3px 3px;
+    -moz-transform-origin: 3px 3px;
+    -ms-transform-origin: 3px 3px;
+    -o-transform-origin: 3px 3px;
+    transform-origin: 3px 3px;
+}
+
+
+[hours]{
+    width: 40%;
+    height: 5px;
+    border-radius: 970px;
+    background-color: var(--hour-color,var(--lime));
+    margin-top: -2.5px;
+    margin-left: -2.5px;
+    -webkit-transform-origin: 2.5px 2.5px;
+    transform-origin: 2.5px 2.5px;
+}
+
+[dot] {
+    width: 14px;
+    height: 14px;
+    background-color:var(--dot-color,rgba(55, 55, 59, 1));
+    position: absolute;
+    border-radius: 50%;
+    top: calc(50% - 7.5px);
+    left: calc(50% - 7.5px);
+    box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 0.07);
+    border:1px solid white;
+    display:none;
+}
+

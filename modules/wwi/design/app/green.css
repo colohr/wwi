@@ -1,0 +1,14 @@
+:host{
+    --bar-color:var(--forest-dark);
+    --drawer-background:var(--forest-dark);
+    --text:var(--mint-white);
+    --focus-color:var(--mint-light);
+    --menu-item-background-color: var(--forest-50);
+    --menu-item-color: var(--mint-white);
+    --menu-item-focus-color: var(--mint-light);
+}
+content-button{
+    border-radius: 100px;
+    font-weight:900;
+    text-indent:5px;
+}

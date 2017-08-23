@@ -1,34 +1,42 @@
-wwi.exports('dom',(dom,fxy)=>{
-
+window.fxy.exports('dom',(dom)=>{
+	
 	
 	class Site{
 		constructor(element){
 			window.app.site = this
 			this.element = element
-			this.drawer_button.setAttribute('opens','')
-			this.drawer_button.define('routes',{
-				opened(opened){
-					if(opened === null) window.app.site.drawer.opened = false
-					else window.app.site.drawer.opened = true
-				}
-			})
-			
-			this.drawer.on('transition',e=>{
-				let detail = e.detail
-				if(detail.closed && this.drawer_button.opened) this.drawer_button.opened=false
-				else if(detail.opened && !this.drawer_button.opened) this.drawer_button.opened=true
-			})
-			
-			this.element.onfocus = e => this.bar.drawer_button.focus()
-			this.element.setAttribute('tabindex','0')
-			window.document.body.onfocus = e => this.bar.drawer_button.focus()
-			window.onfocus = e => this.bar.drawer_button.focus()
+			let drawer_button = this.drawer_button
+			this.element.setAttribute('role','application')
+			if(drawer_button){
+				drawer_button.setAttribute('opens','')
+				drawer_button.define('routes',{
+					opened(opened){
+						if(opened === null) window.app.site.drawer.opened = false
+						else window.app.site.drawer.opened = true
+					}
+				})
+				this.element.onfocus = e => drawer_button.focus()
+				window.document.body.onfocus = e => drawer_button.focus()
+				window.onfocus = e => drawer_button.focus()
+			}
+			let drawer = this.drawer
+			if(drawer && drawer_button){
+				this.drawer.on('transition',e=>{
+					let detail = e.detail
+					if(detail.closed && this.drawer_button.opened) this.drawer_button.opened=false
+					else if(detail.opened && !this.drawer_button.opened) this.drawer_button.opened=true
+				})
+			}
 		}
 		get bar(){ return this.query('[app-bar]') }
 		get drawer(){ return this.element.query('[app-drawer]') }
-		get drawer_button(){ return this.bar.drawer_button }
+		get drawer_button(){ return this.bar ? this.bar.drawer_button:null }
 		query(name){ return this.element.query(`${name}`) }
 	}
+	
+	get_wwi_content().then(_=>{
+	
+	})
 	
 	dom.app = Base => class extends Base{
 		constructor(){
@@ -37,15 +45,14 @@ wwi.exports('dom',(dom,fxy)=>{
 					this.query('[app-pages]').loading = value === null ? false:true
 				}
 			})
-			this.setAttribute('id','app')
 		}
 		
 		connected(){
+			this.setAttribute('id','app')
 			this.on('module opened',e=>set_active_module(this,e.detail))
-			wwi.when('content-library','content-pages')
-			   .then(()=>set_app_elements(this))
-			   .then(()=>this.show())
-			   .catch(console.error)
+				fxy.when('content-library').then(()=>set_app_elements(this))
+				.then(()=>this.show())
+				.catch(console.error)
 		}
 		
 		get drawer(){ return this.site.drawer }
@@ -72,11 +79,12 @@ wwi.exports('dom',(dom,fxy)=>{
 	function set_app_elements(e){
 		return new Promise((success,error)=>{
 			e.site = new Site(e)
-			e.menu.item_selector_options = {item:'content-button',role:'option'}
-			e.drawer.app = true
+			if(e.menu) e.menu.item_selector_options = {item:'content-button',role:'option'}
+			if(e.drawer) e.drawer.app = true
 			e.router = new dom.Router(e.module_routes)
 			return window.requestAnimationFrame(()=>{
 				let pages = e.query('[app-pages]')
+				if(!pages) return success()
 				pages.connect_menu(e).router.goto().then(x=>e.drawer.set_tabindex(false)).then(success).catch(error)
 			})
 		})
@@ -101,43 +109,28 @@ wwi.exports('dom',(dom,fxy)=>{
 			}
 		})
 	}
-
+	
+	function get_wwi_content(){
+		return new Promise((success,error)=>{
+			if(fxy.is.defined('content-library')) return success()
+			return get_wwi_components_code().then(_=>{
+				return fxy.port(components.content.index_url)
+				          .then(_=>fxy.when('content-library'))
+				          .then(success)
+				          .catch(error)
+			})
+		})
+		
+	}
+	//shared actions
+	function get_wwi_components_code(){
+		return new Promise((success,error)=>{
+			if(fxy.is.defined('components-code')) return success()
+			return fxy.port(url('components.js'))
+			          .then(_=>fxy.when('components-code'))
+			          .then(success)
+			          .catch(error)
+		})
+	}
+	
 })
-
-/*
- let pages = Array.from(pages_container.querySelectorAll('*')).map(page=>{
- if(!page.hasAttribute('name')) page.setAttribute('name',page.localName.replace('-page',''))
- if(!page.hasAttribute('page-title')) page.setAttribute('page-title',fxy.id.proper(page.getAttribute('name')))
- return page
- }).sort((x,y)=>{
- let a = x.getAttribute('page-title')
- let b = y.getAttribute('page-title')
- if(a > b) return 1
- else if(a < b) return -1
- return 0
- }).map((page,index)=>{
- page[app_page_index] = index
- return page
- })
- 
- if( !('buttons' in pages_container) || pages.length !== pages_container.buttons.length){
- pages_container.buttons = pages.map(page=>{ return {
- name:page.getAttribute('name'),
- title:page.getAttribute('page-title')
- }}).map(({name,title})=>{
- if(!name) return null
- if(e.menu.has_item('hash',name)) return e.menu.get_item('hash',name)
- let button = document.createElement('wwe-button')
- button.setAttribute('hash',name)
- button.setAttribute('kind','item')
- button.setAttribute('tabindex','-1')
- button.setAttribute('role','option')
- button.innerHTML = title
- e.menu.appendChild(button)
- return button
- })
- }
- return e
-
-*
-* */

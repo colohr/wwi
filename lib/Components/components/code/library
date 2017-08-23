@@ -1,0 +1,11 @@
+library = {}
+library.logic = [
+	'control/logic.es6',
+	'control/editor.es6'
+]
+library.elements = [
+	'π/π.html',
+	{path:'tool/bar.html',wait:['code-π']},
+	{path:'editor.html',wait:['code-bar']},
+	{path:'snippet/index.html',wait:['code-editor']}
+]

@@ -1,0 +1,410 @@
+<template id="media-audio-template">
+	<style>
+		@import "modules/wwi/component/design/gui.css";
+
+		:host {
+			--background: var(--bg, white);
+			background: var(--background);
+			box-sizing: content-box;
+			display: block;
+			font-size: 14px;
+			position: relative;
+			width: 100%;
+			z-index: 99999;
+			height: 50px;
+			transition-property: height;
+			transition-duration: 200ms;
+			transition-timing-function: ease;
+			will-change: height;
+			cursor: default;
+			outline: none;
+		}
+
+		:host([expanded]) {
+			height: 300px;
+		}
+
+		[player] {
+			position: relative;
+			height: 50px;
+			width: 100%;
+			font-size: 14px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			box-sizing: border-box;
+			z-index: 1;
+		}
+
+		[selector]{
+			position: absolute;
+			height: 50px;
+			top:0;
+			left:0;
+			width: 100%;
+			font-size: 14px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			box-sizing: border-box;
+			z-index: 0;
+		}
+
+		[selector]:before,
+		[selector]:after{
+			content: '';
+			position: absolute;
+			top:3px;
+			bottom:3px;
+			right:3px;
+			left:3px;
+			z-index: 1;
+			border-radius: 7px;
+		}
+
+		[selector]:before{
+			background: inherit;
+			opacity:0;
+			transition-property: opacity, background;
+			transition-duration: 200ms;
+			transition-timing-function: ease;
+			will-change: opacity, background;
+		}
+
+		[selector]:after{
+			box-shadow: inset 0 0 0 1px transparent;
+			transition-property:  box-shadow;
+			transition-duration: 200ms;
+			transition-timing-function: ease;
+			will-change:  box-shadow;
+		}
+
+
+		:host(:active) [selector]:after,
+		:host([playing]) [selector]:after{
+			box-shadow: inset 0 0 0 1px currentColor;
+		}
+
+		:host(:hover) [selector]:before,
+		:host([playing]) [selector]:before,
+		:host(:focus) [selector]:before{
+			background: currentColor;
+			box-shadow: inset 0 0 0 1px transparent;
+			opacity: 0.18;
+		}
+
+		:host(:active) [selector]:before,
+		:host([playing]) [selector]:before{
+			background: currentColor;
+			opacity: 0.2;
+		}
+
+		[player] > * {
+			margin: 0 1% 0 1%;
+			height: 100%;
+			z-index: 2;
+		}
+
+		[player-container] {
+			position: relative;
+			height: 50px;
+			width: 100%;
+			max-width: 1440px;
+			margin: auto;
+		}
+
+		[control-space] {
+			position: relative;
+			width: 8px;
+		}
+
+		[control-container] {
+			position: relative;
+			box-sizing: border-box;
+		}
+
+		[control-container] > #album {
+			border: none;
+		}
+
+		[album] {
+			position: relative;
+			height: 0px;
+			box-sizing: border-box;
+			width: 100%;
+			transition: height 200ms ease;
+			will-change: height;
+			overflow: hidden;
+			top: -3px;
+		}
+
+		:host([expanded]) [album] {
+			height: 250px;
+		}
+
+		media-button.sort-handle{
+			--w:26px;
+			--h:26px;
+			--size:16px;
+			--radius:7px;
+			display: block;
+			position: relative;
+			z-index: 1000;
+		}
+
+		:host(.sort-chosen) [player],
+		:host(.sort-child) [player]{
+			overflow: hidden;
+
+		}
+		:host(.sort-chosen) [album],
+		:host(.sort-child) [album]{
+			display: none;
+		}
+
+		:host-context(media-player) [player] > media-playback,
+		:host-context(media-player) [player] > track-item{
+			margin:0;
+		}
+
+		:host-context(media-player) [control-container] > *{
+			margin: 0 1% 0 1%;
+		}
+
+		:host-context(media-player) media-volume{
+			opacity: 0;
+			transition-property: opacity;
+			transition-duration: 200ms;
+			transition-timing-function: ease;
+			will-change: opacity;
+		}
+
+		:host-context(media-player) [player]:hover media-volume{
+			opacity: 1;
+		}
+
+		[player] > [track-number-container]{
+			display: none;
+			position: relative;
+			z-index: 0;
+			margin: 0 0 0 3px;
+		}
+
+		[track-number]{
+			color:rgba(0,0,0,0.2);
+			font-size: 13px;
+			font-weight: normal;
+			border-radius: 4px;
+			text-align: center;
+			box-sizing: border-box;
+			letter-spacing: -0.5px;
+			position:relative;
+			/*font-style: italic;*/
+			font-family:'SF Mono', 'Operator Mono', 'Source Sans Pro', Menlo, Monaco, Consolas, Courier New, monospace;
+
+		}
+		[track-number]:after{
+			content:'.';
+			position:relative;
+			left:-1.5px;
+		}
+		:host-context(media-player) [player] > [track-number-container]{
+			display: inherit;
+		}
+
+
+	</style>
+
+
+	<div selector></div>
+	<!--<media-button no-border icon-name=drag class="sort-handle"></media-button>-->
+
+	<div player class="ap" id="ap" gui horizontal center-center wrap></div>
+
+	<div album>
+		<track-lyrics></track-lyrics>
+	</div>
+
+
+</template>
+<script id="media-audio">
+	(function (doc) {
+		const MediaAudio = wwi.button(doc)
+		const Sound = fxy.require('media/Sound')
+		const connected_events = ['playback', 'track']
+		const connected_elements = Symbol.for('connected elements')
+
+		const html = `<div track-number-container flex gui vertical center-center>
+							<div track-number gui horizontal center></div>
+						</div>
+					  <media-playback gui horizontal flex id="playback" class="ap__item--playback"></media-playback>
+					  <track-item gui flex-max id="track"></track-item>
+					  <div control-container gui horizontal center-center around-justified>
+					    <media-button id=album></media-button>
+						<div control-space></div>
+						<media-volume id=volume></media-volume>
+					  </div>`;
+		const player_track = Symbol.for('audio is in a media player')
+
+
+
+		MediaAudio(class extends MediaAudio.Element {
+			constructor(){super({color:true,option:true})}
+			get audio() { return 'sound' in this ? this.sound.audio:null }
+			get audio_data(){ return Sound.get(this.url) }
+			changed(name,old,value){
+				switch(name){
+					case 'color':
+						if(value){
+							let color = value
+							this.all('media-button').forEach(button => button.fill = color)
+							this.style.color = color
+							this.playback.fill = color
+							this.volume.fill = color
+						}
+						break
+					case 'option':
+						show_hide_controls(this)
+						break
+				}
+			}
+			connected() {
+				this[connected_elements] = new Set()
+				this.query('[player]').innerHTML = html
+				for (let type of connected_events) {
+					let element = this[type]
+					if (element.isConnected) {
+						this.connected_element({type: `${type} connected`, currentTarget: element})
+					} else {
+						element.on(`${type} connected`, this.connected_element.bind(this))
+					}
+				}
+			}
+			connected_element(e) {
+				if(fxy.is.data(e) && 'type' in e) this[connected_elements].add(e.type)
+
+				if (this[connected_elements].size === connected_events.length) {
+
+					this.on('sound', e => {
+						this.track.controller = this
+						this.volume.controller = this
+						this.update_song_data(e.detail)
+					})
+
+					this.on('duration', (e) => {
+						let duration = e.detail
+						this.duration.minutes = duration.minutes
+						this.duration.seconds = duration.seconds
+					})
+
+					this.on('canplay', (e) => {
+						if (this.waiting_to_play) {
+							delete this.waiting_to_play
+							this.play()
+						}
+					})
+
+					this.lyrics.addEventListener('aria-disabled',e=>this.setAttribute(e.type,e.detail))
+
+					this.on('time', update_time)
+
+					this.sound = Sound(this)
+
+					this.playback.on('play',() => this.play())
+
+					if(player_track in this){
+						this.query('[track-number]').innerHTML = this[player_track]
+					}
+
+
+
+				}
+			}
+
+			disconnected(){
+				let sound = this.sound
+				if(sound) sound.disconnect()
+			}
+
+			get duration() { return this.track.duration }
+
+			get lyrics(){ return this.query('track-lyrics') }
+
+			play() {
+				if (!this.playable) this.waiting_to_play = true
+				else {
+					if (this.sound.playing) this.sound.stop()
+					else {
+						this.lyrics.blur()
+						this.sound.play()
+					}
+				}
+			}
+
+			get playable() { return this.audio !== null }
+
+			get playback() { return this.query('media-playback')}
+
+			get seek() { return this.track.seek }
+
+			get time() { return this.track.time }
+
+			get track() { return this.query('track-item') }
+
+			update_song_data(sound){
+				let metadata = sound.metadata
+				if(metadata){
+					this.track.song_title.innerHTML = sound.title
+					let album = this.query('#album')
+					if('lyrics' in metadata) {
+						this.lyrics.value = this.sound.metadata.lyrics
+						album.on('click',(e)=>{
+							e.stopPropagation()
+							if(this.hasAttribute('expanded')) this.removeAttribute('expanded')
+							else this.setAttribute('expanded','')
+						})
+					}
+					else {
+						album.style.visibility = 'hidden'
+						album.style.pointerEvents = 'none'
+					}
+					if(this.option === true){
+						this.playback.button.aria.tabindex = -1
+						this.playback.next.aria.tabindex = -1
+						this.playback.back.aria.tabindex = -1
+						this.volume.button.aria.tabindex = -1
+						this.volume.button.aria.tabindex = -1
+						album.aria.tabindex = -1
+						show_hide_controls(this)
+					}
+				}
+			}
+
+			get url() { return this.getAttribute('url') }
+
+			get volume() { return this.query('#volume') }
+		})
+
+		function show_hide_controls(element){
+			let playback = element.shadowRoot.querySelector('media-playback')
+			if(playback){
+				if(element.option) playback.setAttribute('hide-controls','')
+				else playback.removeAttribute('hide-controls')
+			}
+			return playback
+		}
+		function update_time(e) {
+			let target = e.currentTarget
+			let audio = target.audio
+			if (!audio || audio.readyState === 0 || fxy.require('media/seek').seeking) return
+			let time = e.detail
+			target.seek.update()
+			target.time.minutes = time.minutes
+			target.time.seconds = time.seconds
+		}
+	})(document)
+
+
+</script>

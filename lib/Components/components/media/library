@@ -1,0 +1,21 @@
+library = {}
+library.logic = [
+	'control/library.es6',
+	'control/time.es6',
+	'control/metadata.es6',
+	'control/sound.es6',
+	'control/playlist.es6',
+	'control/seek.es6',
+	'control/icons.es6',
+	'control/Video.es6'
+]
+library.elements = [
+	'button.html',
+	'playback.html',
+	{path:'seek/index.html',wait:['media-seek','media-volume']},
+	{path:'track/index.html',wait:['track-time','track-lyrics','track-item']},
+	'audio.html',
+	{path:'player.html',wait:['content-menu','media-player']},
+	'video.html'
+]
+

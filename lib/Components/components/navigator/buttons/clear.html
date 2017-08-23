@@ -1,0 +1,50 @@
+<template id="navigator-clear">
+	<style>
+		@import "/library/components/navigator/buttons/design.css";
+		:host([up]) svg{
+			transform:rotate(90deg) translateX(-1px);
+		}
+		:host([up]:focus){
+			animation:point 600ms ease-in-out both;
+		}
+		@keyframes point{
+			0%{
+				transform:translate(0);
+			}
+			5%{
+				transform:translateY(-2px);
+			}
+			20%{
+				transform:translateY(1px);
+			}
+			40%{
+				transform:translateY(-4px);
+			}
+			55%{
+				transform:translateY(-1px);
+			}
+			80%{
+				transform:translateY(-3px);
+			}
+			100%{
+				transform:translate(0);
+			}
+		}
+	</style>
+	<div box gui vertical center-center>
+		<svg height="24" width="24" viewBox="0 0 24px 24px" preserveAspectRatio="xMidYMid meet" >
+			<g id="backspace"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/></g>
+		</svg>
+	</div>
+</template>
+<script>
+	(function(doc){
+		const NavigatorClear = wwi.element(doc).extension(...components.navigator.mix('Button'))
+		NavigatorClear(class extends NavigatorClear.Element{
+			constructor(){
+				super()
+				this.setAttribute('no-shadow','')
+			}
+		})
+	})(document)
+</script>

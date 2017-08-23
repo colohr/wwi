@@ -1,0 +1,53 @@
+<template id="content-menu-template">
+	<style>
+		@import "modules/wwi/component/design/host.css";
+
+		:host {
+			--font-size:1em;
+			font-size: var(--font-size);
+			display: block;
+			position: relative;
+		}
+		[view]{ position: relative;  box-sizing: border-box; }
+	</style>
+
+
+
+	<div view gui vertical>
+
+		<slot id="options"></slot>
+	</div>
+
+</template>
+
+
+<script id="content-menu">
+	(function(doc) {
+		const Menu = wwi.element(doc).extension('behavior','Selector')
+		Menu(class extends Menu.Element {
+			static get observedAttributes(){return ['grid']}
+			attributeChangedCallback(name,old,value){
+				switch(name){
+					case 'grid':
+						if(value !== null) set_as_grid(this)
+						else set_as_list(this)
+						break
+				}
+			}
+		})
+		//shared actions
+		function remove_attributes(element,...x){ return x.map(name=>element.removeAttribute(name)) }
+		function set_attributes(element,...x){ return x.map(name=>element.setAttribute(name,'')) }
+		function set_as_grid(element){
+			remove_attributes(element.view,'vertical')
+			set_attributes(element.view,'horizontal','wrap','between','start-aligned')
+			return element
+		}
+		function set_as_list(element){
+			remove_attributes(element.view,'horizontal','wrap','between','start-aligned')
+			set_attributes(element.view,'vertical')
+			return element
+		}
+
+	})(document)
+</script>

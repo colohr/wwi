@@ -1,0 +1,8 @@
+library = {}
+library.id = 'components-navigator-library'
+
+library.elements = [
+	'component.html'
+]
+
+library.wait = ['navigator-component']

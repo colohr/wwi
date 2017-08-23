@@ -1,0 +1,10 @@
+:host{
+    --bar-color: var(--water-dark);
+    --text:var(--pink-bright);
+
+    --focus-color: var(--pink-light);
+    --menu-item-background-color: var(--pink-dark);
+    --menu-item-color: var(--water-black);
+    --menu-item-focus-color: var(--pink-light);
+}
+

@@ -1,0 +1,8 @@
+library = {}
+library.id = 'components-frame-library'
+
+library.elements = [
+	"frame.html"
+]
+
+library.wait = ['frame-component']

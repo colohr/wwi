@@ -47,7 +47,11 @@
 	--rose-dark:rosybrown;
 	--rose-50:rgba(220,195,190,0.4);
 
-	--pink-light:rgb(216, 191, 216);
+
+	--pink-light: rgb(255, 237, 253);
+	--pink-bright: rgb(238, 221, 232);
+	--pink: rgb(245, 224, 245);
+	--pink-dark:rgb(216, 191, 216);
 
 	--navy-bright: rgb(4, 88, 150);
 	--navy: rgb(4, 64, 120);
@@ -58,19 +62,32 @@
 	--azul-dark: #1E6DAF;
 	--azul-dark-50: rgba(31, 91, 154, 0.85);
 
+	--water-light: #75c8ee;
+	--water-bright: #3f98d6;
+	--water: #367fb4;
+	--water-dark: #2e5c89;
+	--water-black: #214d70;
+
 	--blue-bright:#498bff;
 	--blue: dodgerblue;
 	--blue-dark: rgb(29, 98, 240);
+	--blue-black: rgb(27, 83, 187);
 	--blue-50: rgba(30, 144, 255, 0.51);
 
-	--cyan:rgba(26, 214, 253, 1);
+	--cyan-light: rgb(88, 225, 253);
+	--cyan-bright:rgba(26, 214, 253, 1);
+	--cyan: rgb(26, 198, 237);
+	--cyan-dark: rgb(26, 163, 199);
 
 
 	--teal-bright:#2abfce;
 	--teal: #22a6b5;
 	--teal-dark:#2d9097;
 
+	--aqua-light: rgb(123, 249, 226);
 	--aqua-bright:rgb(25, 249, 216);
+	--aqua: rgb(25, 228, 196);
+	--aqua-dark: rgb(24, 176, 146);
 
 	--turquoise-bright: #2cccaa;
 	--turquoise:rgb(0, 207, 181);
@@ -79,7 +96,19 @@
 	--sea: #00aba4;
 	--sea-50: rgba(0, 171, 164, 0.47);
 
-	--mint:#40fba5;
+	--mint-white: #d8fbec;
+	--mint-light: #aafbd3;
+	--mint-bright: #63f8ad;
+	--mint: #3eee9a;
+	--mint-dark: #34b069;
+	--mint-30: rgba(40, 156, 103, 0.31);
+	--mint-10: rgba(40, 156, 103, 0.11);
+
+	--forest-light: rgb(96, 121, 112);
+	--forest-bright: rgb(69, 94, 82);
+	--forest: #2a3d35;
+	--forest-dark: #5a6d67;
+	--forest-50: rgba(54, 84, 71, 0.36);
 
 	--emerald-light: #5BCC8B;
 	--emerald-bright: #06E07F;

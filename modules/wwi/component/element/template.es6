@@ -1,4 +1,4 @@
-wwi.exports('element',( element, fxy ) => {
+window.fxy.exports('element',( element, fxy ) => {
 	
 	const is = fxy.is
 	const shadow_attached = Symbol.for('shadow dom is already attached')
@@ -34,7 +34,7 @@ wwi.exports('element',( element, fxy ) => {
 			return this
 		}
 		query(selector){ return this.shadow.querySelector(is.text(selector) ? selector : ':first-child')}
-		get shadow() { return 'shadowRoot' in this ? this.shadowRoot : this }
+		get shadow() { return 'shadowRoot' in this && this.shadowRoot !== null ? this.shadowRoot : this }
 		get view(){ return get_view(this) }
 	}
 	
@@ -77,7 +77,7 @@ wwi.exports('element',( element, fxy ) => {
 			let view = element.query(selector)
 			if(view) return view
 		}
-		return null
+		return element.shadow
 	}
 	
 	

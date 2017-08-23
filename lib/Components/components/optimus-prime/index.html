@@ -1,0 +1,135 @@
+<template id="optimus-prime">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+	        position: relative;
+        }
+        canvas[canvas-view]{
+            display: block;
+            position: absolute;
+            top:0;left:0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            box-sizing: border-box;
+        }
+        #content::slotted(*){
+            z-index: 0;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+    <slot id="content"></slot>
+    <canvas canvas-view></canvas>
+</template>
+<script>
+    (function(doc){
+        const OptimusPrime = wwi.element(doc).extension(
+                                	{module:'behavior',name:'Draw'},
+                                    {module:'behavior',name:'Timeout'},
+                                    {module:'behavior',name:'Transformer'})
+
+	    OptimusPrime(class extends OptimusPrime.Element{
+	    	constructor(){
+	    		super('routes',{
+	    			fill:true,
+				    stroke:true,
+                    color(value){
+	                    if(value !== null){
+		                    this.fill=value
+		                    this.stroke = value
+                            this.style.color = value
+                            this.style.borderColor = value
+	                    }
+                    }
+                })
+		    }
+		    connected(){
+
+	    		if(fxy.is.defined('remote-control')) set_remote_control(this)
+                else load_remote_control(this)
+
+
+			    this.on('mousedown',e=>this.down(e))
+			    this.on('mouseenter',e=>this.enter(e))
+			    this.on('mouseleave',e=>this.leave(e))
+			    this.on('mouseup',e=>this.up(e))
+                this.ondblclick = e=>{
+			    	if(this.auto){
+			    		delete this.auto
+					    this.rotate = [0,0,0,0]
+					    this.color = fxy.require('design/colors').color('blue').hex
+					    this.down(e)
+                        this.up(e)
+                    }else{
+			    		this.auto = true
+					    this.color = fxy.require('design/colors').color('apple').hex
+					    this.enter()
+                    }
+                }
+
+                this.color = fxy.require('design/colors').color('blue').hex
+		    }
+		    down(e){
+		    	if(!this.auto){
+				    this.start = this.draw.position(e)
+				    this.draw.start.circle(this.start)
+				    this.on('mousemove',event=>this.move(event))
+				    this.dispatch('travel',this.draw.travel(this.start,this.start))
+                }
+		    }
+		    enter(e){
+		    	if(this.auto){
+				    this.start = this.draw.position(this.width/2,this.height/2)
+				    this.draw.start.circle(this.start)
+				    this.on('mousemove',event=>this.move(event))
+				    this.dispatch('travel',this.draw.travel(this.start,this.start))
+                }
+            }
+		    leave(e){
+                delete this.moving
+			    this.off('mousemove')
+		    }
+		    move(e){
+		    	this.moving=true
+                let to = this.draw.position(e)
+                this.draw.start.circle(this.start).line(this.start,to).circle(to,2.5).stroke
+                this.timeout(()=>{
+	                let travel = this.draw.travel(this.start,to)
+	                this.rotate_x = travel.offset.y  * -1
+	                this.rotate_y = travel.offset.x
+	                this.rotate_deg = travel.axis.vertical ? (travel.axis.y/this.height) * 100:(travel.axis.x/this.width) * 100
+                    this.dispatch('travel',travel)
+                })
+
+		    }
+		    up(e){
+			    delete this.moving
+			    let to = this.draw.position(e)
+			    this.draw.start.circle(this.start).fill.line(this.start,to).circle(to).fill
+				this.off('mousemove')
+                this.dispatch('travel',this.draw.travel(this.start,to))
+		    }
+
+        })
+
+        function set_remote_control(prime){
+        	let remote = document.createElement('remote-control')
+	        remote.id = fxy.uid.generate()
+            let view = prime.supermodel
+            if(view && 'shadowRoot' in view && view.shadowRoot) view = view.shadowRoot
+            if(!view) view = window.document.body
+	        view.appendChild(remote)
+            prime.rc = remote
+            remote.prime = prime
+            return prime
+        }
+        function load_remote_control(prime){
+	        return window.app.port(window.url.elements('optimus-prime/remote-control.html')).then(_=>set_remote_control(prime)).catch(console.error)
+        }
+
+    })(document)
+</script>

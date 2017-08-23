@@ -19,7 +19,8 @@
 	}
 	
 	//exports
-	return ModuleUrl
+	window.fxy.url = ModuleUrl.get
+	return window.fxy.Url = ModuleUrl
 	
 	//shared actions
 	function add_slash(value){

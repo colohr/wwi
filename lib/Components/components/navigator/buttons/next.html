@@ -1,0 +1,18 @@
+<template id="navigator-next">
+    <style>
+        @import "/library/components/navigator/buttons/design.css";
+    </style>
+    <div box gui vertical center-center>
+        <svg height="24" width="24" viewBox="0 0 24px 24px" preserveAspectRatio="xMidYMid meet" >
+            <g id="arrow-forward"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></g>
+        </svg>
+    </div>
+</template>
+<script>
+    (function(doc){
+        const NavigatorNext = wwi.element(doc).extension(...components.navigator.mix('Button'))
+        NavigatorNext(class extends NavigatorNext.Element{
+            
+        })
+    })(document)
+</script>

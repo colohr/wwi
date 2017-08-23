@@ -1,0 +1,32 @@
+<template id="navigator-action">
+	<style>
+		@import "/library/components/navigator/buttons/design.css";
+
+	</style>
+	<div box gui vertical center-center>
+		<slot id="title"></slot>
+	</div>
+</template>
+<script>
+	(function(doc){
+		let extension = components.icons.mix('Icons').concat(components.navigator.mix('Button'))
+		const NavigatorAction = wwi.element(doc).extension(...extension)
+		NavigatorAction(class extends NavigatorAction.Element{
+			changed(name,old,value){
+				switch(name){
+					case 'icon':
+						if(value !== null){
+							let icon = this.get_icon(value)
+							if(icon){
+								this.query('[box]').innderHTML = '<slot id="title"></slot>'
+								let slot = this.query('#title')
+								this.query('[box]').insertBefore(icon,slot)
+							}
+						}
+						break
+				}
+			}
+
+		})
+	})(document)
+</script>

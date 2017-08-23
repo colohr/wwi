@@ -1,0 +1,97 @@
+[app-pages],
+:host{
+    display: block;
+    position: relative;
+    height: var(--pages-height,100%);
+    min-height: var(--pages-min-height,100vh);
+    width: var(--pages-width,100vw);
+    opacity: var(--pages-opacity,1);
+    z-index: var(--pages-z,1);
+}
+
+[app-pages][loading],
+:host([loading]){
+    opacity: 0;
+    pointer-events: none;
+}
+
+[app-pages] > *,
+slot#pages::slotted(*){
+    display: none;
+    visibility: hidden;
+    position: absolute;
+    top:var(--page-top,0);
+    left:var(--page-left,0);
+    right:var(--page-right,0);
+    bottom:var(--page-bottom,0);
+    pointer-events: none;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+[app-pages][animates] > *,
+:host([animates][transparency]) slot#pages::slotted(*){
+    will-change:opacity,transform;
+}
+
+
+[app-pages][animates][transparency] > *,
+:host([animates][transparency]) slot#pages::slotted(*){
+    -webkit-animation: transparency 500ms ease;
+    -moz-animation: transparency 500ms ease;
+    -ms-animation: transparency 500ms ease;
+    -o-animation: transparency 500ms ease;
+    animation: transparency 500ms ease;
+}
+
+[app-pages][animates][slide-from-top] > *,
+:host([animates][slide-from-top]) slot#pages::slotted(*){
+    -webkit-animation: slide-from-top 300ms ease;
+    -moz-animation: slide-from-top 300ms ease;
+    -ms-animation: slide-from-top 300ms ease;
+    -o-animation: slide-from-top 300ms ease;
+    animation: slide-from-top 300ms ease;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+}
+
+[app-pages][animates][slide-from-right] > *,
+:host([animates][slide-from-right]) slot#pages::slotted(*){
+    -webkit-animation: slide-from-right 300ms ease;
+    -moz-animation: slide-from-right 300ms ease;
+    -ms-animation: slide-from-right 300ms ease;
+    -o-animation: slide-from-right 300ms ease;
+    animation: slide-from-right 300ms ease;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+}
+
+[app-pages][animates][slide-from-bottom] > *,
+:host([animates][slide-from-bottom]) slot#pages::slotted(*){
+    -webkit-animation: slide-from-bottom 300ms ease;
+    -moz-animation: slide-from-bottom 300ms ease;
+    -ms-animation: slide-from-bottom 300ms ease;
+    -o-animation: slide-from-bottom 300ms ease;
+    animation: slide-from-bottom 300ms ease;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+}
+
+[app-pages][animates][slide-from-left] > *,
+:host([animates][slide-from-left]) slot#pages::slotted(*){
+    -webkit-animation: slide-from-left 300ms ease;
+    -moz-animation: slide-from-left 300ms ease;
+    -ms-animation: slide-from-left 300ms ease;
+    -o-animation: slide-from-left 300ms ease;
+    animation: slide-from-left 300ms ease;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+}
+
+[app-pages] > *[active],
+slot#pages::slotted([active]){
+    pointer-events: auto;
+    display:initial;
+    visibility: visible;
+    z-index: 10;
+}

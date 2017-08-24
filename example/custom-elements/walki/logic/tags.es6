@@ -1,3 +1,0 @@
-wwi.exports('walki',(walki)=>{
-
-})

@@ -1,8 +1,0 @@
-library = {}
-library.elements = [
-	'file.html',
-	{
-		path:'box.html',
-		wait:['drop-file']
-	}
-]

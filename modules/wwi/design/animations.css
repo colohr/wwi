@@ -1,5 +1,2 @@
-@import "animations/transparency.css";
-@import "animations/slide-from-top.css";
-@import "animations/slide-from-left.css";
-@import "animations/slide-from-right.css";
-@import "animations/slide-from-bottom.css";
+@import "animations/index.css";
+

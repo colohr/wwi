@@ -1,17 +1,20 @@
 <template id="wwe-background-template">
 	<style>
-		@import "/custom-elements/wwe/background/design.css";
+		@import "/components/wwe/background/design.css";
 	</style>
 	<slot></slot>
 </template>
 <script>
 	(function (doc) {
-		const BG = wwi.element(doc).extension({
-			path:"custom-elements/wwe/external",
-			module:"wwe",
-			name:"background",
-			target:"Element"
-		})
+		let extensions = window.components.wwe.mix('background')
+		extensions[0].target = 'Element'
+//		const BG = wwi.element(doc).extension({
+//			path:"custom-elements/wwe/external",
+//			module:"wwe",
+//			name:"background",
+//			target:"Element"
+//		})
+		const BG = wwi.element(doc).extension(...extensions)
 
 		BG(class extends BG.Element {
 			constructor(){

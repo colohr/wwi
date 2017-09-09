@@ -1,4 +1,4 @@
-wwi.exports('wwe', (wwe,fxy) => {
+window.fxy.exports('wwe', (wwe,fxy) => {
 
 	let current_canvas
 	

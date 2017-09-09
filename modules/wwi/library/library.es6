@@ -14,12 +14,10 @@
 			items.push({
 				module,
 				name,
-				url:window.url.library(`${module}/${name}.es6`),
+				url:window.url.modules.wwi.library(`${module}/${name}.es6`),
 				load(){
-					return window.app.port.eval(this.url).then(result=>{
-						window.fxy.exports(this.module,(module_exports)=>{
-							module_exports[this.name] = result
-						})
+					return window.fxy.port.eval(this.url).then(result=>{
+						window.fxy.exports(this.module,(module_exports)=>module_exports[this.name] = result)
 						return `${this.module}/${this.name}`
 					})
 				}

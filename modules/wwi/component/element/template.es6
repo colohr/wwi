@@ -9,9 +9,7 @@ window.fxy.exports('element',( element, fxy ) => {
 		'[button-view]'
 	]
 	
-	
-	
-	//------------template exports------------
+	//exports
 	element.dom_template = Base => class extends Base{
 		get dom_template_element(){ return this.query('dom-template') }
 		get tag(){ return fxy.tag }
@@ -39,7 +37,7 @@ window.fxy.exports('element',( element, fxy ) => {
 	}
 	
 	
-	//-------shared actions----------
+	//shared actions
 	function contains_element(container,element){
 		if(contains_child_element(container,element)) return true
 		let selector = fxy.selector(element)
@@ -60,8 +58,6 @@ window.fxy.exports('element',( element, fxy ) => {
 		return Array.from(element.children)
 	}
 	
-	
-	
 	function get_template(element){
 		if(!('template' in element.constructor)) return null
 		let template = element.constructor.template
@@ -80,9 +76,4 @@ window.fxy.exports('element',( element, fxy ) => {
 		return element.shadow
 	}
 	
-	
 })
-
-//template = fxy.is.element(template, DomTemplate) ? template:get_template(this)
-//else if(fxy.is.instance( template, DomTemplate )) shadow.innerHTML = template.render(this)
-

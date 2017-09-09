@@ -1,8 +1,7 @@
 @import "../component/design/host.css";
 @import "../component/design/app.css";
-
+@import "action-item.css";
 :host {
-
     --bar-height: 20px;
     --menu-sides-offset:14px;
     display: block;
@@ -16,35 +15,60 @@
 
 [app-drawer] {
     background: var(--drawer-background,var(--bar-color,whitesmoke));
-    position: absolute;
-    top: 40px;
-    width: 260px;
+}
+
+[app-drawer-button]{
+    color:var(--text);
     z-index: 10;
+    background: var(--drawer-background,whitesmoke);
+    height:40px;
+    width: 40px;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.5);
 }
 
-
-
-content-bar {
-    --bar-text:var(--text);
-    top: 0;
-    color:var(--bar-text);
+[app-drawer-button] content-icon{
+    position: relative;
+    margin:  0 auto;
+    display: block;
+    height:100%;
+    width:100%;
+    border-radius: 100px;
+    overflow: hidden;
+    border:1px solid var(--text);
+    box-sizing: border-box;
+    box-shadow: 0 0 0 1px var(--text),0 1px 6px rgba(0,0,0,0.8);
+    transition:background 200ms ease;
+    will-change:background;
 }
 
-content-button[kind="item"] {
-    --width: calc(100% - (var(--menu-sides-offset)*2) );
+[app-drawer-button]:focus content-icon{
+    background-color:white;
+    box-shadow: 0 0 0 1px var(--text),0 1px 15px rgba(0,0,0,0.8);
+}
+
+[app-drawer] [action-item]{
     text-align: left;
     font-size: 18px;
-    font-weight: bold;
-    margin: 8px var(--menu-sides-offset) 5px var(--menu-sides-offset);
-    background: var(--menu-item-background-color,whitesmoke);
-    color: var(--menu-item-color);
-    --focus-color: var(--menu-item-focus-color);
+    --action-background:var(--menu-item-background-color,whitesmoke);
+    --action-color:var(--menu-item-color);
+    --action-focus-color: var(--menu-item-focus-color);
 }
 
-content-menu[grid] content-button[kind="item"]{
-    font-size: 16px;
-    --width:calc((100% - 27px) / 3);
-    margin-left:4px;
-    margin-right:4px;
+[app-drawer] [action-item]+[action-item]{
+    margin:10px 0 0 0;
+}
+
+[app-drawer] [grid]{
+    padding-bottom:5px;
+}
+[app-drawer] [grid] [action-item]{
+    margin:0 0 5px 5px;
+}
+[app-drawer] [action-item][slot="footer"]{
+    font-size: 12px;
+    margin-top:3px;
+    margin-bottom:3px;
+    transition:opacity 200ms, box-shadow 200ms;
+    will-change: opacity, box-shadow;
 }
 

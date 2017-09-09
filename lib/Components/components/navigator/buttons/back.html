@@ -1,6 +1,6 @@
 <template id="navigator-back">
     <style>
-        @import "/library/components/navigator/buttons/design.css";
+        @import "/components/navigator/buttons/design.css";
     </style>
     <div box gui vertical center-center>
         <svg height="24" width="24" viewBox="0 0 24px 24px" preserveAspectRatio="xMidYMid meet" >
@@ -11,8 +11,6 @@
 <script>
     (function(doc){
         const NavigatorBack = wwi.element(doc).extension(...components.navigator.mix('Button'))
-        NavigatorBack(class extends NavigatorBack.Element{
-
-        })
+        NavigatorBack(class extends NavigatorBack.Element{})
     })(document)
 </script>

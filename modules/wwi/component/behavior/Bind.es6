@@ -1,28 +1,37 @@
 (function(get_module){ return get_module() })
 (function(){
     return function external_module(behavior,fxy){
-	
+    	const binding = Symbol.for('data binding')
 	    const bound_data = Symbol.for('bound data')
-	
-        const Bind = Base => class extends Base{
-	        bind(data){
-		        if(fxy.is.data(data)) {
-			        this[bound_data] = data
-			        return bind_data(this)
-		        }
-		        return this
-	        }
-        }
+	    
+	    class Binding{
+	    	constructor(element){
+			    let bind_target = element.hasAttribute('bind-target') ? element.query(element.getAttribute('bind-target')):element.shadow
+	    		this.template = bind_target.innerHTML
+			    
+				   
+			    this.render = data=>{
+	    			if(fxy.is.data(data)){
+					    this[bound_data] = data
+					    bind_target.innerHTML = set_data(this.template,data)
+					    element.dispatch('bind',this)
+				    }
+				    return element
+			    }
+		    }
+		    get data(){ return bound_data in this ? this[bound_data]:null }
+	    }
         
         //exports
-        return behavior.Bind = Bind
+        return Base => class extends Base{
+	        get binding(){ return get_binding(this) }
+	        bind(data){ return this.binding.render(data) }
+        }
 	
 	    //shared actions
-	    function bind_data(element){
-		    let html = element.shadow.innerHTML
-		    let new_html = set_data(html,element[bound_data])
-		    element.shadow.innerHTML = new_html
-		    return element
+	    function get_binding(element){
+    		if(binding in element) return element[binding]
+		    return element[binding] = new Binding(element)
 	    }
 	
 	    function get_data_name(str){
@@ -39,5 +48,6 @@
 		    html = html.replace(reg_name,data_value)
 		    return set_data(html,data)
 	    }
+	    
     }
 })

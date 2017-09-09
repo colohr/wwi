@@ -29,7 +29,7 @@
 		
 		function get_files(...items){
 			return items.map(item=>`${folder_url}/${item}`).map(item=>{
-				return window.app.port.eval(item).then(result=>{
+				return window.fxy.port.eval(item).then(result=>{
 					return result
 				}).catch(e=>{
 					console.log('error loading folder item: ',folder_url)

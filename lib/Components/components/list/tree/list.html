@@ -1,0 +1,21 @@
+<template id="tree-list">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+
+        }
+    </style>
+	<slot></slot>
+</template>
+<script>
+    (function(doc){
+        const TreeList = wwi.custom(doc)
+        TreeList(class extends TreeList.Element{
+            connected(){
+            	this.setAttribute('role','listbox')
+
+            }
+        })
+    })(document)
+</script>

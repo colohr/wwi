@@ -2,55 +2,29 @@
 (function create_editor({Code, Mirror}) {
 	
 	//exports
-	return wwi.exports('code', (code => {
-		
+	return window.fxy.exports('code', (code => {
 		const logic_code = Symbol('logic_code')
 		class Logic {
 			static get window_size() { return [window.innerWidth, document.body.clientHeight] }
-			constructor(...x) {
-				this.mirror = Mirror.View(...x)
-			}
+			constructor(...x) { this.mirror = Mirror.View(...x) }
 		}
 		
-		code.symbol = logic_code
-		
-		code.logic = (editor)=>{
+		//exports
+		code.position = Mirror.position
+		code.logic = editor=>{
 			if(logic_code in editor) return editor[logic_code]
 			editor[logic_code] = Code(editor, new Logic(editor.view))
 			editor[Mirror.Keys.symbol] = new Mirror.Keys(editor)
 			return editor[logic_code]
 		}
-		
-		code.socket = set_socket
-		code.id = set_editor_id
-		
-		
-		function set_editor_id(editor,namespace){
-			if(!editor.id && namespace) editor.id =  `${namespace}-editor`
-			return set_socket(editor)
-		}
-		
-		function set_socket(editor){
-			if(!('socket' in editor) && 'io' in window){
-				let path = editor.ioPath
-				let namespace = fxy.is.text(editor.ioNamespace) ? `/${editor.ioNamespace}` : null
-				if (namespace && path) {
-					editor.socket = window.io.connect(namespace, {path: editor.ioPath})
-					editor.emit = function socket_io_emit(name, data) { return this.socket.emit(name, data) }
-				}
-			}
-			return editor
-		}
-		
-		
 	}))
 	
 },function export_logic(set_logic, create_editor) {
 	let current = -1
-	const source = window.app.source
-	const port = window.app.port
-	const url = window.url.elements
-	const code_path = url('code/codemirror')
+	const source = window.fxy.file
+	const port = window.fxy.port
+	const url = window.url
+	const code_path = url(window.components.code.path,'codemirror')
 	const assets = {
 		lib: ['codemirror'],
 		"addon/edit/": [
@@ -77,24 +51,23 @@
 			'xml'
 		]
 	}
-	
 	const folders = Object.keys(assets)
 	
+	//exports
 	return load_logic().then(set_logic).then(create_editor)
-	
 	
 	//shared actions
 	function load_logic(){ return load_next_folder(()=>get_control_sources()) }
 	
 	function get_control_sources(){
 			return Promise.all([
-				'code/control/source/graphql.rules.js',
-				'code/control/source/graphql.mode.js',
-				'code/control/source/graphql.helper.js',
-				'code/control/source/command.mode.js',
-				'code/control/source/command.rules.js',
-				'code/control/source/command.keys.js'
-			].map(file_path => url(file_path))
+				'control/source/graphql.rules.js',
+				'control/source/graphql.mode.js',
+				'control/source/graphql.helper.js',
+				'control/source/command.mode.js',
+				'control/source/command.rules.js',
+				'control/source/command.keys.js'
+			].map(file_path => url(window.components.code.path,file_path))
 			 .map(file_url => port.eval(source.url(file_url))))
 	}
 	
@@ -104,6 +77,7 @@
 		const folder = folders[current]
 		const items = assets[folder].map(file => path(folder, file))
 		
+		//return value
 		return load_next(items[0])
 		
 		//shared actions
@@ -155,10 +129,9 @@
 		]
 	}
 	
-	
-	//promise
-	return new Promise((success, error) => {
-		return Define((app, CodeMirror) => {
+	//exports
+	return new Promise(success => {
+		return window.fxy.on((CodeMirror) => {
 			
 			Mode(CodeMirror, Rules)
 			Helper(CodeMirror, Rules)
@@ -167,12 +140,12 @@
 				Code: get_code_proxy(CodeMirror),
 				Mirror: {
 					Keys,
-					View(view, options){ return CodeMirror(view, options || Options) }
+					View(view, options){ return CodeMirror(view, options || Options) },
+					position(...x){ return CodeMirror.Pos(...x) }
 				}
 			})
 		}, 'CodeMirror')
 	})
-	
 	
 	//shared actions
 	function get_code_proxy(CodeMirror) {
@@ -212,7 +185,7 @@
 					get({name, getter}){ return editor.mirror[getter]() },
 					set({name, setter}, value){
 						if (!is.array(value)) value = [value]
-						let result = editor.mirror[setter](...value)
+						editor.mirror[setter](...value)
 						if (this.updates.includes(name)) coder.resize(name)
 						return true
 					}
@@ -240,13 +213,9 @@
 					if (name in editor) return true
 					else if (name in editor.mirror) return true
 					let has = o.action.has(name)
-					if ('setter' in has) return true
-					return false
+					return 'setter' in has
 				}
 			})
 		}
 	}
-	
-	
-	
 })

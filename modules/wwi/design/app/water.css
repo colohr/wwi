@@ -1,10 +1,17 @@
-:host{
-    --bar-color: var(--water-dark);
-    --text:var(--pink-bright);
 
-    --focus-color: var(--pink-light);
-    --menu-item-background-color: var(--pink-dark);
-    --menu-item-color: var(--water-black);
-    --menu-item-focus-color: var(--pink-light);
+:host{
+    --bar-color:var(--water);
+    --drawer-background:var(--water);
+    --text:var(--water-black);
+    --focus-color:var(--water-dark);
+    --menu-item-background-color: var(--marine-bg);
+    --menu-item-color: var(--water-light);
+    --menu-item-focus-color: var(--water-dark);
+}
+[app-drawer] [action-item]{
+    font-weight:100;
+}
+[app-drawer] [grid] [action-item]{
+    background-color: var(--water-dark);
 }
 

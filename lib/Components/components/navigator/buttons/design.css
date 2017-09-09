@@ -1,24 +1,32 @@
-@import "/library/modules/wwi/component/design/host.css";
+@import "/modules/wwi/component/design/host.css";
 :host{
     --color:var(--watermelon);
     --background:rgba(255,255,255,0.1);
     --focus-shadow:inset 0 -1px 3px rgba(0,0,0,0.35), 0 0 0 1px var(--color);
+    --button-width:var(--width,30px);
     display:inline-block;
     position: relative;
     color:var(--color);
     pointer-events: auto;
     cursor: pointer;
-
     height:30px;
-    width: 30px;
+    width: var(--button-width,30px);
     border-radius: 100px;
     box-shadow: inset 0 0px 0px rgba(0,0,0,0.2);
     filter:none;
     transition:box-shadow 100ms linear;
     will-change:box-shadow;
     outline: none;
+    box-sizing: border-box;
+    font-size:14px;
 }
 
+:host([auto]){
+    --button-width: auto;
+    height:auto;
+    padding-top:5px;
+    padding-bottom:5px;
+}
 
 :host:before{
     content:'';
@@ -49,23 +57,26 @@
 }
 
 :host([aria-selected="true"]){
-
     box-shadow:0 0 0 2px var(--color);
 }
+
 [box]{
     position: relative;
     height:100%;
     width: 100%;
-
     transition:filter 200ms ease;
     will-change:filter;
     filter:brightness(100%);
 }
 
+:host([auto]) [box]{
+    width: calc(100% - 20px);
+    padding-left:10px;
+    padding-right:10px;
+}
 
 :host(:active) [box],
 :host([aria-selected="true"]) [box]{
-
     filter:brightness(80%);
     background-color: var(--background);
     border-radius: inherit;

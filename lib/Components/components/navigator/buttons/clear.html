@@ -1,6 +1,6 @@
 <template id="navigator-clear">
 	<style>
-		@import "/library/components/navigator/buttons/design.css";
+		@import "/components/navigator/buttons/design.css";
 		:host([up]) svg{
 			transform:rotate(90deg) translateX(-1px);
 		}
@@ -41,8 +41,8 @@
 	(function(doc){
 		const NavigatorClear = wwi.element(doc).extension(...components.navigator.mix('Button'))
 		NavigatorClear(class extends NavigatorClear.Element{
-			constructor(){
-				super()
+			connectedCallback(){
+				super.connectedCallback()
 				this.setAttribute('no-shadow','')
 			}
 		})

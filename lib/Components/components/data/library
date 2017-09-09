@@ -1,6 +1,5 @@
 library = {}
-library.id = 'components-data-library'
-
+library.id = 'data-component'
 library.logic = [
 	'logic/local.es6'
 ]

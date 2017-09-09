@@ -4,7 +4,7 @@
     --pages-min-height:100vh;
     --pages-height:100%;
     --pages-z:1;
-    --page-top:39px;
+    --page-top:0px;
 }
 
 :host([loading]):after{

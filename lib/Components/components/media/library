@@ -1,4 +1,5 @@
 library = {}
+library.ports = [window.components.window.index_url]
 library.logic = [
 	'control/library.es6',
 	'control/time.es6',
@@ -12,10 +13,10 @@ library.logic = [
 library.elements = [
 	'button.html',
 	'playback.html',
-	{path:'seek/index.html',wait:['media-seek','media-volume']},
-	{path:'track/index.html',wait:['track-time','track-lyrics','track-item']},
-	'audio.html',
-	{path:'player.html',wait:['content-menu','media-player']},
-	'video.html'
+	{path:'seek/index.html'},
+	{path:'track/index.html',wait:['media-seek','media-volume']},
+	{path:'audio.html',wait:['track-time','track-lyrics','track-item']},
+	{path:'player.html',wait:['window-frame']}
 ]
+library.wait=['media-player']
 

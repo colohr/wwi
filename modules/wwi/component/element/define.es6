@@ -1,4 +1,4 @@
-wwi.exports('element',(element,fxy) => {
+window.fxy.exports('element',(element,fxy) => {
 	const is = fxy.is
 	const skip_definitons = ["isAttributed", "__polymerGestures"]
 	class Routes{ constructor(){ } }

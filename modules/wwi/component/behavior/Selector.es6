@@ -2,7 +2,6 @@
 (function(){
     return function external_module(exports,fxy){
 	    const is_focused = Symbol.for('item is focused')
-	    const is_selector_item = Symbol.for('item is selector item')
 	    const item_selector_options = Symbol('item selector options')
 	    const has_item_action = Symbol.for('selector has item action')
 	    const focus_select_keys = [13,32]
@@ -13,17 +12,7 @@
 		    tag:'slot'
 	    }
 	    
-	    const SelectItemActions = Base => class extends Base{
-		    on_item_action(event){
-			    on_item_action(event,this)
-			    if(event.detail.select){
-				    this.dispatchEvent(new CustomEvent('select',{bubbles:true,composed:true,detail:event.detail}))
-			    }
-		    }
-		    set_item_select_action(item){ return set_item_select_action(this,item) }
-	    }
-	    
-	    const Selectable = Base => class extends SelectItemActions(Base) {
+	    const Selectable = Base => class extends Base {
 	    	
 	    	get item_selector_options(){ return item_selector_options in this ? this[item_selector_options]:default_item_selector_options }
 		    set item_selector_options(values){
@@ -35,12 +24,14 @@
 		    get items(){ return this.option_items }
 		    get_item(name,value){ return this.option_items.filter(item=>item.hasAttribute(name) && item.getAttribute(name) === value)[0] || null }
 		    has_item(name,value){ return this.option_items.filter(item=>item.hasAttribute(name) && item.getAttribute(name) === value).length > 0 }
-		    get selected(){ return this.items.filter(item=>{ return item.hasAttribute('aria-selected') && item.getAttribute('aria-selected') === 'true' })}
+		    get selected(){
+		    	return this.items.filter(item=>is_selected(item))
+		    }
 		    get selector(){ return get_selector(this) }
 		    set_selector_items(items){ return configure_items(this,items) }
 		    set_tabindex(active) {
 			    let items = this.option_items
-			    for (let item of items) item.setAttribute('tabindex', active ? '0' : '-1')
+			    for (let item of items) tab_index(item, active ? '0' : '-1')
 			    return this
 		    }
 	    }
@@ -48,55 +39,43 @@
 	    
 	
 	    const Selector = Base => class extends Selectable(Base){
-		    changed(name, old, value) {
-			    switch (name) {
-				    case 'multi':
-					    if (value !== null) this.aria.multiselectable = 'true'
-					    else this.aria.multiselectable = 'false'
-					    break
-				    case 'required':
-					    if (value !== null) this.aria.required = 'true'
-					    else this.aria.required = 'false'
+	    	constructor(...x){
+	    		super(...x)
+			    this.define('routes',{
+			    	multi(value){ is_multi(this,value !== null ? true:false) },
+				    required(value){
+					    is_required(this,value !== null ? true:false)
 					    this.update_selections()
-					    break
-			    }
+				    }
+			    })
 		    }
-			get selects(){ return this.item_selector_options }
-			set selects(value){
-				this.item_selector_options = value
-				this.update_items()
-			}
-		    connected() {
-	    		this.define({multi:true,required:true})
-			    this.setAttribute('role', 'listbox')
-			    const multi = 'aria-multiselectable'
-			    const req = 'aria-required'
-			    if (!this.hasAttribute(multi)) {
-				    if (this.hasAttribute('multi')) this.setAttribute('aria-multiselectable', 'true')
-				    else this.setAttribute('aria-multiselectable', 'false')
+			
+		    connectedCallback() {
+				super.connectedCallback()
+			    connect_element(this)
+			    this.on_item_action = function(event){
+				    on_item_action(event,this)
+				    if(event.detail.select){
+					    this.dispatchEvent(new CustomEvent('select',{
+					    	bubbles:true,
+						    composed:true,
+						    detail:event.detail
+					    }))
+				    }
 			    }
-			    if (!this.hasAttribute(req)) {
-				    if (this.hasAttribute('required')) this.setAttribute('aria-required', 'true')
-				    else this.setAttribute('aria-required', 'false')
-			    }
+			    
 			    this.update_items()
 			    if('list_connected' in this) this.list_connected()
 		    }
-		    update_items() {
-			    if ('update_item_timer' in this) {
-				    window.clearTimeout(this.update_item_timer)
-				    delete this.update_item_timer
-			    }
-	    		return new Promise((success,error)=>{
-				    this.update_item_timer = window.setTimeout(() => {
-					    this.update_selections(Array.from(this.set_selector_items(this.option_items)))
-					    delete this.update_item_timer
-					    success()
-				    }, 100)
-			    })
+		    get selects(){ return this.item_selector_options }
+		    set selects(value){
+			    this.item_selector_options = value
+			    this.update_items()
 		    }
+		    set_item_select_action(item){ return set_item_select_action(this,item) }
+		    update_items() { return update_items(this) }
 		    update_selections(items) {
-			    if (this.getAttribute('aria-required') === 'true') {
+			    if (is_required(this)) {
 				    if (!Array.isArray(items)) items = this.items
 				    let selected = this.selected
 				    if (selected.length <= 0) this.selector.selected = items[0]
@@ -104,38 +83,51 @@
 			    return this
 		    }
 	    }
-	
-	
+	    
+	    //exports
 	    return Selector
 	
 	    //shared actions
+	    function connect_element(element){
+		    element.setAttribute('role', 'listbox')
+		    if (!element.hasAttribute('aria-multiselectable')) {
+			    if (element.hasAttribute('multi')) is_multi(element,true)
+			    else is_multi(element,false)
+		    }
+		    if (!element.hasAttribute('aria-required')) {
+			    if (element.hasAttribute('required')) is_required(element,true)
+			    else is_required(element,false)
+		    }
+		    return element
+	    }
+	    
 	    function configure_item(item,setup){
 		    if(item){
 			    item.setAttribute('role','option')
-			    if(!item.hasAttribute('aria-selected')) item.setAttribute('aria-selected','false')
-			    else if(!setup.multi){
-				    if(item.getAttribute('aria-selected') === 'true' && !setup.selection) setup.selection = true
-				    else if(item.getAttribute('aria-selected') === 'true' && setup.selection) item.setAttribute('aria-selected','false')
+			    let selected = is_selected(item)
+			    if(!setup.multi){
+				    if(selected && !setup.selection) setup.selection = true
+				    else if(selected && setup.selection) is_selected(item,false)
 			    }
-			    if(!item.hasAttribute('aria-disabled')) item.setAttribute('aria-disabled','false')
-			    if(!item.hasAttribute('tabindex')) item.setAttribute('tabindex','0')
+			    is_disabled(item)
+			    tab_index(item)
 		    }
 		    return item
 	    }
 	    
-	    function configure_items(list,items){
+	    function configure_items(element,items){
 		    items = get_valid_item_elements(items)
 		    let set = new Set(items)
 		    if(set.size){
 			    let setup = {
-			    	multi:list.getAttribute('aria-multiselectable') === 'true' ? true:false,
-				    required:list.getAttribute('aria-required') === 'true' ? true:false,
+			    	multi:is_multi(element),
+				    required:is_required(element),
 				    selection:false
 			    }
-			    let selector = get_selector(list)
+			    let selector = get_selector(element)
 			    for(let item of set){
 			    	item = configure_item(item,setup)
-				    item = set_item_select_action(list,item)
+				    item = set_item_select_action(element,item)
 			    }
 			    if(setup.required && !setup.selection && set.size) selector.selected = items[0]
 		    }
@@ -164,14 +156,19 @@
 	    function get_option_items(list){
 		    let selector_options = list.item_selector_options
 	    	let options = get_option_container(list)
-		    if(!options) return []
-		    let items
+		    let items = []
+		    if(!options) return items
 		    if(options.localName === 'slot') items = get_option_items_from_slot(options)
 		    else items = Array.from(options.querySelectorAll(selector_options.item))
 		    if(selector_options.item === '*') return items
 		    return items.filter(item=>item.localName === selector_options.item)
+		    //shared actions
 		    function get_option_items_from_slot(slot){
-			    return Array.from(slot.assignedNodes()).filter(node=>node instanceof HTMLElement)
+			    return Array.from(slot.assignedNodes())
+			                .filter(node=>node instanceof HTMLElement).filter(node=>{
+			                	if(options.role) return node.getAttribute('role') === options.role
+					            return true
+				            })
 		    }
 	    }
 	    
@@ -179,7 +176,7 @@
 		    return new Proxy(element, {
 			    get(o, name) {
 				    let	items = o.items
-				    var result = null
+				    let result = null
 				    switch (name) {
 					    case 'items':
 						    result = items
@@ -193,8 +190,6 @@
 						    result = o.selected
 						    if(name === 'item') result = result[0]
 						    break
-					    default:
-						    break
 				    }
 				    return result
 			    },
@@ -203,12 +198,11 @@
 					    if (name === 'selected') {
 						    if(!o.multi){
 							    let selected = o.selected
-							    if(selected.length === 1) selected[0].setAttribute('aria-selected', 'false')
+							    if(selected.length === 1) is_selected(selected[0],false)
 						    }
-						    let is_selected = value.getAttribute('aria-selected') === 'true' ? true:false
-						    if (!is_selected) value.setAttribute('aria-selected', 'true')
-						    else value.setAttribute('aria-selected', 'false')
-						    if(o.getAttribute('aria-required') === "true" && o.selected.length <= 0) value.setAttribute('aria-selected','true')
+						    if (!is_selected(value)) is_selected(value,true)
+						    else is_selected(value,false)
+						    if(is_required(o) && o.selected.length <= 0) is_selected(value,true)
 					    }
 				    }
 				    return true
@@ -223,10 +217,43 @@
 	
 	    function is_focus_select_key(key){ return focus_select_keys.includes(key) }
 	
+	    function is_disabled(element,value){
+		    let disabled = false
+		    if(!fxy.is.nothing(value)) element.setAttribute('aria-disabled',value)
+		    if(element.hasAttribute('aria-disabled')) disabled = element.getAttribute('aria-disabled') === 'true'
+		    else element.setAttribute('aria-disabled',disabled)
+		    return disabled
+	    }
+	    
+	    function is_multi(element,value){
+		    let multi = false
+		    if(!fxy.is.nothing(value)) element.setAttribute('aria-multiselectable',value)
+	    	if(element.hasAttribute('aria-multiselectable')) multi = element.getAttribute('aria-multiselectable') === 'true'
+		    else element.setAttribute('aria-multiselectable',multi)
+		    return multi
+	    }
+	
+	    function is_required(element,value){
+		    let required = false
+		    if(!fxy.is.nothing(value)) element.setAttribute('aria-required',value)
+		    if(element.hasAttribute('aria-required')) required = element.getAttribute('aria-required') === 'true'
+		    else element.setAttribute('aria-required',required)
+		    return required
+	    }
+	    
+	    function is_selected(element,value){
+	    	let selected = false
+		    if(!fxy.is.nothing(value)) element.setAttribute('aria-selected',value)
+		    if(element.hasAttribute('aria-selected')) selected = element.getAttribute('aria-selected') === 'true'
+		    else element.setAttribute('aria-selected',selected)
+		    return selected
+	    }
+	    
 	    function on_item_action_event(event){
 		    let detail = {}
 		    detail.item = event.currentTarget
 		    detail.ally = wwi.ally.keydown(event)
+		   
 		    let type = event.type
 		    if( type === 'keydown' && is_focus_select_key(event.keyCode || event.which) ) detail.select = true
 		    else detail.ally.activate()
@@ -235,9 +262,7 @@
 		    else if(type === 'blur') detail.remove = true
 		    else if(type === 'focus') detail.add = true
 		    
-		    if(detail.item.hasAttribute('aria-disabled') && detail.item.getAttribute('aria-disabled') === 'true'){
-			    return
-		    }
+		    if(is_disabled(detail.item)) return
 		    return this.dispatchEvent( new CustomEvent('item action',{bubbles:true,composed:true,detail}) )
 	    }
 	
@@ -267,53 +292,27 @@
 		    item.onblur = on_item_action_event.bind(list)
 		    return item
 	    }
+	
+	    function tab_index(element,value){
+		    if(!fxy.is.nothing(value)) element.setAttribute('tabindex',value)
+		    if(!element.hasAttribute('tabindex')) element.setAttribute('tabindex',0)
+		    return element.getAttribute('tabindex')
+	    }
+	    
+	    function update_items(element){
+		    if ('update_item_timer' in element) {
+			    window.clearTimeout(element.update_item_timer)
+			    delete element.update_item_timer
+		    }
+		    return new Promise(success=>{
+			    element.update_item_timer = window.setTimeout(() => {
+				    element.update_selections(Array.from(element.set_selector_items(element.option_items)))
+				    delete element.update_item_timer
+				    success()
+			    }, 100)
+		    })
+	    }
+	    
+	    
     }
 })
-
-//console.log({values})
-//if(fxy.is.text(values)) new_options.item = values
-//else if(fxy.is.data(values)){
-//	for(let name in values){
-//		if(name in new_options) new_options[name] = values[name]
-//   }
-//}
-//else return delete this[default_item_selector_options]
-//return this[default_item_selector_options] = new_options
-//return this.query('slot#options') }
-//return Array.from(this.options_slot.assignedNodes()).filter(node=>node instanceof HTMLElement)
-//return this.option_items.filter(item=>{ return item.getAttribute('role') === 'option' })}
-//set_selector_items(items){
-//   items = get_valid_item_elements(items)
-//   let set = new Set(items)
-//   if(set.size){
-//    let multi = this.getAttribute('aria-multiselectable') === 'true' ? true:false
-//    let required = this.getAttribute('aria-required') === 'true' ? true:false
-//    var has_selection
-//    let selector = this.selector
-//    for(let item of set){
-//	    item = this.set_item_select_action(item)
-//	    if(item){
-//		    item.setAttribute('role','option')
-//		    if(!item.hasAttribute('aria-selected')) item.setAttribute('aria-selected','false')
-//		    else if(!multi){
-//			    if(item.getAttribute('aria-selected') === 'true' && !has_selection) has_selection = true
-//			    else if(item.getAttribute('aria-selected') === 'true' && has_selection) item.setAttribute('aria-selected','false')
-//		    }
-//		    if(!item.hasAttribute('aria-disabled')) item.setAttribute('aria-disabled','false')
-//		    if(!item.hasAttribute('tabindex')) item.setAttribute('tabindex','0')
-//	    }
-//    }
-//    if(required && !has_selection && set.size) selector.selected = items[0]
-//   }
-//   return set
-//}
-
-//if( !(has_item_action in this) ) {
-//   this.addEventListener('item action', this.on_item_action.bind(this), false)
-//   this[has_item_action] = true
-//}
-//if(is_focused in item) return item
-//item.onclick = on_item_action_event.bind(this)
-//item.onfocus = on_item_action_event.bind(this)
-//item.onblur = on_item_action_event.bind(this)
-//return item

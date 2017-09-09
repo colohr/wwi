@@ -1,8 +1,7 @@
 (function(export_scroll){ return export_scroll() })
 (function(){
 	return function external_module(){
-		const notifiers = Symbol.for('notifiers')
-		const notifies = Symbol.for('notifies')
+	
 		const styles = Symbol('element style')
 		const three_dimension = Symbol('3D')
 		const transform_data = Symbol('transform data')
@@ -59,6 +58,7 @@
 				}
 				return s.join(' ')
 			},
+			symbol: i => Symbol.for(`${i} value`),
 			symbols:new Map(),
 			types:new Map([
 				['translate3d',{
@@ -103,9 +103,6 @@
 				return o
 			}
 		}
-		
-		transforms.symbol = i => Symbol.for(`${i} value`)
-		
 		
 		class Transformation{
 			constructor(op,a,b){
@@ -208,7 +205,6 @@
 				}
 			}
 		}
-		
 		
 		const Transformer = Base => class extends Base{
 			
@@ -501,146 +497,7 @@
 			else el.removeAttribute(transitioning)
 			return active
 		}
-		
-		
-		
 	}
 })
-
-
-//const TransformObject = (v)=>{
-//	return {
-//		value:transforms.devalue(v),
-//		get(key){
-//			if(key in this.value) return new TransformDefinition(this.value[key],key)
-//			if(key === 'x' || key === 'y') key = 'translate3d'
-//			if(key in this.value) return new TransformDefinition(this.value[key],key)
-//			return undefined
-//		},
-//		set(key,value){
-//			if(key instanceof TransformDefinition) this.value[key.key] = key+''
-//			else if(typeof key === 'string' && typeof value !== 'undefined'){
-//				if(value === null) delete this.value[key]
-//				else this[key] = value
-//			}
-//			return undefined
-//		},
-//		valueOf(){ return transforms.stringValue(this.value) },
-//		toString(){ return this.valueOf() }
-//	}
-//}
-
-//class OptimusPrime extends Transformer(HTMLElement){
-//	static Transformer(val,key){return new Transformers.Def(val,key);}
-//	constructor(){ super() }
-//	connectedCallback() {
-//		if (this.hasAttribute('style')) {}
-//		else if(typeof this.css === 'function') this.css({display: 'flex', alignItems: 'center', justifyContent: 'center'});
-//		if(typeof this.z === 'function') this.z();
-//		if(typeof this.opacity === 'function') this.opacity();
-//		if(typeof this.transition === 'function') this.transition();
-//	}
-//}
-
-//return value if module is global & name === module name or use module proxy to specify custom behavior
-//return OptimusPrimer;
-
-//Base = ThreeDimensional(Base)
-//Base = CSSBase(Base);
-//Base = StyleFace(Base);
-//Base = StyleZ(Base);
-//Base = StyleOpacity(Base);
-//	if(typeof Hitter === 'function') Base = Hitter(Base);
-//	return Transition(Base)
-//};
-
-
-
-
-//const ThreeDimensional = Base => class extends Base{
-//
-//}
-
-//const ThreeD = css=>{
-//	return {
-//		css,
-//		get(k){return this.transformObject.get(k)},
-//		set(k,v){return this.transformObject.set(k,v)},
-//		get style(){
-//			if(styles in this) return this[styles]
-//			let s = {}
-//			if(typeof this.css === 'object') transformers.map(key=>s[key] = this.css[key])
-//			return this[styles]=s
-//		},
-//		transform( values ){
-//			let assign
-//			if(typeof values === 'string') assign = TransformObject(values).value
-//			else if(typeof values === 'object'){
-//				for(let key in values){
-//					let v = transforms.defValue(values[key])
-//					if(v) values[key] = v
-//				}
-//				assign = values
-//			}
-//			if(assign) Object.assign(this.transformObject.value,assign)
-//			return this
-//		},
-//		get transformObject(){
-//			if(transform_data in this) return this[transform_data]
-//			return this[transform_data] = TransformObject(this.style.transform)
-//		}
-//	}
-//}
-
-
-
-
-//const CSSBase = Base => class extends Base{
-//
-//}
-
-//const StyleFace = Base => class extends Base{
-//	face(value){
-//		if(typeof value === 'undefined') return this.style.backfaceVisibility;
-//		this.style.webkitBackfaceVisibility = value;
-//		this.style.backfaceVisibility = value;
-//		return this.style.backfaceVisibility;
-//	}
-//};
-
-//const StyleZ = Base => class extends Base{
-//	z(value){
-//		if(typeof value === 'undefined' && this.style.zIndex) return parseInt(this.style.zIndex);
-//		if(typeof value === 'undefined') value = 1;
-//		return this.style.zIndex=value;
-//	}
-//};
-
-//const StyleOpacity = Base => class extends Base{
-//	opacity(value){
-//		if(typeof value === 'undefined' && this.style.opacity) return parseInt(this.style.opacity)
-//		if(typeof value === 'undefined') value = 1
-//		return this.style.opacity=value
-//	}
-//}
-
-//const Transformers={
-//	get Def(){return TransformDefinition;},
-//	get Dimensional(){return ThreeDimensional;},
-//	get CSS(){return CSSBase;},
-//	get Transition(){return TransitionBase;},
-//	get Style(){
-//		return {
-//			get Z(){return StyleZ;},
-//			get Opacity(){return StyleOpacity;},
-//			get Face(){return StyleFace}
-//		}
-//	},
-//	ThreeD( style ){
-//		this[three_dimension] = get_3d(this.style || style)
-//		return this[three_dimension]
-//	}
-//};
-
 
 

@@ -14,10 +14,8 @@
 		    return element[database_value] = new data.LocalDatabase(element)
 	    }
 	    function load(){
-	    	on((LocalDatabase)=>{
-			    LocalDatabase.load().then(_=>{
-				    data.Local = Local
-			    }).catch(console.error)
+	    	fxy.on((LocalDatabase)=>{
+			    LocalDatabase.load().then(_=>data.Local = Local).catch(console.error)
 		    },'fxy.modules.data.LocalDatabase')
 		    return null
 	    }

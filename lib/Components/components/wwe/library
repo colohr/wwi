@@ -11,6 +11,7 @@ library.elements = [
 	'ui/spinner/index.html',
 	'ui/card/index.html',
 	'ui/position/index.html',
+	'background/index.html',
 	'input/index.html'
 	
 ]

@@ -1,4 +1,3 @@
-//main
 (function(get_wwi,window){ return get_wwi(window) })
 (function(window){
 	
@@ -39,10 +38,8 @@
 	
 	class WorldWideListener extends Map{ constructor(element){ super(); this.dispatch = (name)=>{ return function dispatch_action(event){ return element.dispatch(name,event) } } } }
 	
-	
 	//exports
 	return window.wwi = new WorldWideInternet()
-	
 	
 	//shared actions
 	function get_broadcast_action(action) {
@@ -60,6 +57,7 @@
 	}
 	
 	function off_broadcast_action(element){
+		
 		if(fxy.is.element(element) !== true) return update_broadcast_actions()
 		if(world_wide_actions in WorldWideInternet) WorldWideInternet.actions.delete(fxy.id.dash(fxy.selector(element)))
 		return update_broadcast_actions()
@@ -139,8 +137,6 @@
 					return false
 				}
 			}
-			
-			
 			
 		}
 		function getset_on(o){

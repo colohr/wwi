@@ -1,14 +1,10 @@
-wwi.exports('dom',(dom,fxy)=>{
+window.fxy.exports('dom',(dom)=>{
 	
 	const Page = Base=>class extends Base{
 		constructor(...x){
 			super(...x)
 			this.addEventListener('animationend', app_page_transitioned.bind(this), false)
 			this.at('app-page')
-			//this.onfocus = e => {
-				//let first = this.first_focus
-				//if(first) first.focus()
-			//}
 		}
 	}
 	

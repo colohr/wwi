@@ -5,7 +5,6 @@
 		:host {
 			--bg: var(--background,rgba(210, 211, 221, 0.7));
 			--border: 1px solid rgb(237, 239, 241);
-			--expanded-menu-filter:var(--expanded-filter,drop-shadow(0 2px 15px rgba(0,0,0,0.4)));
 
 
 			background-color: var(--bg);
@@ -24,14 +23,15 @@
 		}
 
 		:host([aria-expanded="true"]){
-			filter:var(--expanded-menu-filter);
+			filter:var(--expanded-menu-filter,drop-shadow(0 2px 15px rgba(0,0,0,0.2)));
 		}
 
 		[container] {
 			display: block;
 			height: 44px;
 			position: relative;
-			transition: height 300ms cubic-bezier(0.5, -0.1, 0.05, -0.18);
+			/*transition: height 300ms cubic-bezier(0.5, -0.1, 0.05, -0.18);*/
+			transition: height 300ms ease;
 			transform-style: flat;
 			transform-origin: top center;
 			will-change: height;
@@ -218,7 +218,7 @@
 			let items = menu.items
 			for(let item of items){
 				item.style.transitionTimingFunction = 'linear'
-				item.style.transform = `translate(0,0)`
+				item.style.transform = `translate3d(0,0,0)`
 				item.setAttribute('tabindex', '-1')
 				item.style.opacity = '0'
 			}
@@ -251,7 +251,7 @@
 			for (let i = 0; i < count; i++) {
 				let item = items[i]
 				let y = (height * (i+1))
-				let transformation = `translate(0,${y}px)`
+				let transformation = `translate3d(0,${y}px,0)`
 				let duration = `${get_transition_duration(i)}ms`
 				item.dataset.transform = transformation
 				item.style.opacity = '0'

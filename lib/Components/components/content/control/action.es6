@@ -1,4 +1,4 @@
-window.wwi.exports('content',(content,fxy)=>{
+window.fxy.exports('content',(content,fxy)=>{
 	content.Action = Base => class extends Base{
 		constructor(){
 			super('routes',{

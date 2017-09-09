@@ -2,7 +2,11 @@ library = {}
 library.id = 'components-navigator-library'
 
 library.elements = [
+	'buttons/index.html',
 	'component.html'
 ]
 
-library.wait = ['navigator-component']
+library.wait = [
+	'navigator-component'
+]
+

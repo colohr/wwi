@@ -1,4 +1,4 @@
-wwi.exports('media',(media,fxy)=>{
+window.fxy.exports('media',(media,fxy)=>{
 	const media_listener = Symbol.for('media event listener')
 	const media_playlist = Symbol.for('media playlist')
 	
@@ -12,12 +12,6 @@ wwi.exports('media',(media,fxy)=>{
 		set data(playlist_data){
 			if(fxy.is.data(playlist_data)) {
 				this.set('data',playlist_data)
-				//if(media_listener in this){
-				//	let listener = this.listener
-				//	if(listener.has_listener && listener.listener.has('data')){
-				//		return listener.dispatch('data',playlist_data)
-				//	}
-				//}
 			}
 			return playlist_data
 		}
@@ -75,9 +69,15 @@ wwi.exports('media',(media,fxy)=>{
 			return this[media_playlist] = value
 		}
 	}
+	
+	//load
+	//fxy.define('media-listener', class extends fxy.require('dom/basics').Element{})
+	
+	//exports
 	media.Playlist = Playlist
 	media.playlist = create_playlist
 	
+	//shared actions
 	function create_playlist(source){
 		let playlist = new Playlist(source)
 		if(fxy.is.text(source)) load_playlist_data(playlist,source)
@@ -93,8 +93,6 @@ wwi.exports('media',(media,fxy)=>{
 		})
 	}
 	
-	wwi.define('media-listener', class extends fxy.require('dom/basics').Element{
-
-	})
+	
 	
 })

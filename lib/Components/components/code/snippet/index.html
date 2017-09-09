@@ -24,6 +24,7 @@
 	(function (doc) {
 		const Snippet = wwi.element(doc)
 		Snippet(class extends Snippet.Element {
+			static get observedAttributes(){return ['no-wrap','read-only']}
 			constructor(){
 				super('routes',{
 					language(value){
@@ -31,20 +32,32 @@
 					},
 					theme(value){
 						this.editor.theme = value
-					}
+					},
+					['read-only'](value){
+						if(value !== null) this.editor.code.mirror.setOption('readOnly',true)
+						else this.editor.code.mirror.setOption('readOnly',false)
+					},
+					['no-wrap'](value){ value !== null ? this.editor.setAttribute('no-wrap',value):this.editor.removeAttribute('no-wrap') }
 				})
 			}
 			get code(){ return this.codes.map(code=>code.innerHTML).join('\n') }
 			get codes(){ return this.slots.code.items }
 			connected(){
-				this.editor.code.mirror.setOption('readOnly',true)
 				this.query('#code').addEventListener('slotchange',(e)=>this.update())
 				this.update()
 			}
 			get editor(){ return this.query('code-editor')}
 			get empty(){ return this.codes.length <= 0}
-			update(){ this.editor.code.setValue(this.code) }
 			resize(){ return this.editor.resize() }
+			update(){
+				let code = this.editor.code
+				if(code && code.setValue) {
+					code.setValue(this.code)
+					if(this.hasAttribute('read-only')) code.setOption('readOnly',true)
+				}
+
+			}
+
 		})
 	})(document)
 </script>

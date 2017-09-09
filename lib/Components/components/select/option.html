@@ -14,11 +14,13 @@
 			outline: none;
 			position: absolute;
 			top: 0;
-			transform:translate(0,0);
+			transform:translate3d(0,0,0);
 			transition-property: transform, opacity,background, color;
 			transform-origin: center center;
 			width: 100%;
 			will-change: transform, opacity, background, color;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
 		}
 
 		:host(:focus){

@@ -1,0 +1,14 @@
+:host{
+    --bar-color:var(--rose-dark);
+    --drawer-background:var(--rose-dark);
+    --text:var(--rose-bright);
+    --focus-color:var(--rose);
+    --menu-item-background-color: var(--rose-50);
+    --menu-item-color: var(--rose-bright);
+    --menu-item-focus-color: var(--rose-bright);
+}
+[app-drawer] [action-item]{
+    --action-radius:100px;
+    --action-font-weight:900;
+    text-rendering: geometricPrecision;
+}

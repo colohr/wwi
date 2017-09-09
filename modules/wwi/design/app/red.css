@@ -7,8 +7,8 @@
     --menu-item-color: var(--pink-light);
     --menu-item-focus-color: var(--pink-bright);
 }
-content-button{
-    border-radius: 100px;
-    font-weight:900;
-    text-indent:5px;
+[app-drawer] [action-item]{
+    --action-radius:100px;
+    --action-font-weight:900;
+    text-rendering: geometricPrecision;
 }

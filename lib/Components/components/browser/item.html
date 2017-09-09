@@ -55,7 +55,7 @@
 		}
 
 
-		[expand] content-expand{
+		[expand] item-expander{
 			--height:2px;
 			--width:12px;
 			max-height:40px;
@@ -89,13 +89,13 @@
 			opacity: 1;
 		}
 
-		 content-expand[open][expanded],
-		:host([aria-selected="true"]) content-expand[open]{
+		 item-expander[open][expanded],
+		:host([aria-selected="true"]) item-expander[open]{
 			color:var(--sea);
 			 opacity:0.9;
 		}
 
-		:host(:hover) content-expand[expanded]{
+		:host(:hover) item-expander[expanded]{
 			color:var(--berry);
 		}
 
@@ -131,17 +131,18 @@
 		<div title no-select></div>
 	</div>
 	<div expand gui vertical center-center>
-		<content-expand style="display:none"></content-expand>
+		<item-expander style="display:none"></item-expander>
 	</div>
 
 
 </template>
 <script>
 	(function (doc) {
-		const Item = wwi.element(doc,'a11y')
-		const Memory = fxy.require('browser/memory').Mix
-
-		Item(class extends Memory(Item.Element) {
+		let extension = [{module:'behavior',name:'UID'}].concat(components.browser.mix('Item'))
+		const Item = wwi.element(doc,'a11y').extension(...extension)
+//		const Memory = fxy.require('browser/memory').Mix
+//		Memory(Item.Element)
+		Item(class extends Item.Element {
 
 			constructor(){
 
@@ -164,7 +165,7 @@
 				})
 
 			}
-			get expand(){ return this.query('content-expand') }
+			get expand(){ return this.query('item-expander') }
 			connected(){
 				this.kind="item"
 				this.aria.role = "option"

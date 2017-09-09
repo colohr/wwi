@@ -14,11 +14,25 @@
 			constructor(){
 				super()
 				this[modules] = new Map()
+				this.aria = new Proxy(aria,{
+					get(o,name){
+						switch(name){
+							case 'at': return aria_attributes
+							case 'element': return aria_element
+							case 'name': return aria_name
+							case 'set': return aria_attributes
+							case 'value': return aria_value
+						}
+						return null
+					},
+					has(o,name){ return name in o }
+				})
 			}
 			get all(){ return all_promises }
 			get define(){ return define_element }
 			get deep(){ return get_deep_value }
 			get deeper(){ return get_deeper_value }
+			get doc(){ return load_doc() }
 			get dot(){ return get_dot_notation }
 			exports(folder,action){
 				if(!is_string(folder)) return module_exports_proxy()
@@ -88,6 +102,7 @@
 				}
 			}
 			get in(){ return get_in }
+			get load(){ return load_files }
 			module(paths){
 				let folder
 				if(!is_data(paths)) return null
@@ -126,6 +141,7 @@
 			}
 			get service_worker(){ return get_service_worker }
 			get tag(){ return tag_closure }
+			get uid(){ return get_uid }
 			get when(){ return when_element_is_defined }
 		}
 		
@@ -165,6 +181,73 @@
 				return done()
 			}
 		}
+		
+		function aria(...elements){
+			let items = elements.map(element=>aria_element(element))
+			return new Proxy(items,{
+				set(o,name,value){
+					o.forEach(element=>element[name]=value)
+					return true
+				},
+				get(o,name){ return o.filter(element=>name in element) },
+				has(o,name){ return o.includes(name) }
+			})
+		}
+		
+		function aria_attributes(element,...x){
+			let value = aria_value(...x)
+			for(let name in value) element.setAttribute(name,value[name])
+			return element
+		}
+		
+		function aria_element(element){
+			return new Proxy(element,{
+				deleteProperty(o,name){
+					name = aria_name(name)
+					if(name) o.setAttribute(name,false)
+					return true
+				},
+				get(o,name){
+					name = aria_name(name)
+					if(name && o.hasAttribute(name)) return o.getAttribute(name) === 'true'
+					return null
+				},
+				has(o,name){
+					name = aria_name(name)
+					if(name) return o.getAttribute(name) === 'true'
+					return false
+				},
+				set(o,name,value){
+					aria_attributes(o,name,value)
+					return true
+				}
+			})
+		}
+		
+		function aria_name(name){
+			if(is_text(name)){
+				if(name === 'role' || name === 'tabindex') return name
+				if(name.indexOf('aria') !== 0) name = `aria-${name}`
+				if(name.indexOf('-') <= -1) name = fxy.id.dash(name)
+				return name
+			}
+			return null
+		}
+		
+		function aria_value(...x){
+			let values = {}
+			if(is_data(x[0])) values = x[0]
+			else values[x[0]] = x[1]
+			let output = {}
+			for(let i in values){
+				let name = aria_name(i)
+				let value = values[i]
+				if(!is_bool(value)) value = value === 'true'
+				if(name) output[name] = value
+			}
+			return output
+		}
+		
 		
 		function define_element(tag_name,custom_element,extension){ return define_element_action( tag_name, define_element_class( tag_name, custom_element, extension ) ) }
 		function define_element_ability(tag_name){
@@ -293,7 +376,7 @@
 				let loading_module = is_loading(path)
 				let promise = new Promise(function(success,error) {
 					if (!is_text(folder) || !is_text(module) || !is_text(name)) return error(new Error(`Invalid module path: ${path}`))
-					Define((app,module_exports)=>{
+					fxy.on((module_exports)=>{
 						//console.log({module_exports,target,folder,module,name})
 						if(module_exports instanceof Error) return error(module_exports)
 						return success(module_exports)
@@ -400,6 +483,14 @@
 			if(kit && kit.has('service-worker')) return  window.navigator.serviceWorker.register(kit.get('service-worker'))
 			return null
 		}
+		function get_uid(count = 5){
+			const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+			const numbers = '0123456789'
+			let id = alphabet.charAt(Math.floor(Math.random() * alphabet.length))
+			let all = numbers+alphabet
+			for (let i = 0; i < count-1; i++) id += all.charAt(Math.floor(Math.random() * all.length))
+			return id
+		}
 		
 		function is_array(value){ return is_object(value) && Array.isArray(value) }
 		function is_bool(value){return is_TF(value)}
@@ -431,6 +522,79 @@
 		function is_symbol(value){ return typeof value === 'symbol'}
 		function is_text(value){ return typeof value === 'string' || (is_object(value) && value instanceof String)}
 		function is_TF(value){return typeof value === 'boolean'}
+		
+		function load_doc(){
+			let func = {name:'doc'}
+			return new Proxy((file,...options)=>load_func(func,{file,type:'fetch',options}),{ get(o,type){ return (file,...options)=>load_func(func,{file,type,options}) } })
+		}
+		function load_func(func,item){
+			let id = Symbol.for(func.name)
+			if(id in Fxy) return Fxy[id](item)
+			return fxy.port.eval(window.url.modules('fxy',`funcs/${func.name}.es6`)).then(x=>Fxy[id]=x).then(x=>x(item))
+		}
+		function load_files(...files){
+			let promise = get_promise()
+			return new Proxy(promise,{
+				get(o,name){
+					let value = null
+					switch(name){
+						case 'wait':
+							return (...wait)=>fxy.when(...wait).then(_=>o.then())
+							break
+						default:
+							if(name in o) {
+								value = o[name]
+								if(typeof value === 'function') value = o[name].bind(o)
+							}
+							break
+					}
+					return value
+				}
+			})
+			//shared actions
+			function get_promise() {
+				let items = files.map(item=>item.includes('http')?item:window.url(item))
+				let count = items.length
+				let loaded = 0
+				return get_files()
+				//shared actions
+				function get_files(){
+					let results = []
+					return new Promise(success=>{
+						function get_file_items(){
+							for(let i = loaded; i < count; i++){
+								return get_file_load(items[i]).then(result=>{
+									//console.log(result)
+									results[i] = result
+									loaded++
+									return get_file_items()
+								}).catch(e=>{
+									console.error(e)
+									results[i] = e
+									loaded++
+									return get_file_items()
+								})
+							}
+							return success(results)
+						}
+						return get_file_items()
+					})
+				}
+				
+				function get_file_load(item) {
+					let type = fxy.file.type(item).replace('.','')
+					switch(type){
+						case 'js':
+						case 'es6':
+							return fxy.port.eval(item)
+						case 'json':
+							return window.fetch(item).then(x=>x.json())
+						default:
+							return fxy.port(item)
+					}
+				}
+			}
+		}
 		
 		function module_exports(module_folder_path){
 			const folder_path = module_folder_path

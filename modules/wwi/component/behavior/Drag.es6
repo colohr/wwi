@@ -3,7 +3,7 @@
 	return function external_module(behavior,fxy){
 		const draggable_frame = Symbol('is draggable frame')
 		
-		window.app.port.eval(window.url.component('behavior/logic/displace.es6')).then(Displace=>{
+		window.fxy.port.eval(window.url.component('behavior/logic/displace.es6')).then(Displace=>{
 			
 			behavior.Drag  = Base => class extends Base{
 	            constructor(){
@@ -60,15 +60,3 @@
 	}
 	
 })
-
-//changed(name,old,value){
-//   switch(name){
-//       case 'contain':
-//           if(value === null) this.drag = false
-//           else if(fxy.is.element(value)) this.drag ={view: value}
-//           break
-//   }
-//}
-
-//get drag(){ return this[draggable_frame] || null }
-//set drag(value){ return set_drag(this,value) }

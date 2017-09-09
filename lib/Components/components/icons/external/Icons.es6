@@ -32,7 +32,7 @@
 		    function load_svgs(){
 		    	return new Promise((success,error)=>{
 				    if('svgs' in icons) success(icons.svg)
-				    return window.fetch(window.url('wwi.files.content/icons/svg'))
+				    return window.fetch(window.url('components.files.content/icons/svg'))
 				                 .then(x=>x.json())
 				                 .then(data=>rename_data(data))
 				                 .then(svgs=>success(icons.svgs = svgs))

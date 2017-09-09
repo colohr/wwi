@@ -6,10 +6,11 @@
 	    
     	const Container = Base => class extends Base{
 		    get search(){ return get_search(this) }
-		    
 	    }
+	    
         //exports
         return load_search()
+	    
 	    //shared actions
 	    function load_search(){
 		    if(!fxy.is.defined('components-search-library')) fxy.port(components.search.url+'/index.html').then(_=>fxy.when('search-component')).then(_=>search.Container = Container)

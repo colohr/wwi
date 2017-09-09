@@ -1,7 +1,5 @@
 <template id="browser-list-template">
 	<style>
-
-
 		:host {
 			display: block;
 			position: relative;
@@ -40,18 +38,38 @@
 			outline: none;
 			overflow: hidden;
 		}
-
-
-
 	</style>
-	<div view>
-	</div>
+	<div view></div>
 </template>
 <script>
 	(function (doc) {
 
-		const Browser = wwi.element(doc)
-		const Mix = fxy.require('browser/Mix')
-		Browser(class extends Mix(Browser.Element) {})
+		let extension = [{module:'behavior',name:'UID'}].concat(components.browser.mix('List'))
+		const Browser = wwi.element(doc).extension(...extension)
+//		const Mix = fxy.require('browser/Mix')
+//		Mix(Browser.Element)
+		Browser(class extends Browser.Element {
+			connected(){
+				this.dispatch('connected')
+//				let called = false
+//				try{
+//					super.connectedCallback()
+//					called = true
+//				}
+//				catch(e){ console.error(e) }
+//				if(!called){
+//					try{
+//						if('connectedCallback' in this.constructor){
+//							this.constructor.connectedCallback()
+//							called = true
+//						}
+//					}
+//					catch(e){ console.error(e) }
+//				}
+//				if('browser_connected' in this) this.browser_connected()
+//				if(!called)
+
+			}
+		})
 	})(document)
 </script>

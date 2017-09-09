@@ -1,119 +1,51 @@
-wwi.exports('dom',(dom,fxy)=>{
+window.fxy.exports('dom',(dom,fxy)=>{
 	
-	class Module {
-		static get application() { return 'app' in window && window.app.el instanceof HTMLElement ? window.app.el : document.querySelector('#app') }
-		static data(module, data) {
-			if (data instanceof Map) this.memory.set(module, data)
-			return this.memory.get(module)
+	class Module{
+		constructor(element, {extension, name, type}) {
+			this.name = name
+			this.type = type || 'page'
+			this.extension = extension || 'html'
+			this.element = element
+			let loads = this.element.hasAttribute('load') ? this.element.getAttribute('load'):null
+			this.loads = loads ? get_list(loads).map(source=>source.includes('http')?source:window.url(source)):[]
+			let wait = this.element.hasAttribute('wait') ? this.element.getAttribute('wait'):null
+			this.waits = wait ? get_list(wait):[]
 		}
-		static element(module) {
-			let application = this.application
-			let element = 'pages' in application ? application.pages[module.name]:null
-			if (!element && application && 'get_module_element' in application) return application.get_module_element(module)
-			return element ? element:document.querySelector(`${module.data.tag}`)
-		}
-		static get memory() {
-			if (!this[Symbol.for('Io Module Memory')]) this[Symbol.for('Io Module Memory')] = new WeakMap()
-			return this[Symbol.for('Io Module Memory')]
-		}
-		constructor(name, type, extension) {
-			const data = new Map([['name', name], ['type', type || 'io'], ['extension', extension || 'html']])
-			this.constructor.data(this, data)
-		}
-		get active() {return this[Symbol.for('active')]}
-		set active(x) {
-			let el = this.element
-			let active =  x !== true ? false : true
-			if ( el instanceof HTMLElement ) el.active = active
-			if(el.hasAttribute('active') && !active) el.removeAttribute('active')
-			else if(!el.hasAttribute('active') && active) el.setAttribute('active','')
-			this[Symbol.for('active')] = active
-			return this[Symbol.for('active')]
-		}
-		blur() {
-			if (this.element) this.element.blur()
+		get active() { return this.element.hasAttribute('active') }
+		set active(active) { return active !== true ? this.element.removeAttribute('active'):this.element.setAttribute('active','') }
+		close(container,next) {
+			if('will_close_page' in container) container.will_close_page(this,next).then(_=>set_active(this,false)).catch(console.error)
+			else set_active(this,false)
 			return this
 		}
-		close() {
-			this.active = false
-			this.element.setAttribute('tabindex','-1')
+		get data() { return get_data(this) }
+		open(container,last) {
+			if('will_open_page' in container) container.will_open_page(this,last).then(_=>set_active(this,true)).catch(console.error)
+			else set_active(this,true)
 			return this
 		}
-		get data() {
-			const data = this.constructor.data(this)
-			return new Proxy({}, {
-				get(o, name){
-					if (data.has(name)) return data.get(name)
-					let x = data.has(name) ? data.get(name) : null
-					switch (name) {
-						case 'tag':
-							return x ? x : `${data.get('name')}-${data.get('type')}`
-							break
-						case 'file':
-							return x ? x : `${ data.get('name') }.${ data.get('extension') }`
-							break
-					}
-					return null
-				},
-				has(o, name){
-					return data.has(name)
-				},
-				set(o, name, value){
-					console.log('set', {name, value})
-					return true
-				}
-			})
-		}
-		get element() { return this.constructor.element(this) }
-		focus() {
-			if (this.element) this.element.focus()
-			return this
-		}
-		get name() { return this.data.name }
-		open() {
-			this.style.display = ''
-			this.element.setAttribute('tabindex','0')
-			this.active = true
-			return this
-		}
-		get style(){ return this.element.style }
+		get title(){ return this.element.hasAttribute('page-title') ? this.element.getAttribute('page-title'):fxy.id.proper(module.name) }
+		
 	}
 	
 	class Router extends Map {
-		constructor({element, type, folder}) {
+		constructor(element,{type, folder}) {
 			super()
 			this.element = element
 			this.folder = folder
 			this.type = type
 			window.addEventListener('route', this.on_route.bind(this))
 		}
-		close(module) {
-			this.last = module.close()
+		close(module,opening) {
+			this.last = module.close(this.element,opening)
 			return this
 		}
-		
-		get element() {
-			let el = this.has('element') ? this.get('element') : window.app.el
-			if (el instanceof HTMLElement) return el
-			return null
-		}
-		
-		set element(element) {
-			if (element instanceof HTMLElement) this.set('element', element)
-			return this.get('element')
-		}
-		
 		error(module) { return 'on_module_error' in this.element ? this.element.on_module_error(module) : module }
-		
-		get_module(named) {
-			if (this.has(named)) return this.get(named)
-			let module = new Module(named, this.type)
-			return this.set(named, module).get(named)
+		get_module(name) {
+			if (this.has(name)) return this.get(name)
+			return this.set(name,new Module(this.element.pages[name],{name,type:this.type})).get(name)
 		}
 		get_name(data){ return get_name(data,this.type) }
-		
-		get_url(path) { return window.app.source.url(this.folder, path || '') }
-		
 		goto(hash){
 			if(!fxy.is.text(hash)) hash = window.location.hash
 			if(fxy.is.text(hash)) hash = hash.trim().replace('#','')
@@ -124,38 +56,15 @@ wwi.exports('dom',(dom,fxy)=>{
 			if(hash && hash.length) return this.on_route(hash)
 			return new Promise((success,error)=>{ return error(new Error(`invalid hash to open Router Module`))})
 		}
-		
-		load(name) {
-			return new Promise((success, error) => {
-				if(!fxy.is.text(name)) {
-					this.loading = false
-					return error(new Error(`invalid name for Router Module`))
-				}
-				let module = this.get_module(name)
-				if ('loaded' in module) return module.loaded === true ? success(module) : error(module)
-				let page_url = this.get_url(module.data.file)
-				this.loading = true
-				return window.app.port(page_url).then(e=>{
-					if(e === window.app.port.loading) return success(e)
-					return ensure(module).then(()=>{
-						module.loaded = true
-						return success(module)
-					}).catch(error)
-				}).catch(e=>{
-					console.error(e)
-					module.loaded = e
-					return error(module)
-				})
-			})
-		}
-		get loading(){ return this.element.loading }
-		set loading(value){ this.element.loading = value }
+		load(name) { return load_module(this,name) }
 		load_module(module){
 			if (module instanceof Module) {
 				if (module.loaded instanceof Error) this.error(module.loaded)
 				else this.open(module)
 			}
 		}
+		get loading(){ return this.element.loading }
+		set loading(value){ this.element.loading = value }
 		on_error(e){
 			console.groupCollapsed('ModuleRouter Error')
 			console.error(`route type: "${this.type}" is not in route event detail`)
@@ -163,37 +72,36 @@ wwi.exports('dom',(dom,fxy)=>{
 			console.dir(this)
 			console.groupEnd()
 		}
-		on_route(e) {
-			return this.load(this.get_name(e)).then(module => this.load_module(module)).catch(error=>this.on_error(error))
-		}
+		on_route(e) { return on_route(this,e) }
 		open(module) {
-			if(this.opened && this.opened !== module) this.close(this.opened)
-			this.opened = module.open()
-			this.element.dispatch('module opened',this.opened)
+			this.loading = null
+			let opened = this.opened
+			if(opened && opened !== module) this.close(this.opened,module)
+			this.element.page = module.name
+			this.opened = module.open(this.element,opened)
+			this.element.site.title = module.title
+			return this
 		}
 	}
 	
+	//exports
 	dom.Router = Router
 	
 	//shared actions
-	function ensure(module){ return get_load(module).then(()=>get_wait(module)) }
+	function get_data(module){
+		return new Proxy(module, {
+			get(o, name){
+				if (name in o) return o[name]
+				switch (name) {
+					case 'tag': return `${o.name}-${o.type}`
+					case 'file': return `${o.name}.${ o.extension }`
+				}
+				return null
+			}
+		})
+	}
 	
 	function get_list(value){ return value.replace(/ /g,',').split(',').map(part=>part.trim()).filter(part=>part.length > 0) }
-	
-	function get_load(module){ return fxy.all(get_loads(module.element)) }
-	
-	function get_loads(element){
-		if('getAttribute' in element){
-			let load = element.getAttribute('load')
-			if(fxy.is.text(load)) {
-				return get_list(load).map(source=>{
-					if(source.includes('http')) return source
-					return window.url(source)
-				}).map(source=>window.app.port(source))
-			}
-		}
-		return []
-	}
 	
 	function get_name(data,type){
 		if(fxy.is.text(data)) return data
@@ -202,17 +110,53 @@ wwi.exports('dom',(dom,fxy)=>{
 		return null
 	}
 	
-	function get_wait(module){ return window.wwi.when(...get_waits(module.element)) }
-	
-	function get_waits(element){
-		if('getAttribute' in element){
-			let wait = element.getAttribute('wait')
-			if(fxy.is.text(wait)) return get_list(wait)
+	function load_module(element,name){
+		if(!fxy.is.text(name)) element.loading = false
+		let module = element.get_module(name)
+		//return value
+		return new Promise((success, error) => {
+			if ('loaded' in module) return module.loaded === true ? success(module) : error(module)
+			return get_element().then(_=>success(module)).catch(_=>error(module))
+		})
+		//shared actions
+		function get_element(){
+			element.loading = true
+			let page_url = fxy.file.url(element.folder, module.data.file || '')
+			return fxy.port(page_url).then(on_port).then(e=>module.loaded=true).catch(e=>module.loaded=e)
 		}
-		return []
+		function get_loads(ports){ return fxy.all(ports).then(_=>fxy.when(...module.waits)).then(_=>fxy.when(module.element.localName)) }
+		function on_port(e){ return e === fxy.port.loading ? e:get_loads(module.loads.map(source=>fxy.port(source))) }
 	}
 	
+	function on_route(element,e){
+		return element.load(element.get_name(e))
+		              .then(module=>element.load_module(module))
+		              .catch(error=>element.on_error(error))
+	}
 	
-	
+	function set_active(module,active){
+		let element = module.element
+		let set = element.setAttribute.bind(element)
+		let remove = element.removeAttribute.bind(element)
+		switch(active){
+			case true:
+				set('aria-hidden','false')
+				set('aria-expanded','true')
+				remove('tabindex')
+				element.dispatch('active')
+				break
+			default:
+				set('aria-hidden','true')
+				set('aria-expanded','false')
+				set('tabindex','-1')
+				element.dispatch('inactive')
+				break
+		}
+		window.requestAnimationFrame(_=>{
+			module.element.style.display = active ? '':'none'
+			module.active = active
+		})
+		return element
+	}
 })
 

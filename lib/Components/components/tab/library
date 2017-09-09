@@ -1,0 +1,8 @@
+library = {}
+library.id = 'tab-component-library'
+library.elements = [
+	'handle.html',
+	{path:'view.html',wait:['tab-handle']},
+	{path:'container.html',wait:['tab-handle','tab-view']}
+]
+library.wait = ['tab-container']

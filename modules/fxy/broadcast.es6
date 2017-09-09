@@ -1,30 +1,25 @@
 (function(get_broadcast){ return get_broadcast() })
 (function(){
 	    const broadcaster = Symbol('fxy broadcaster')
-	    const Cache = new Map()
 	    const Watchers = new Map()
 	    
 	    class Broadcast extends Map{
 		
 		    constructor(){
 			    super()
-			    window.Define = (callback, requires) => {
-				    if(!is_array(requires)) requires = [requires]
-				    return this.create({ callback, is_define:true, requires });
-			    }
-			    window.on = on_broad(this)
+			    fxy.on = on_broad(this)
+			    window.on = fxy.on
 		    }
 		
 		    check(block) {
 			    let count = block.requires.length
 			    if (count === 0) return { loaded: true }
-			    let mods = this.require( block.requires ).filter( filter_nothingness )
+			    let mods = this.require( block.requires , block.target ).filter( filter_nothingness )
 			    if (mods.length < count) return { waiting: true }
 			    return { loaded: true, mods }
 		    }
 		
 		    create( block ) {
-			
 			    let status = this.check( block )
 			    if ( status.loaded ) return this.fire( block , block.mods )
 			    else block.watcherId = 'watcher-' + Watchers.size
@@ -32,11 +27,10 @@
 			    this.get('definites').add( block )
 			    if ( block.watcherId ) this.set_watcher( block.watcherId )
 			    return true
-			
 		    }
 		
 		    fire( block , mods ) {
-			    let has_mods = Array.isArray(mods) ? true:false
+			    let has_mods = fxy.is.array(mods)
 			    mods = has_mods ? mods : this.require( block.requires )
 			    if( block.is_define ) mods.unshift( window.app )
 			    if('wwi' in window) mods.push( window.wwi )
@@ -44,65 +38,32 @@
 		    }
 		
 		    get_watcher(key) {
-			    if (!this.has('definites')) return undefined
+			    if (!this.has('definites')) return null
 			    let defs = this.get('definites')
-			    for(let def of defs){
-				    if( def.watcherId === key ) return def
-			    }
-			    return undefined
-		    }
-		
-		    is_required(name){ return 'app' in window && this.requirements.includes(name) && !(name in window) }
-		
-		    ready( key, value ) {
-			    if ( typeof value !== 'undefined' &&
-				    value !== null &&
-				    !(key in window) ) {
-				    window[key] = value
-			    }
-			    Cache.get('ready').add(key)
-			    this.recheck()
-			    return window[key]
-		    }
-		
-		    recheck() {
-			    if ( this.has('definites') ) {
-				    let defs = this.get('definites')
-				    for (let def of defs) {
-					    if ( waiting_dependents( def.requires ) ) {
-						    console.log(def.requires)
-					    }
-					    else this.check( def )
-				    }
-				    if ( defs.size === 0 ) this.delete('definites')
-			    }
+			    for(let def of defs) if( def.watcherId === key ) return def
+			    return null
 		    }
 		
 		    //check to see if stuff in cache & window has been set
-		    require(list) {
+		    require(list, block_target) {
 			    let targets = []
-			    if (is_array(list)) {
-				    for(let name of list){
-					    if(this.is_required(name)) this.ready( name, window.app[name] )
-					    targets.push(name)
-				    }
-			    }
-			    else return []
+			    if (!fxy.is.array(list)) return targets
+			    for(let name of list) targets.push(name)
 			    return targets.map( name => {
 				    if(typeof name !== 'string') return null
-				    else if ( name.includes('app.')  ) return get_deep_value( {app:window.app}, name )
+				    if(block_target){
+					    let value = fxy.deep( block_target, name )
+					    if(!value) value = fxy.deeper(block_target,name)
+					    return value
+				    }
+				    else if ( name.includes('app.')  ) return fxy.deep( {app:window.app}, name )
 				    else if ( name in window ) return window[name]
 				    else if ( name in document ) return document[name]
-				    else return get_deeper_value( window, name )
-				    return null
+				    else return fxy.deeper( window, name )
 			    })
 		    }
-		
-		    get requirements(){ return get_app_requirements() }
-		
+		    
 		    set_watcher(key){ return set_watcher(this,key) }
-		
-		
 	    }
         
         //exports
@@ -111,58 +72,42 @@
 	    //shared actions
 	    function filter_nothingness(v){ return v !== null && v !== undefined }
 	    
-	    function filter_cached(name){ return Cache.get('ready').has(name) }
-	
-	    function get_app_requirements(){ return [] }
-	    
-	    function get_deep_value(...x){ return fxy.deep(...x) }
-	
-	    function get_deeper_value(...x){ return fxy.deeper(...x) }
-	
-	    function is_array(...x){ return fxy.is.array(...x) }
-	    
 	    function on_broad(caster){
-		   
-		  
-		    const uid = fxy.uid.generate()
-		
-		    const proxy = new Proxy(broadband_waiter,{
+		    //return value
+	    	return new Proxy(broadband_waiter,{
 			    get(o,name){
-				    if(name === 'then'){
-					    return function then(callback){
-						    o.created = true
-						    //caster.create({callback, requires:waits})
-						    return Promise.resolve(new Promise(function(success,error){
-							    console.log('called resolve:',uid,o.waits)
-							    return this
-						    }))
-					    }
-				    }
-				    return o
+			    	if(fxy.is.text(name)) return get_promise(...get_waits(name))
+				    return null
 			    },
 			    set(o,name,value){
-				    console.log(name)
-				    if(is_text(name) && is_function(value)){
-					    let waits = name.replace(/ /g,',')
-					                    .replace(/\|/g,',')
-					                    .replace(/\+/g,',')
-					                    .replace(/\&/g,',')
-					                    .split(',').map(wait=>wait.trim()).filter(wait=>wait.length > 0)
-					    broadband_waiter(value,...waits)
-				    }
+				    if(fxy.is.text(name) && fxy.is.function(value)) o(value,...get_waits(name))
 				    return true
 			    }
 		    })
-		
-		    //return value
-		    return proxy
 		    
 		    //shared actions
 		    function broadband_waiter(value,...waits){
-		    	//console.log(value,...waits)
-			    caster.create({callback:value, requires:waits})
-			    return proxy
+	    		let block = get_block(value,...waits)
+			    if(block) return caster.create(block)
+			    else return get_promise(...waits.concat([value]))
 		    }
+		    function get_block(value,...x){
+		    	if(typeof value !== 'function') return null
+		    	let callback = value
+			    let requires = x.filter(wait=>typeof wait === 'string')
+			    let block = {callback,requires}
+			    if(fxy.is.object(x[0])) block.target = x[0]
+			    return block
+		    }
+		    function get_promise(...requires){
+			    return {
+				    then(callback){
+					    caster.create({callback,requires})
+					    return this
+				    }
+			    }
+		    }
+		    function get_waits(name){ return name.replace(/ /g,',').replace(/\|/g,',').replace(/\+/g,',').replace(/\&/g,',').split(',').map(wait=>wait.trim()).filter(wait=>wait.length > 0) }
 	    }
 	
 	    function set_watcher(caster,key){
@@ -189,7 +134,10 @@
 			    let status = caster.check( block )
 			    if ( status.waiting ) return this.count++;
 			    this.clear()
-			    caster.get('definites').delete(block)
+			    
+			    let definites = caster.get('definites')
+			    definites.delete(block)
+			    if(definites.size === 0) caster.delete('definites')
 			    return caster.fire( block , status.mods )
 		    }
 		
@@ -202,9 +150,4 @@
 		    return Watchers.set( key, watcher.start() )
 	    }
 	
-	    function waiting_dependents(list){
-		    if (!list) return false
-		    return list.filter(filter_cached).length > 0
-	    }
-    
 })

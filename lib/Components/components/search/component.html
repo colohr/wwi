@@ -1,6 +1,6 @@
 <template id="search-component">
 	<style>
-		@import "/library/modules/wwi/component/design/host.css";
+		@import "/components/search/design/search.css";
 		:host{
 			display: none;
 			top:0;
@@ -26,32 +26,9 @@
 
 		[view]{
 			max-height:none;
-			max-width: none;
 			padding-left:10px;
 			padding-right:10px;
 			max-width: calc(100% - 20px);
-		}
-
-		input{
-			display: inline-block;
-			position: relative;
-			border-radius: 100px;
-			border:none;
-			-webkit-appearance: none;
-			appearance:none;
-			background-color: white;
-			box-sizing: border-box;
-			padding:5px 18px 5px 18px;
-			max-width: calc(100% - 36px);
-			max-height: calc(100% - 100px);
-			width:50%;
-			margin:0 auto;
-			font-size:var(--font-size,16px);
-			outline: none;
-			box-shadow: none;
-			transition:box-shadow 180ms ease;
-			will-change:box-shadow;
-			left:var(--input-left,0);
 		}
 
 		input:focus{
@@ -80,9 +57,24 @@
 				transform: translate3d(0, -100%, 0);
 			}
 		}
+
+
 	</style>
 	<div view gui horizontal center-center>
-		<input tabindex="0" type="search" placeholder="Search..." aria-label="Search">
+		<input aria-autocomplete="list"
+		       aria-expanded="false"
+		       aria-labelledby="search-input-1"
+		       aria-owns="search-results-1"
+		       aria-label="Search"
+		       autocomplete="off"
+		       dir="auto"
+		       id="search-input-1"
+		       placeholder="Search..."
+		       role="combobox"
+		       spellcheck="false"
+		       tabindex="0"
+		       type="search">
+
 		<div buttons gui horizontal center-center>
 			<slot name="clear-button"></slot>
 			<slot name="close-button"></slot>
@@ -96,23 +88,9 @@
 		const SearchComponent = wwi.element(doc).extension(...extension)
 
 		SearchComponent(class extends SearchComponent.Element{
-
 			constructor(){
 				super('routes',{
-					expanded(value){
-						if(value === null){
-							this.setAttribute('aria-expanded','false')
-							this.input.setAttribute('tabindex','-1')
-							this.timeout(()=>this.style.display='none',300)
-							this.dispatch('done')
-						}else{
-							this.style.display=''
-							this.setAttribute('aria-expanded','true')
-							this.input.setAttribute('tabindex','0')
-							this.input.focus()
-							this.dispatch('searching')
-						}
-					},
+					expanded(value){ return this.expand(value) },
 					placeholder(value){
 						if(value !== null) this.input.setAttribute('placeholder',value)
 					},
@@ -124,19 +102,38 @@
 			get button(){ return get_button(this) }
 			set button(value){ return set_button(this,value)}
 			get close_button(){ return this.slots['close-button'].item }
+			connect(controller){}
 			connected(){
 				this.input.onkeyup = e => !this.empty ? this.timeout(()=>this.dispatch('search',this.keywords)):false
-				this.input.onsearch = e => {
-					this.timeout(()=>this.dispatch('search',this.keywords))
-				}
+				this.input.onsearch = e => this.timeout(()=>this.dispatch('search',this.keywords))
+
 				this.query('slot[name="close-button"]').addEventListener('slotchange',e=>{
 					fxy.when('navigator-clear','navigator-close').then(_=>{
 						this.close_button.on('clear',e=>this.expanded=false)
 						this.close_button.on('close',e=>this.expanded=false)
 					})
 				},false)
+
 			}
 			get empty(){ return this.value.length <= 0}
+			expand(value){
+				if(value === null){
+					this.setAttribute('aria-expanded','false')
+					this.input.setAttribute('tabindex','-1')
+					this.timeout(()=>this.style.display='none',300)
+					this.dispatch('done')
+					this.results.hide()
+				}
+				else{
+					this.style.display=''
+					this.setAttribute('aria-expanded','true')
+					this.input.setAttribute('tabindex','0')
+					this.input.focus()
+					this.dispatch('searching')
+					this.timeout(()=>this.results.present(this),350)
+				}
+				return this
+			}
 			get input(){ return this.query('input') }
 			get keywords(){ return !this.empty ? this.value.split(' ').map(word=>word.trim().toLowerCase()).filter(word=>word.length):[] }
 			toggle(){

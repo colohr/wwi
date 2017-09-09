@@ -1,6 +1,5 @@
-wwi.exports('element',(element,fxy) => {
+window.fxy.exports('element',(element,fxy) => {
 	const is = fxy.is
-	
 	
 	const ElementSlots = Base => class extends Base {
 		get slots(){
@@ -66,17 +65,3 @@ wwi.exports('element',(element,fxy) => {
 		})
 	}
 })
-
-//var nodes = Polymer.dom(this).childNodes;
-//return Array.prototype.filter.call(nodes,
-//	function(n) { return n.nodeType = Node.TEXT_NODE });
-//ready() {
-//	super.ready(); // for 2.0 class-based elements only
-//	this._boundHandler = this._processLightChildren.bind(this);
-//	setTimeout(this._boundHandler);
-//	this.$.slot.addEventListener('slotchange', this._boundHandler);
-//}
-//
-//_processLightChildren: function() {
-//	console.log(this.$.slot.assignedNodes());
-//}

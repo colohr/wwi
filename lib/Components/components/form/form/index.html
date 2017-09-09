@@ -1,0 +1,44 @@
+<template id="data-form">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		:host{
+			padding:20px;
+			min-width:300px;
+		}
+		:host([aria-expanded="false"]){
+			display:none;
+		}
+		:host([aria-expanded="true"]){
+			display:block;
+		}
+		[view]{
+			max-height: 90%;
+			overflow-y:auto;
+		}
+		form{
+			position: relative;
+		}
+	</style>
+	<div view>
+		<form>
+			<slot name="title"></slot>
+			<data-repeat>
+				<template>
+					<form-input></form-input>
+				</template>
+			</data-repeat>
+			<slot name="button"></slot>
+		</form>
+	</div>
+</template>
+<script>
+	(function(doc){
+		const DataForm = wwi.element(doc)
+
+		DataForm(class extends DataForm.Element{
+			get data_repeat(){ return this.query('data-repeat') }
+			get items(){ return this.data_repeat.items }
+			set items(items){ return this.data_repeat.items = items }
+		})
+	})(document)
+</script>

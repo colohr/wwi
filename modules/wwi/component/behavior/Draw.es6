@@ -4,9 +4,7 @@
 		
 	
 		//export
-		return window.app.port
-		             .eval(window.url.component('behavior/logic/artist.es6'))
-		             .then(get_artist=>get_artist(fxy)).then(export_draw_tool)
+		return fxy.port.eval(window.url.component('behavior/logic/artist.es6')).then(get_artist=>get_artist(fxy)).then(export_draw_tool)
 		
 		//shared actions
 		function export_draw_tool(Artist){

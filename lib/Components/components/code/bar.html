@@ -1,0 +1,128 @@
+<template id="code-bar">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+			overflow: visible;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 30px;
+			background-color: rgba(29, 36, 44, 0);
+			z-index: 100;
+		}
+		[view]{
+			display: none;
+		}
+		:host([state="show"]) [view]{
+			display: block;
+		}
+
+		[button] {
+			right: -5px;
+			bottom: -2px;
+			color: white;
+			border-radius: 100px;
+		}
+
+		[button][active] {
+			background-color: rgba(29, 36, 44, 0.77);
+		}
+
+	</style>
+
+	<div view>
+		<div fit gui toolbar horizontal center around-justified>
+			<slot></slot>
+			<select languages>
+				<option disabled>Language</option>
+				<option value="commands">Commands</option>
+				<option value="javascript">ES6</option>
+				<option value="graphql" selected>GraphQL</option>
+				<option value="htmlmixed">HTML</option>
+				<option value="xml">XML</option>
+			</select>
+			<select themes>
+				<option disabled>Theme</option>
+				<option>3024-day</option>
+				<option>3024-night</option>
+				<option>abcdef</option>
+				<option>ambiance</option>
+				<option>base16-dark</option>
+				<option>base16-light</option>
+				<option>bespin</option>
+				<option>blackboard</option>
+				<option>cobalt</option>
+				<option>colorforth</option>
+				<option selected>dracula</option>
+				<option>duotone-dark</option>
+				<option>duotone-light</option>
+				<option>eclipse</option>
+				<option>elegant</option>
+				<option>erlang-dark</option>
+				<option>hopscotch</option>
+				<option>icecoder</option>
+				<option>isotope</option>
+				<option>lesser-dark</option>
+				<option>liquibyte</option>
+				<option>material</option>
+				<option>mbo</option>
+				<option>mdn-like</option>
+				<option>midnight</option>
+				<option>monokai</option>
+				<option>neat</option>
+				<option>neo</option>
+				<option>night</option>
+				<option>panda-syntax</option>
+				<option>paraiso-dark</option>
+				<option>paraiso-light</option>
+				<option>pastel-on-dark</option>
+				<option>railscasts</option>
+				<option>rubyblue</option>
+				<option>seti</option>
+				<option>solarized dark</option>
+				<option>solarized light</option>
+				<option>the-matrix</option>
+				<option>tomorrow-night-bright</option>
+				<option>tomorrow-night-eighties</option>
+				<option>ttcn</option>
+				<option>twilight</option>
+				<option>vibrant-ink</option>
+				<option>xq-dark</option>
+				<option>xq-light</option>
+				<option>yeti</option>
+				<option>zenburn</option>
+			</select>
+		</div>
+	</div>
+
+
+	<code-π button type="bar" states="hide,show"></code-π>
+
+</template>
+<script>
+	(function (doc) {
+		const Toolbar = wwi.element(doc)
+		Toolbar(class extends Toolbar.Element {
+			constructor(){super({state:true})}
+			get button(){ return this.query('[button]')}
+			connected(){
+				let options = this.all('select[themes] option')
+				for(let option of options){
+					if(option.hasAttribute('disabled') !== true){
+						option.setAttribute('value',option.textContent.trim())
+					}
+				}
+				this.button.on('state', e => this.state=e.detail.state.value)
+			}
+			get language(){ return this.languages.value }
+			set language(value){ return this.languages.value = value }
+			get languages(){ return this.query('[languages]')}
+			get theme(){ return this.themes.value }
+			set theme(value){ return this.themes.value = value }
+			get themes(){ return this.query('[themes]')}
+		})
+	})(document)
+</script>

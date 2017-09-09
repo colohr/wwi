@@ -15,8 +15,8 @@
 		'html',
 		'ico',
 		'jpg',
-		'js',
 		'json',
+		'js',
 		'm4a', //aac
 		'mp3',
 		'ogg',
@@ -25,8 +25,6 @@
 		'wav',
 		'xml'
 	]
-	
-	
 	
 	const host = `${window.location.protocol}//${window.location.host}`
 	
@@ -66,6 +64,7 @@
 			let count = parts.length
 			return count > 0 ? parts[ count-1 ] : false
 		},
+		get name(){ return this.file },
 		get parts(){ return get_parts },
 		path(x){ return this.clean(this.clear(x)).trim() },
 		get regular_expressions(){ return regular_expressions },

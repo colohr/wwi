@@ -1,4 +1,4 @@
-wwi.exports('element',(element)=>{
+window.fxy.exports('element',(element)=>{
 	
 	const DesignMix = Base => class extends Base {
 		
@@ -19,8 +19,10 @@ wwi.exports('element',(element)=>{
 		
 	}
 	
+	//exports
 	element.design = DesignMix
 	
+	//shared actions
 	function get_design(e){
 		return new Proxy(e,{
 			get(o,name){

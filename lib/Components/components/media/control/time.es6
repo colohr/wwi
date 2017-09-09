@@ -1,4 +1,4 @@
-wwi.exports('media',(media)=>{
+window.fxy.exports('media',(media)=>{
 	media.time = function get_time(time) {
 		let minutes = get_minutes(time)
 		let seconds = get_seconds(time, minutes)

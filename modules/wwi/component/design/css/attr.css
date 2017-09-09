@@ -36,7 +36,7 @@
 [gui][center-center]{ -ms-flex-pack: center; -webkit-justify-content: center; justify-content: center; }
 [gui][end-justified]{ -ms-flex-pack: end; -webkit-justify-content: flex-end; justify-content: flex-end; }
 [gui][around-justified], [gui][around]{ -ms-flex-pack: distribute; -webkit-justify-content: space-around; justify-content: space-around; }
-[gui][justified]{ -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+[gui][justified],[gui][between]{ -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
 
 [self-start]{ -ms-align-self: flex-start; -webkit-align-self: flex-start; align-self: flex-start; }
 [self-center]{ -ms-align-self: center; -webkit-align-self: center; align-self: center; }

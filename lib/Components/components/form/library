@@ -1,0 +1,19 @@
+library = {}
+
+library.logic = [
+	'control/data.es6',
+	'control/inputs.es6',
+	'control/template.es6'
+]
+
+library.elements = [
+	'template/index.html',
+	'form/input.html',
+	{
+		name:'data-form',
+		path:'form/index.html',
+		wait:['form-input']
+	}
+]
+
+library.wait = ['data-form']

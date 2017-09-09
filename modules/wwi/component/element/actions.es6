@@ -1,109 +1,72 @@
-wwi.exports('element',(element,fxy) => {
+window.fxy.exports('element',(element,fxy) => {
 	const ally_triggers =  [13,32]
 	const pointers = Symbol.for('pointers data')
+	const pointable = {'click': true, 'down': true, 'up': true, tap: true}
 	
-	class Listener {
-		static Callbacks(listener) {
-			if (!this.HasCallbacks(listener)) this.Memory[fxy.symbols.Callbacks].set(listener, new Map())
-			return this.Memory[fxy.symbols.Callbacks].get(listener)
+	class Action {
+		constructor(type, is_pointer) {
+			this.type = type
+			if (is_pointer) this.is_pointer = is_pointer
 		}
-		static Delete(element) {
-			if (!this.Memory[fxy.symbols.Listener].has(element)) return element
-			this.Memory[fxy.symbols.Listener].get(element).disconnect(element)
-			this.Memory[fxy.symbols.Listener].delete(element)
+		connect(element) {
+			if (!(element instanceof HTMLElement)) return element
+			if (this.valid && this.eventListener) element.addEventListener(this.original_type || this.type, this.eventListener, false)
 			return element
 		}
-		static get Events() {
-			return this.Memory.Events
+		disconnect(element) {
+			if (!(element instanceof HTMLElement)) return element
+			if (this.valid && this.eventListener) element.removeEventListener(this.original_type || this.type, this.eventListener, false)
+			return element
 		}
-		static Has(element) {
-			return this.Memory[fxy.symbols.Listener].has(element)
+		dispatch(detail, target, element) {
+			target.dispatchEvent(this.event(detail))
+			return element
 		}
-		static HasCallbacks(listener) {
-			return this.Memory[fxy.symbols.Callbacks].has(listener)
+		event(detail) { return Listener.event(this.type, detail) }
+		get eventListener() { return this.elementEventListener || null }
+		set eventListener(callback) {
+			const event_listener_callback = callback
+			const block = this
+			this.elementEventListener = function event_listener(e) {
+				let is_ally = is_ally_trigger(e)
+				if (block.is_pointer || is_ally) Pointer.event(is_ally ? e.detail.original : e)
+				return event_listener_callback(e)
+			}
+			return this.elementEventListener
 		}
-		static Listener(element) {
-			if (!this.Memory[fxy.symbols.Listener].has(element)) this.Memory[fxy.symbols.Listener].set(element, new Listener())
-			return this.Memory[fxy.symbols.Listener].get(element)
-		}
-		static get Memory(){
-			return fxy.require('element/memory')
-		}
-		static get Methods() {
-			return fxy.symbols.Methods
-		}
-		static get Pointer() {
-			return fxy.symbols.Pointer
-		}
-		static Pointers(element) {
-			return new Proxy({
-				element,
-				events: this.Events,
-				methods: this.Methods,
-				pointable: this.Pointable,
-			}, {
-				get(o, p){
-					if (p in o.events) return o.events[p][0]
-					if (p in o.methods) return o.methods[p]
-					return o[p]
-				}
-			})
-		}
-		static get Pointable() {
-			return fxy.symbols.Pointable
-		}
-		static get Restyle() {
-			return fxy.symbols.Restyle
-		}
-		
-		static event(type,detail){
-			return new CustomEvent(type,{bubbles:true,composed:true,detail})
-		}
-		
+		get valid() { return this.type && typeof this.type === 'string' }
+	}
+	
+	class Listener {
+		static disconnect(element){ return delete_listener(element) }
+		static event(type,detail){ return new CustomEvent(type,{bubbles:true,composed:true,detail}) }
 		constructor() {}
-		
-		callback(type, eventListener, isPointer) {
-			var block
+		callback(type, eventListener, is_pointer) {
+			let block
 			if (this.has_callbacks && this.callbacks.has(type)) block = this.callbacks.get(type)
 			else {
-				block = new Listener.Callback(type, isPointer)
+				block = new Action(type, is_pointer)
 				if (!block.valid) throw new TypeError('Invalid Element Callback Type: ' + type)
 				if (typeof eventListener === 'function') block.eventListener = eventListener
 				this.callbacks.set(type, block)
 			}
 			return block
 		}
-		
-		get callbacks() { return this.constructor.Callbacks(this) }
-		
-		delete_all(type){
-			if(this.has(type)) return this.callbacks.delete(type)
-			return false
-		}
-		
+		get callbacks() { return get_callbacks(this) }
+		delete_all(type){ return this.has(type) ? this.callbacks.delete(type):false }
 		disconnect(element) {
-			if (this.has_callbacks) {
-				for (let cb of this.callbacks) cb[1].disconnect(element)
-			}
-			return element;
+			if (this.has_callbacks) for (let action of this.callbacks) action[1].disconnect(element)
+			return element
 		}
-		
 		dispatch(type, detail, target, element) {
 			if (!target) target = element
 			if (this.has_callbacks && this.callbacks.has(type)) return this.callback(type).dispatch(detail, target, element)
 			else target.dispatchEvent(Listener.event(type, detail))
 			return element
 		}
-		
-		get(type){
-			if(this.has(type)) return this.callbacks.get(type)
-			return false
-		}
-		
+		get(type){ return this.has(type) ? this.callbacks.get(type):false }
 		has(type){ return this.has_callbacks && this.callbacks.has(type) }
-		
-		get has_callbacks() { return this.constructor.HasCallbacks(this) }
-		
+		get has_callbacks() { return has_callbacks(this) }
 		off(type, element, delete_all) {
 			if (!this.has_callbacks) return this
 			if (!this.callbacks.has(type)) return this
@@ -111,11 +74,10 @@ wwi.exports('element',(element,fxy) => {
 			if(delete_all === true) this.delete_all(type)
 			return element
 		}
-		
 		on(type, callback, element) {
 			let pointers = this.pointers
-			var pointer = pointers[type]
-			var name = type
+			let pointer = pointers[type]
+			let name = type
 			if (pointer) {
 				if (typeof pointer === 'string') name = pointer
 				if (typeof callback !== 'function') {
@@ -124,76 +86,34 @@ wwi.exports('element',(element,fxy) => {
 				}
 			}
 			
-			let isPointer = pointers.pointable[type]
-			if (isPointer && 'aria' in element) {
+			let is_pointable = pointable[type]
+			if (is_pointable && 'aria' in element) {
 				let aria = element.aria
 				if (!element.hasAttribute('role')) aria.role = 'button'
 				if (!element.hasAttribute('tabindex')) aria.tabindex = '0'
 			}
 			
-			var custom_type = name
+			let custom_type = name
 			if(name !== type) custom_type = type
-			let callback_block = this.callback(custom_type, callback, isPointer)
+			let callback_block = this.callback(custom_type, callback, is_pointable)
 			if(name !== custom_type) callback_block.original_type = name
-			return callback_block.connect( this.restyle.event(custom_type, element) )
+			return callback_block.connect( element )
 		}
 		
-		get pointers() { return this.constructor.Pointers(this) }
-		
-		get restyle() { return this.constructor.Restyle }
-		
-	}
-	
-	Listener.Callback = class ElementCallbackBlock {
-		
-		constructor(typeName, isPointer) {
-			this.type = typeName;
-			if (isPointer) this.isPointer = isPointer
-		}
-		
-		connect(element) {
-			if (!(element instanceof HTMLElement)) return element
-			if (this.valid && this.eventListener) element.addEventListener(this.original_type || this.type, this.eventListener, false)
-			return element
-		}
-		
-		disconnect(element) {
-			if (!(element instanceof HTMLElement)) return element
-			if (this.valid && this.eventListener) element.removeEventListener(this.original_type || this.type, this.eventListener, false)
-			return element
-		}
-		
-		dispatch(detail, target, element) {
-			target.dispatchEvent( this.event(detail) )
-			return element
-		}
-		
-		event(detail) { return Listener.event(this.type, detail) }
-		
-		get eventListener() { return this.elementEventListener || null }
-		
-		set eventListener(callback) {
-			const eventListenerCallback = callback
-			const block = this
-			this.elementEventListener = function eventListener(e) {
-				let is_ally = is_ally_trigger(e)
-				if (block.isPointer || is_ally) {
-					Pointer.event(is_ally ? e.detail.original : e)
+		get pointers() {
+			let events = fxy.require('element/memory').Events
+			return new Proxy(this,{
+				get(o,name){
+					if (name in events) return events[name][0]
+					return o[name]
 				}
-				return eventListenerCallback(e)
-			}
-			return this.elementEventListener
+			})
 		}
-		
-		get valid() { return this.type && typeof this.type === 'string' }
-		
 	}
 	
-	
+	//exports
 	element.actions = Base => class extends Base {
-		
 		a11y_callback(e){ /*console.log('a11y event',e)*/ }
-		
 		dispatch(type, detail, target) {
 			let event
 			if (type instanceof CustomEvent) event = type
@@ -211,30 +131,74 @@ wwi.exports('element',(element,fxy) => {
 			}
 			return this
 		}
-		
-		get has_listener() { return Listener.Has(this) }
-		
-		get listener() { return Listener.Listener(this) }
-		
+		get has_listener() { return has_listener(this) }
+		get listener() { return get_listener(this) }
 		off(type, callback) {
 			if (typeof callback === 'function') this.removeEventListener(type, callback, false)
 			else if (this.has_listener) return this.listener.off(type, this, typeof callback === 'boolean' ? callback:true)
 			return this
 		}
-		get on(){
-			return get_on(this)
-		}
-		
+		get on(){ return get_on(this) }
 	}
 	
-	
+	//exports
 	element.listener = Listener
 	element.pointer = Pointer
 	
+	//shared actions
+	function a11y_callback(element,callback){
+		return function a11y_event_callback(e){
+			let a11y = a11y_event(e)
+			if(a11y) element.dispatch('a11y',a11y)
+			return callback(e)
+		}
+	}
+	function a11y_code(event){
+		let code = event.charCode || event.keyCode
+		return code === 32 || code === 13
+	}
+	function a11y_event(event){
+		let a11y = a11y_type(event.type)
+		if(a11y){
+			return new CustomEvent('a11y',{
+				bubbles:true,
+				detail:{
+					a11y,
+					code:a11y_code(event),
+					event
+				}
+			})
+		}
+		return false
+	}
+	function a11y_type(type){
+		switch (type){
+			case 'click':
+			case 'keypress':
+				return type
+				break;
+		}
+		return false
+	}
 	
+	function delete_listener(element){
+		let memory = fxy.require('element/memory')[fxy.symbols.listener]
+		if (!memory.has(element)) return element
+		memory.get(element).disconnect(element)
+		memory.delete(element)
+		return element
+	}
 	
-	//----------shared actions--------
-	
+	function get_callbacks(listener){
+		let memory = fxy.require('element/memory')[fxy.symbols.actions]
+		if (!has_callbacks(listener)) memory.set(listener, new Map())
+		return memory.get(listener)
+	}
+	function get_listener(element){
+		let memory = fxy.require('element/memory')[fxy.symbols.listener]
+		if (!memory.has(element)) memory.set(element, new Listener())
+		return memory.get(element)
+	}
 	function get_on(element){
 		return new Proxy(listener_on(element),{
 			deleteProperty(o,name){
@@ -252,6 +216,19 @@ wwi.exports('element',(element,fxy) => {
 		})
 	}
 	
+	function has_listener(element){ return fxy.require('element/memory')[fxy.symbols.listener].has(element) }
+	function has_callbacks(listener){ return fxy.require('element/memory')[fxy.symbols.actions].has(listener) }
+	
+	function is_ally_trigger(e){
+		if(e.type === 'a11y'){
+			let detail = e.detail
+			if('action' in detail && detail.action === 'keydown'){
+				return ally_triggers.includes(detail.key.code)
+			}
+		}
+		return false
+	}
+	
 	function listener_on(element){
 		let listener = function get_listener_on(name,action){
 			if(a11y_type(name)){
@@ -264,57 +241,7 @@ wwi.exports('element',(element,fxy) => {
 		return listener
 	}
 	
-	
-	function a11y_callback(element,callback){
-		return function a11y_event_callback(e){
-			let a11y = a11y_event(e)
-			if(a11y) element.dispatch('a11y',a11y)
-			return callback(e)
-		}
-	}
-	
-	function a11y_code(event){
-		let code = event.charCode || event.keyCode
-		return code === 32 || code === 13
-	}
-	
-	function a11y_event(event){
-		let a11y = a11y_type(event.type)
-		if(a11y){
-			return new CustomEvent('a11y',{
-				bubbles:true,
-				detail:{
-					a11y,
-					code:a11y_code(event),
-					event
-				}
-			})
-		}
-		return false
-	}
-	
-	function a11y_type(type){
-		switch (type){
-			case 'click':
-			case 'keypress':
-				return type
-				break;
-		}
-		return false
-	}
-	
-	function is_ally_trigger(e){
-		if(e.type === 'a11y'){
-			let detail = e.detail
-			if('action' in detail && detail.action === 'keydown'){
-				return ally_triggers.includes(detail.key.code)
-			}
-		}
-		return false
-	}
-	
-	
-	//--------------pointer-----------------
+	//Pointer
 	function Pointer() {
 		if (!this[this.Canvas]) {
 			this[this.Canvas] = {
@@ -343,7 +270,6 @@ wwi.exports('element',(element,fxy) => {
 		}
 		return this[this.Canvas];
 	}
-	
 	Pointer.get = function(name){
 		if(Pointer.has(name)) return Pointer[pointers].get(name)
 		return null

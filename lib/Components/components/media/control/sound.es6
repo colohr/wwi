@@ -1,7 +1,5 @@
 (function(get_sound,export_sound){ return export_sound(get_sound()) })
 (function(){
-	const app = window.app
-	const fxy = window.fxy
 	const AudioEvents = [
 		'abort',
 		'canplay',
@@ -26,14 +24,15 @@
 	const SoundLibrary = library.data
 	const played = Symbol.for('audio has been played')
 	
-	return app.port.eval(window.url.elements('media/control/logic/tags.es6')).then(tags=>{
+	//exports
+	return window.fxy.port.eval(window.url(window.components.media.path,'/control/logic/tags.es6')).then(tags=>{
 	
 		class MediaSound extends Map {
 			static get tags(){ return get_audio_tags }
 			constructor(element) {
 				super([['element',element]])
 				this.url = element.url
-				this.identity = app.source.identity(this.url)
+				this.identity = fxy.file.identity(this.url)
 			}
 			get audio() { return this.has('audio') ? this.get('audio'):null }
 			set audio(sound_data){
@@ -120,9 +119,10 @@
 		}
 		
 		
-		
+		//exports
 		return get_media_sound
 		
+		//shared actions
 		function get_data_type(text) {
 			const types = { mp3: 'audio/mpeg', ogg: 'audio/ogg' }
 			if (fxy.is.text(text)) {
@@ -136,7 +136,7 @@
 		function get_media_sound(element){ return set_sound_element(new MediaSound(element)) }
 		
 		get_media_sound.get = function(url){
-			let identity = app.source.identity(url)
+			let identity = fxy.file.identity(url)
 			if(SoundLibrary.has(identity.id)) return SoundLibrary.get(identity.id)
 			return null
 		}
@@ -148,7 +148,7 @@
 				
 				function get_audio_file_type_loader(audio_url){
 					return new Promise((success,error)=>{
-						let type = app.source.type(audio_url,'song')
+						let type = fxy.file.type(audio_url,'song')
 						switch(type){
 							case 'song':
 								return window.fetch(audio_url)
@@ -158,7 +158,7 @@
 								break
 							default:
 								if(!type) return error(new Error(`Audio source type is invalid`))
-								let name = app.source.file(audio_url).replace(`.${type}`,'')
+								let name = fxy.file.file(audio_url).replace(`.${type}`,'')
 								return get_audio_tags(audio_url).then(metadata=>{
 									return success({metadata, name, source:audio_url})
 								}).catch(error)
@@ -181,29 +181,22 @@
 		function set_sound_element(media_audio){
 			let media_url = media_audio.url
 			let id = media_audio.id
-			if(SoundLibrary.has(media_audio.id)){
-				media_audio.audio = SoundLibrary.get(media_audio.id)
-			}
+			if(SoundLibrary.has(media_audio.id)) media_audio.audio = SoundLibrary.get(media_audio.id)
 			else{
 				load_audio_data(media_url).then(function(sound_data){
 					sound_data.metadata = get_metadata({identity:media_audio.identity,data:sound_data})
 					media_audio.audio = SoundLibrary.set(id,sound_data).get(id)
-					
 				}).catch(console.error)
 			}
 			return media_audio
-			
-			
 		}
 		
 	})
 	
 },function wwi_export(sound_promise){
-	
-	wwi.exports('media',(media)=>{
+	window.fxy.exports('media',(media)=>{
 		sound_promise.then(Sound=>{
 			media.Sound = Sound
 		})
-		
 	})
 })

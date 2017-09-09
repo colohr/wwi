@@ -1,9 +1,7 @@
 (function(get_fxy){ return get_fxy() })
 (function(){
-	
 	return function export_fxy(modules){
 		let folder = `${window.location.origin}/${modules}/fxy`
-		
 		//return value
 		return get_logic().then(_=>window.fxy).catch(console.error)
 		//shared actions
@@ -13,17 +11,15 @@
 				'class.es6',
 				'symbols.es6',
 				'browser.es6',
-				'uid.es6',
+				//'uid.es6',
 				'file.es6',
 				'port.es6',
 				'library.es6',
 				'broadcast.es6'
 			]
 			let loaded = []
-			
 			//return value
 			return new Promise((success,error)=>load_next(()=>success(),error))
-			
 			//shared actions
 			function load_next(done,error){
 				for(let file_path of files){

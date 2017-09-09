@@ -1,6 +1,6 @@
-wwi.exports('element',(element,fxy)=>{
+window.fxy.exports('element',(element,fxy)=>{
+	
 	const is = fxy.is
-	const Listener = fxy.require('element/listener')
 	const A11y = fxy.require('element/a11y')
 	
 	const routes = {
@@ -19,14 +19,14 @@ wwi.exports('element',(element,fxy)=>{
 		}
 	}
 
-	//--------------tricycle exports-----------
+	//exports
 	element.tricycle = Base => class extends Base {
 		connectedCallback() { routes.connected(this) }
 		disconnectedCallback() { routes.disconnected(this) }
 		attributeChangedCallback(attribute_name, old_value, new_value) { routes.changed({ el:this, name:attribute_name, old:old_value, value:new_value }) }
 	}
 	
-	//--------------shared actions--------------
+	//shared actions
 	function changed_element({el,name,old,value}){
 		let data = {name,old,value}
 		let tricycles = 'tricycle' in el
@@ -53,7 +53,7 @@ wwi.exports('element',(element,fxy)=>{
 		if(typeof el.disconnected === 'function') el.disconnected(fxy.symbols,is)
 		if(is_ally(el)) A11y.disconnect(el)
 		fxy.require('element/forget')(el)
-		return Listener.Delete(el)
+		return element.listener.disconnect(el)
 	}
 	
 	function get_element_routes(el){
@@ -88,8 +88,6 @@ wwi.exports('element',(element,fxy)=>{
 		}
 	}
 	
-	
-
 	function is_ally(el){ return fxy.symbols.ally.element in el }
 	
 	function tricycle(el,data,type){
@@ -109,38 +107,3 @@ wwi.exports('element',(element,fxy)=>{
 	}
 	
 })
-
-
-//function connect_element_attributes(el){
-//	if (typeof el.attributeChangedCallback === 'function') {
-//		let a = el.attributes
-//		let Atts = el.constructor && 'observedAttributes' in el.constructor ? el.constructor.observedAttributes : []
-//		if (Atts && Atts.length) {
-//			for (var i = 0; i < a.length; i++) {
-//				let b = a[i]
-//				if (Atts.includes(b.name) && 'attributeChangedCallback' in el){
-//					el.attributeChangedCallback(b.name, null, b.value)
-//				}
-//			}
-//		}
-//	}
-//	return el
-//}
-
-//routes.connected = function (el) {
-//	if('tricycle' in el) return tricycle(el,{},{cycle:'connected'})
-//	return connect_element(el)
-//}
-//
-//routes.disconnected = function (el) {
-//	if('tricycle' in el) return tricycle(el,{},{cycle:'disconnected'})
-//	return disconnect_element(el)
-//}
-//
-//routes.changed = function ( changes ) { return changed_element( changes ) }
-
-
-//const Tricycle =
-//Tricycle.routes = routes
-
-

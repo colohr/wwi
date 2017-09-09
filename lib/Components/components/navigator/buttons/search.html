@@ -1,6 +1,6 @@
 <template id="navigator-search">
 	<style>
-		@import "/library/components/navigator/buttons/design.css";
+		@import "/components/navigator/buttons/design.css";
 		:host [find]{
 			display: none;
 		}
@@ -22,10 +22,10 @@
 	(function(doc){
 		const NavigatorSearch = wwi.element(doc).extension(...components.navigator.mix('Button'))
 		NavigatorSearch(class extends NavigatorSearch.Element{
-			constructor(){
-				super()
+			connectedCallback(){
+				super.connectedCallback()
 				this.define({find:true})
-				this.at('gui','end-align')
+				this.setAttribute('no-shadow','')
 			}
 		})
 	})(document)

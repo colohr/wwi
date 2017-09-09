@@ -2,7 +2,7 @@
 (function(){
     return function export_control(wwe,fxy){
 	    const timer = Symbol('timer')
-	    const data_path = url.elements('wwe/background/data.json')
+	    const data_path = window.url(window.components.wwe.path,'background/data.json')
         const types = {
 	    	collections:null,
 	        effects:null,

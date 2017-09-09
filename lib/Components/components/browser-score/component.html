@@ -1,0 +1,147 @@
+<template id="browser-score">
+	<style>
+		@import "/modules/wwi/component/design/host.css";
+		@import "/modules/wwi/design/action-item.css";
+		:host {
+			display: block;
+			position: relative;
+			max-width: 100vw;
+			height:100%;
+			width:100%;
+			perspective: 1000px;
+			background: rgb(42,51,66);
+			background: -moz-radial-gradient(center, ellipse cover, rgba(42,51,66,1) 18%, rgba(39,47,61,1) 61%, rgba(42,48,61,1) 100%);
+			background: -webkit-radial-gradient(center, ellipse cover, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
+			background: radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
+		}
+
+		[container]{
+			position: relative;
+		}
+
+		[box]{
+			display:block;
+			box-sizing: border-box;
+			overflow: hidden;
+			border: 10px solid #de4747;
+			max-width: 100%;
+			transform-style: preserve-3d;
+			transition-timing-function: ease-out;
+			transition-duration: 600ms;
+			transform-origin: bottom center;
+			transition-property: transform, opacity;
+			position: absolute;
+			bottom:20%;
+			width:70%;
+			cursor: default;
+			margin:0 auto;
+			left:calc(50vw - 35%);
+		}
+
+		[box]:nth-of-type(1){
+			transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,-40px);
+		}
+
+		[box]:nth-of-type(2){
+			transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,0px);
+		}
+		[box]:nth-of-type(3){
+			transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,40px);
+		}
+
+		[box]:nth-of-type(1):hover{
+			-webkit-text-stroke: 4px var(--tangerine);
+		}
+		[box]:nth-of-type(2):hover {
+			-webkit-text-stroke: 4px var(--grape);
+		}
+		[box]:nth-of-type(3):hover{
+			-webkit-text-stroke: 4px var(--turquoise);
+		}
+
+		:host(:hover) [box]:nth-of-type(1){
+			transform: rotateX(45deg) scale(0.8,0.8) rotateY(0deg) translate3d(0px,5vh,-5vh);
+		}
+		:host(:hover) [box]:nth-of-type(2){
+			transform: rotateX(45deg) scale(0.8,0.8) rotateY(0deg) translate3d(0px,10vh,20vh);
+		}
+		:host(:hover) [box]:nth-of-type(3){
+			transform: rotateX(45deg) scale(0.8,0.8) rotateY(0deg) translate3d(0px,20vh,45vh);
+		}
+
+		:host([scored]:active) [box]{
+			transform: rotateX(55deg) scale(1,1) rotateY(0) translate3d(0,5px,-50px) !important;
+		}
+
+		[title]{
+			line-height:0.88;
+			font-weight: 900;
+			padding:20px;
+			font-size:100px;
+			color: #464551;
+			filter: drop-shadow(0 0 4px);
+			background: rgba(31, 31, 31, 0.46);
+		}
+
+		tagger-element{
+			margin-top:calc(120vh + 50px);
+			margin-bottom:50px;
+
+		}
+
+		a{
+			-webkit-text-stroke: 0;
+		}
+		[box]:nth-of-type(3):hover a{
+			color:var(--turquoise);
+		}
+
+		[view]{
+			overflow-y:auto;
+			max-height:100%;
+		}
+
+
+	</style>
+	<div container view gui vertical center-center>
+		<div box gui>
+			<div title vertical>
+				<div>World</div>
+				<div>Wide</div>
+				<div>Internet</div>
+
+			</div>
+		</div>
+		<div box gui>
+			<div title vertical>
+				<div>World</div>
+				<div>Wide</div>
+				<div>Internet</div>
+			</div>
+		</div>
+		<div box gui>
+			<div title vertical>
+				<div>World</div>
+				<div>Wide</div>
+				<div>Internet</div>
+				<a action-item role="button" tabindex="0" style="font-size:60px" score>Web Score</a>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+    (function(doc){
+        const BrowserScore = wwi.element(doc).extension(...components['browser-score'].mix('ProgressReport'))
+	    BrowserScore(class extends BrowserScore.Element{
+	    	connected(){
+	    		this.define({scored:true})
+			    this.query('[score]').onclick = e => this.load()
+	    	}
+			load(){
+				if(this.scored) return
+				this.query('[score]').innerHTML = this.report_card.grade
+				this.scored=true
+			}
+        })
+    })(document)
+</script>

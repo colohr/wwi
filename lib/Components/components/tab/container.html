@@ -1,0 +1,147 @@
+<template id="tab-container">
+	<style>
+		@import "/modules/wwi/design/host.css";
+		:host {
+			--list-height:33px;
+			display: block;
+			position: relative;
+		}
+		[view]{
+			position: relative;
+			height:100%;
+			width:100%;
+		}
+		[panels]{
+			position:relative;
+			height:calc(100% - var(--list-height));
+			width: 100%;
+			background-color: rgba(255,255,255,0.4);
+		}
+		[menu]{
+			position: relative;
+			width: 100%;
+			max-width: 100%;
+			height:var(--list-height,33px);
+			border-bottom: 1px solid rgba(208, 208, 208,0.6);
+			overflow: hidden;
+			background-color: rgba(255,255,255,0.4);
+
+		}
+
+	</style>
+	<div view  gui horizontal wrap>
+		<div menu sort-container role="tablist" gui horizontal around-justified end stretch>
+
+		</div>
+		<div panels gui horizontal center-center>
+			<slot id="panels">
+				Tab Panels
+			</slot>
+		</div>
+	</div>
+
+</template>
+<script>
+	(function (doc) {
+		let TabContainer = wwi.element(doc).extension({
+			name:'Timeout',
+			module:'behavior'
+		},{
+			name:'Sort',
+			module:'behavior'
+		})
+
+		TabContainer(class extends TabContainer.Element{
+			constructor(){
+				super()
+				this.shadowRoot.querySelector('slot#panels').addEventListener('slotchange',this.slot_changed.bind(this),false)
+			}
+			get menu(){ return this.query('[menu') }
+
+
+			connected(){
+				let items = this.update_views().sort.sorted
+				console.log({items})
+			}
+			update_views(){
+				let views = this.views
+				for(let view of views){
+					let handle = view.handle
+					if(handle.parentElement === null) this.menu.appendChild(handle)
+				}
+				return this
+			}
+			deselect(tab){
+				if(tab instanceof HTMLElement){
+					tab.aria.selected=false
+					let panel = tab.panel
+					if(panel) panel.active = false
+				}
+				return  this.resize_panels()
+			}
+			on_sort(){
+
+				let tabs = this.tabs
+				tabs.forEach((tab,index)=>{
+					tab.panel.dataset.index = index
+				})
+
+				let panels = this.panels.sort((A,B)=>{
+					let a = parseInt(A.dataset.index)
+					let b = parseInt(B.dataset.index)
+					if(a > b) return 1
+					if(b < a) return -1
+					return 0
+				})
+
+				panels.forEach(panel=>panel.remove())
+				panels.forEach(panel=>{ this.append(panel) })
+				this.tabs.forEach(tab=>{
+
+					if(tab.was_selected) {
+						this.deselect(tab)
+						this.select(tab)
+					}
+					delete tab.was_selected
+				})
+			}
+			panel(id){
+				return this.panels.filter(panel=>{
+					console.log(panel.id)
+					return panel.id === id
+				})[0] || null
+			}
+			get panels(){ return this.query('[panels]') }
+
+			resize_panels(){
+				let tabs = this.tabs
+				tabs.forEach(tab=>{
+					let panel = tab.panel
+					panel.style.width = tab.size.width+'px'
+					if(panel.update) {
+						this.timeout(()=>{
+							panel.update()
+						},200)
+					}
+				})
+				return this
+			}
+			select(tab){
+				if(tab.aria.selected === 'true') return this.deselect(tab)
+				tab.aria.selected = true
+				let panel = tab.panel
+				if(panel) panel.active = true
+				return this.resize_panels()
+			}
+			slot_changed(e){
+				console.log('event',e)
+			}
+			get views(){
+				return this.slots.panels.items.filter(view=>view.localName === 'tab-view')
+			}
+
+		})
+
+
+	})(document)
+</script>

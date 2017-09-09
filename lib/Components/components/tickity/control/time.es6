@@ -1,4 +1,4 @@
-wwi.exports('tickity',(tickity,fxy)=>{
+window.fxy.exports('tickity',(tickity,fxy)=>{
 	
 	const clock_hands = Symbol('tickity clock hands')
 	const default_tick = 1000

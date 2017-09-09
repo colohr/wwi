@@ -1,6 +1,6 @@
 <template id="navigator-component">
     <style>
-		@import "/library/components/navigator/design/component.css";
+		@import "/components/navigator/design/component.css";
 	    search-component{
 		    background:var(--navigator-background);
 		    left:90px;
@@ -17,15 +17,17 @@
 		    <navigator-next keep-focus></navigator-next>
 	    </div>
 	    <slot></slot>
+	    <div buttons>
+		    <slot name="right"></slot>
+	    </div>
     </div>
 </template>
 <script>
     (function(doc){
-        const NavigatorComponent = wwi.element(doc).extension(...components.search.extension('Container'))
-        NavigatorComponent(class extends NavigatorComponent.Element{
+        const NavigatorComponent = wwi.element(doc).extension(...components.search.extension('Controller'))
+	    NavigatorComponent(class extends NavigatorComponent.Element{
         	constructor(){super({show:true})}
 	        connected(){
-		        window.fxy.port(components.navigator.url+'/buttons/index.html').then(_=>false)
 		        this.on.searching = e => {
 		        	this.all('[role="button"]').forEach(button=>{
 				        if(!button.hasAttribute('search-close-button') && !button.hasAttribute('keep-focus')) button.setAttribute('tabindex','-1')

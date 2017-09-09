@@ -1,0 +1,719 @@
+{
+  "list": [
+    {
+      "id": "1",
+      "classes": {
+        "out_class": "pt-page-moveToLeft",
+        "in_class": "pt-page-moveFromRight"
+      },
+      "type": "move",
+      "from": "move-to-left",
+      "to": "move-from-right",
+      "direction":"horizontal"
+    },
+    {
+      "id": "2",
+      "classes": {
+        "out_class": "pt-page-moveToRight",
+        "in_class": "pt-page-moveFromLeft"
+      },
+      "type": "move",
+      "from": "move-to-right",
+      "to": "move-from-left",
+      "direction":"horizontal"
+    },
+    {
+      "id": "3",
+      "classes": {
+        "out_class": "pt-page-moveToTop",
+        "in_class": "pt-page-moveFromBottom"
+      },
+      "type": "move",
+      "from": "move-to-top",
+      "to": "move-from-bottom",
+      "direction":"vertical"
+    },
+    {
+      "id": "4",
+      "classes": {
+        "out_class": "pt-page-moveToBottom",
+        "in_class": "pt-page-moveFromTop"
+      },
+      "type": "move",
+      "from": "move-to-bottom",
+      "to": "move-from-top",
+      "direction":"vertical"
+    },
+    {
+      "id": "5",
+      "classes": {
+        "out_class": "pt-page-fade",
+        "in_class": "pt-page-moveFromRight pt-page-ontop"
+      },
+      "type": "fade",
+      "from": "fade",
+      "to": "move-from-right-ontop",
+      "direction":"horizontal"
+    },
+    {
+      "id": "6",
+      "classes": {
+        "out_class": "pt-page-fade",
+        "in_class": "pt-page-moveFromLeft pt-page-ontop"
+      },
+      "type": "fade",
+      "from": "fade",
+      "to": "move-from-left-ontop",
+      "direction":"horizontal"
+    },
+    {
+      "id": "7",
+      "classes": {
+        "out_class": "pt-page-fade",
+        "in_class": "pt-page-moveFromBottom pt-page-ontop"
+      },
+      "type": "fade",
+      "from": "fade",
+      "to": "move-from-bottom-ontop",
+      "direction":"vertical"
+    },
+    {
+      "id": "8",
+      "classes": {
+        "out_class": "pt-page-fade",
+        "in_class": "pt-page-moveFromTop pt-page-ontop"
+      },
+      "type": "fade",
+      "from": "fade",
+      "to": "move-from-top-ontop",
+      "direction":"vertical"
+    },
+    {
+      "id": "9",
+      "classes": {
+        "out_class": "pt-page-moveToLeftFade",
+        "in_class": "pt-page-moveFromRightFade"
+      },
+      "type": "fade",
+      "from": "move-to-left-fade",
+      "to": "move-from-right-fade",
+      "direction":"horizontal"
+    },
+    {
+      "id": "10",
+      "classes": {
+        "out_class": "pt-page-moveToRightFade",
+        "in_class": "pt-page-moveFromLeftFade"
+      },
+      "type": "fade",
+      "from": "move-to-right-fade",
+      "to": "move-from-left-fade",
+      "direction":"horizontal"
+    },
+    {
+      "id": "11",
+      "classes": {
+        "out_class": "pt-page-moveToTopFade",
+        "in_class": "pt-page-moveFromBottomFade"
+      },
+      "type": "fade",
+      "from": "move-to-top-fade",
+      "to": "move-from-bottom-fade",
+      "direction":"vertical"
+    },
+    {
+      "id": "12",
+      "classes": {
+        "out_class": "pt-page-moveToBottomFade",
+        "in_class": "pt-page-moveFromTopFade"
+      },
+      "type": "fade",
+      "from": "move-to-bottom-fade",
+      "to": "move-from-top-fade",
+      "direction":"vertical"
+    },
+    {
+      "id": "13",
+      "classes": {
+        "out_class": "pt-page-moveToLeftEasing pt-page-ontop",
+        "in_class": "pt-page-moveFromRight"
+      },
+      "type": "move-ease",
+      "from": "move-to-left-easing-ontop",
+      "to": "move-from-right",
+      "direction":"horizontal"
+    },
+    {
+      "id": "14",
+      "classes": {
+        "out_class": "pt-page-moveToRightEasing pt-page-ontop",
+        "in_class": "pt-page-moveFromLeft"
+      },
+      "type": "move-ease",
+      "from": "move-to-right-easing-ontop",
+      "to": "move-from-left",
+      "direction":"horizontal"
+    },
+    {
+      "id": "15",
+      "classes": {
+        "out_class": "pt-page-moveToTopEasing pt-page-ontop",
+        "in_class": "pt-page-moveFromBottom"
+      },
+      "type": "move-ease",
+      "from": "move-to-top-easing-ontop",
+      "to": "move-from-bottom",
+      "direction":"vertical"
+    },
+    {
+      "id": "16",
+      "classes": {
+        "out_class": "pt-page-moveToBottomEasing pt-page-ontop",
+        "in_class": "pt-page-moveFromTop"
+      },
+      "type": "move-ease",
+      "from": "move-to-bottom-easing-ontop",
+      "to": "move-from-top",
+      "direction":"vertical"
+    },
+    {
+      "id": "17",
+      "classes": {
+        "out_class": "pt-page-scaleDown",
+        "in_class": "pt-page-moveFromRight pt-page-ontop"
+      },
+      "type": "scale-down",
+      "from": "scale-down",
+      "to": "move-from-right-ontop",
+      "direction":"horizontal"
+    },
+    {
+      "id": "18",
+      "classes": {
+        "out_class": "pt-page-scaleDown",
+        "in_class": "pt-page-moveFromLeft pt-page-ontop"
+      },
+      "type": "scale-down",
+      "from": "scale-down",
+      "to": "move-from-left-ontop",
+      "direction":"horizontal"
+    },
+    {
+      "id": "19",
+      "classes": {
+        "out_class": "pt-page-scaleDown",
+        "in_class": "pt-page-moveFromBottom pt-page-ontop"
+      },
+      "type": "scale-down",
+      "from": "scale-down",
+      "to": "move-from-bottom-ontop",
+      "direction":"vertical"
+    },
+    {
+      "id": "20",
+      "classes": {
+        "out_class": "pt-page-scaleDown",
+        "in_class": "pt-page-moveFromTop pt-page-ontop"
+      },
+      "type": "scale-down",
+      "from": "scale-down",
+      "to": "move-from-top-ontop",
+      "direction":"vertical"
+    },
+    {
+      "id": "21",
+      "classes": {
+        "out_class": "pt-page-scaleDown",
+        "in_class": "pt-page-scaleUpDown"
+      },
+      "type": "scale-down",
+      "from": "scale-down",
+      "to": "scale-up-down-delay-300",
+      "direction":"center"
+    },
+    {
+      "id": "22",
+      "classes": {
+        "out_class": "pt-page-scaleDownUp",
+        "in_class": "pt-page-scaleUp"
+      },
+      "type": "scale-down",
+      "from": "scale-down-up",
+      "to": "scale-up-delay-300",
+      "direction":"center"
+    },
+    {
+      "id": "23",
+      "classes": {
+        "out_class": "pt-page-moveToLeft pt-page-ontop",
+        "in_class": "pt-page-scaleUp"
+      },
+      "type": "scale-up",
+      "from": "move-to-left-ontop",
+      "to": "scale-up",
+      "direction":"horizontal"
+    },
+    {
+      "id": "24",
+      "classes": {
+        "out_class": "pt-page-moveToRight pt-page-ontop",
+        "in_class": "pt-page-scaleUp"
+      },
+      "type": "scale-up",
+      "from": "move-to-right-ontop",
+      "to": "scale-up",
+      "direction":"horizontal"
+    },
+    {
+      "id": "25",
+      "classes": {
+        "out_class": "pt-page-moveToTop pt-page-ontop",
+        "in_class": "pt-page-scaleUp"
+      },
+      "type": "scale-up",
+      "from": "move-to-top-ontop",
+      "to": "scale-up",
+      "direction":"vertical"
+    },
+    {
+      "id": "26",
+      "classes": {
+        "out_class": "pt-page-moveToBottom pt-page-ontop",
+        "in_class": "pt-page-scaleUp"
+      },
+      "type": "scale-up",
+      "from": "move-to-bottom-ontop",
+      "to": "scale-up",
+      "direction":"center"
+    },
+    {
+      "id": "27",
+      "classes": {
+        "out_class": "pt-page-scaleDownCenter",
+        "in_class": "pt-page-scaleUpCenter pt-page-delay400"
+      },
+      "type": "scale-up",
+      "from": "scale-down-center",
+      "to": "scale-up-center-delay-400",
+      "direction":"center"
+    },
+    {
+      "id": "28",
+      "classes": {
+        "out_class": "pt-page-rotateRightSideFirst",
+        "in_class": "pt-page-moveFromRight pt-page-delay200 pt-page-ontop"
+      },
+      "type": "side",
+      "from": "rotate-right-side-first",
+      "to": "move-from-right-delay-200-ontop",
+      "direction":"horizontal"
+    },
+    {
+      "id": "29",
+      "classes": {
+        "out_class": "pt-page-rotateLeftSideFirst",
+        "in_class": "pt-page-moveFromLeft pt-page-delay200 pt-page-ontop"
+      },
+      "type": "side",
+      "from": "rotate-left-side-first",
+      "to": "move-from-left-delay-200-ontop",
+      "direction":"horizontal"
+    },
+    {
+      "id": "30",
+      "classes": {
+        "out_class": "pt-page-rotateTopSideFirst",
+        "in_class": "pt-page-moveFromTop pt-page-delay200 pt-page-ontop"
+      },
+      "type": "side",
+      "from": "rotate-top-side-first",
+      "to": "move-from-top-delay-200-ontop",
+      "direction":"vertical"
+    },
+    {
+      "id": "31",
+      "classes": {
+        "out_class": "pt-page-rotateBottomSideFirst",
+        "in_class": "pt-page-moveFromBottom pt-page-delay200 pt-page-ontop"
+      },
+      "type": "side",
+      "from": "rotate-bottom-side-first",
+      "to": "move-from-bottom-delay-200-ontop",
+      "direction":"vertical"
+    },
+    {
+      "id": "32",
+      "classes": {
+        "out_class": "pt-page-flipOutRight",
+        "in_class": "pt-page-flipInLeft"
+      },
+      "type": "flip",
+      "from": "flip-out-right",
+      "to": "flip-in-left-delay-500",
+      "direction":"horizontal"
+    },
+    {
+      "id": "33",
+      "classes": {
+        "out_class": "pt-page-flipOutLeft",
+        "in_class": "pt-page-flipInRight"
+      },
+      "type": "flip",
+      "from": "flip-out-left",
+      "to": "flip-in-right-delay-500",
+      "direction":"horizontal"
+    },
+    {
+      "id": "34",
+      "classes": {
+        "out_class": "pt-page-flipOutTop",
+        "in_class": "pt-page-flipInBottom"
+      },
+      "type": "flip",
+      "from": "flip-out-top",
+      "to": "flip-in-bottom-delay-500",
+      "direction":"vertical"
+    },
+    {
+      "id": "35",
+      "classes": {
+        "out_class": "pt-page-flipOutBottom",
+        "in_class": "pt-page-flipInTop"
+      },
+      "type": "flip",
+      "from": "flip-out-bottom",
+      "to": "flip-in-top-delay-500",
+      "direction":"vertical"
+    },
+    {
+      "id": "36",
+      "classes": {
+        "out_class": "pt-page-rotateFall pt-page-ontop",
+        "in_class": "pt-page-scaleUp"
+      },
+      "type": "fall",
+      "from": "rotate-fall-ontop",
+      "to": "scale-up",
+      "direction":"center"
+    },
+    {
+      "id": "38",
+      "classes": {
+        "out_class": "pt-page-rotatePushLeft",
+        "in_class": "pt-page-moveFromRight"
+      },
+      "type": "push",
+      "from": "rotate-push-left",
+      "to": "move-from-right",
+      "direction":"horizontal"
+    },
+    {
+      "id": "39",
+      "classes": {
+        "out_class": "pt-page-rotatePushRight",
+        "in_class": "pt-page-moveFromLeft"
+      },
+      "type": "push",
+      "from": "rotate-push-right",
+      "to": "move-from-left",
+      "direction":"horizontal"
+    },
+    {
+      "id": "40",
+      "classes": {
+        "out_class": "pt-page-rotatePushTop",
+        "in_class": "pt-page-moveFromBottom"
+      },
+      "type": "push",
+      "from": "rotate-push-top",
+      "to": "move-from-bottom",
+      "direction":"vertical"
+    },
+    {
+      "id": "41",
+      "classes": {
+        "out_class": "pt-page-rotatePushBottom",
+        "in_class": "pt-page-moveFromTop"
+      },
+      "type": "push",
+      "from": "rotate-push-bottom",
+      "to": "move-from-top",
+      "direction":"vertical"
+    },
+    {
+      "id": "42",
+      "classes": {
+        "out_class": "pt-page-rotatePushLeft",
+        "in_class": "pt-page-rotatePullRight pt-page-delay180"
+      },
+      "type": "pull",
+      "from": "rotate-push-left",
+      "to": "rotate-pull-right-delay-180",
+      "direction":"horizontal"
+    },
+    {
+      "id": "43",
+      "classes": {
+        "out_class": "pt-page-rotatePushRight",
+        "in_class": "pt-page-rotatePullLeft pt-page-delay180"
+      },
+      "type": "pull",
+      "from": "rotate-push-right",
+      "to": "rotate-pull-left-delay-180",
+      "direction":"horizontal"
+    },
+    {
+      "id": "44",
+      "classes": {
+        "out_class": "pt-page-rotatePushTop",
+        "in_class": "pt-page-rotatePullBottom pt-page-delay180"
+      },
+      "type": "pull",
+      "from": "rotate-push-top",
+      "to": "rotate-pull-bottom-delay-180",
+      "direction":"vertical"
+    },
+    {
+      "id": "45",
+      "classes": {
+        "out_class": "pt-page-rotatePushBottom",
+        "in_class": "pt-page-rotatePullTop pt-page-delay180"
+      },
+      "type": "pull",
+      "from": "rotate-push-bottom",
+      "to": "rotate-pull-top-delay-180",
+      "direction":"vertical"
+    },
+    {
+      "id": "46",
+      "classes": {
+        "out_class": "pt-page-rotateFoldLeft",
+        "in_class": "pt-page-moveFromRightFade"
+      },
+      "type": "glue",
+      "from": "rotate-fold-left",
+      "to": "move-from-right-fade",
+      "direction":"horizontal"
+    },
+    {
+      "id": "47",
+      "classes": {
+        "out_class": "pt-page-rotateFoldRight",
+        "in_class": "pt-page-moveFromLeftFade"
+      },
+      "type": "glue",
+      "from": "rotate-fold-right",
+      "to": "move-from-left-fade",
+      "direction":"horizontal"
+    },
+    {
+      "id": "48",
+      "classes": {
+        "out_class": "pt-page-rotateFoldTop",
+        "in_class": "pt-page-moveFromBottomFade"
+      },
+      "type": "glue",
+      "from": "rotate-fold-top",
+      "to": "move-from-bottom-fade",
+      "direction":"vertical"
+    },
+    {
+      "id": "49",
+      "classes": {
+        "out_class": "pt-page-rotateFoldBottom",
+        "in_class": "pt-page-moveFromTopFade"
+      },
+      "type": "glue",
+      "from": "rotate-fold-bottom",
+      "to": "move-from-top-fade",
+      "direction":"vertical"
+    },
+    {
+      "id": "50",
+      "classes": {
+        "out_class": "pt-page-moveToRightFade",
+        "in_class": "pt-page-rotateUnfoldLeft"
+      },
+      "type": "rotate",
+      "from": "move-to-right-fade",
+      "to": "rotate-unfold-left",
+      "direction":"horizontal"
+    },
+    {
+      "id": "51",
+      "classes": {
+        "out_class": "pt-page-moveToLeftFade",
+        "in_class": "pt-page-rotateUnfoldRight"
+      },
+      "type": "rotate",
+      "from": "move-to-left-fade",
+      "to": "rotate-unfold-right",
+      "direction":"horizontal"
+    },
+    {
+      "id": "52",
+      "classes": {
+        "out_class": "pt-page-moveToBottomFade",
+        "in_class": "pt-page-rotateUnfoldTop"
+      },
+      "type": "rotate",
+      "from": "move-to-bottom-fade",
+      "to": "rotate-unfold-top",
+      "direction":"vertical"
+    },
+    {
+      "id": "53",
+      "classes": {
+        "out_class": "pt-page-moveToTopFade",
+        "in_class": "pt-page-rotateUnfoldBottom"
+      },
+      "type": "rotate",
+      "from": "move-to-top-fade",
+      "to": "rotate-unfold-bottom",
+      "direction":"vertical"
+    },
+    {
+      "id": "54",
+      "classes": {
+        "out_class": "pt-page-rotateRoomLeftOut pt-page-ontop",
+        "in_class": "pt-page-rotateRoomLeftIn"
+      },
+      "type": "room",
+      "from": "rotate-room-left-out-ontop",
+      "to": "rotate-room-left-in",
+      "direction":"horizontal"
+    },
+    {
+      "id": "55",
+      "classes": {
+        "out_class": "pt-page-rotateRoomRightOut pt-page-ontop",
+        "in_class": "pt-page-rotateRoomRightIn"
+      },
+      "type": "room",
+      "from": "rotate-room-right-out-ontop",
+      "to": "rotate-room-right-in",
+      "direction":"horizontal"
+    },
+    {
+      "id": "56",
+      "classes": {
+        "out_class": "pt-page-rotateRoomTopOut pt-page-ontop",
+        "in_class": "pt-page-rotateRoomTopIn"
+      },
+      "type": "room",
+      "from": "rotate-room-top-out-ontop",
+      "to": "rotate-room-top-in",
+      "direction":"vertical"
+    },
+    {
+      "id": "57",
+      "classes": {
+        "out_class": "pt-page-rotateRoomBottomOut pt-page-ontop",
+        "in_class": "pt-page-rotateRoomBottomIn"
+      },
+      "type": "room",
+      "from": "rotate-room-bottom-out-ontop",
+      "to": "rotate-room-bottom-in",
+      "direction":"vertical"
+    },
+    {
+      "id": "58",
+      "classes": {
+        "out_class": "pt-page-rotateCubeLeftOut pt-page-ontop",
+        "in_class": "pt-page-rotateCubeLeftIn"
+      },
+      "type": "cube",
+      "from": "rotate-cube-left-out-ontop",
+      "to": "rotate-cube-left-in",
+      "direction":"horizontal"
+    },
+    {
+      "id": "59",
+      "classes": {
+        "out_class": "pt-page-rotateCubeRightOut pt-page-ontop",
+        "in_class": "pt-page-rotateCubeRightIn"
+      },
+      "type": "cube",
+      "from": "rotate-cube-right-out-ontop",
+      "to": "rotate-cube-right-in",
+      "direction":"horizontal"
+    },
+    {
+      "id": "60",
+      "classes": {
+        "out_class": "pt-page-rotateCubeTopOut pt-page-ontop",
+        "in_class": "pt-page-rotateCubeTopIn"
+      },
+      "type": "cube",
+      "from": "rotate-cube-top-out-ontop",
+      "to": "rotate-cube-top-in",
+      "direction":"vertical"
+    },
+    {
+      "id": "61",
+      "classes": {
+        "out_class": "pt-page-rotateCubeBottomOut pt-page-ontop",
+        "in_class": "pt-page-rotateCubeBottomIn"
+      },
+      "type": "cube",
+      "from": "rotate-cube-bottom-out-ontop",
+      "to": "rotate-cube-bottom-in",
+      "direction":"vertical"
+    },
+    {
+      "id": "62",
+      "classes": {
+        "out_class": "pt-page-rotateCarouselLeftOut pt-page-ontop",
+        "in_class": "pt-page-rotateCarouselLeftIn"
+      },
+      "type": "carousel",
+      "from": "rotate-carousel-left-out-ontop",
+      "to": "rotate-carousel-left-in",
+      "direction":"horizontal"
+    },
+    {
+      "id": "63",
+      "classes": {
+        "out_class": "pt-page-rotateCarouselRightOut pt-page-ontop",
+        "in_class": "pt-page-rotateCarouselRightIn"
+      },
+      "type": "carousel",
+      "from": "rotate-carousel-right-out-ontop",
+      "to": "rotate-carousel-right-in",
+      "direction":"horizontal"
+    },
+    {
+      "id": "64",
+      "classes": {
+        "out_class": "pt-page-rotateCarouselTopOut pt-page-ontop",
+        "in_class": "pt-page-rotateCarouselTopIn"
+      },
+      "type": "carousel",
+      "from": "rotate-carousel-top-out-ontop",
+      "to": "rotate-carousel-top-in",
+      "direction":"vertical"
+    },
+    {
+      "id": "65",
+      "classes": {
+        "out_class": "pt-page-rotateCarouselBottomOut pt-page-ontop",
+        "in_class": "pt-page-rotateCarouselBottomIn"
+      },
+      "type": "carousel",
+      "from": "rotate-carousel-bottom-out-ontop",
+      "to": "rotate-carousel-bottom-in",
+      "direction":"vertical"
+    },
+    {
+      "id": "37",
+      "classes": {
+        "out_class": "pt-page-rotateOutNewspaper",
+        "in_class": "pt-page-rotateInNewspaper"
+      },
+      "type": "fly",
+      "from": "rotate-out-newspaper",
+      "to": "rotate-in-newspaper-delay-500",
+      "direction":"center"
+    }
+  ]
+}

@@ -4,24 +4,88 @@
 
 		:host {
 			--font-size:1em;
+			contain: content;
 			font-size: var(--font-size);
 			display: block;
 			position: relative;
+
 		}
-		[view]{ position: relative;  box-sizing: border-box; }
+		[view]{
+			position: relative;
+			box-sizing: border-box;
+			padding-left:10px;
+			padding-right:10px;
+		}
+		[sticky]{
+			position: -webkit-sticky;
+			position: sticky;
+			z-index: 1;
+			padding-left:10px;
+			padding-right:10px;
+			width: calc(100% - 20px);
+			background: rgba(55,55,55,0);
+			border-radius: 6px;
+			transition: background 200ms linear, box-shadow 200ms linear;
+			will-change:background, box-shadow;
+		}
+
+		[header]{top:0;}
+		[footer]{
+			bottom: 0;
+			margin-top:16px;
+			transform:translateY(-7px);
+		}
+
+		:host([grid]) [header]{
+			min-height: 10px;
+			margin-bottom: 5px;
+		}
+
+		:host([grid]) [footer]{
+			opacity: 0.7;
+			margin-top:11px;
+			transform:translateY(-4px);
+			background: var(--menu-item-background-color,rgba(255,255,255,0.4));
+		}
+		:host(:hover) [footer],
+		:host([grid]:hover) [footer]{
+			background: var(--menu-item-background-color,rgba(255,255,255,0.4));
+			filter:contrast(120%) saturate(90%);
+			box-shadow: 0 -0.5px 7px rgba(0,0,0,0.08);
+			opacity: 1;
+		}
+
+		[footer] slot::slotted(*){
+			transition:opacity 200ms ease;
+			opacity:0;
+		}
+		:host([grid]) [sticky] slot::slotted(*){  margin-left:0 !important;  }
+		:host([grid]) [footer] slot::slotted(*){
+			opacity: 0.5;
+		}
+		:host(:hover) [footer] slot::slotted(*),
+		:host([grid]) [footer] slot::slotted(*:focus),
+		[sticky] slot::slotted(*:focus){
+			opacity: 1;
+		}
+
 	</style>
 
-
-
 	<div view gui vertical>
-
+		<div header sticky>
+			<slot name="header"></slot>
+		</div>
 		<slot id="options"></slot>
+		<div footer sticky gui horizontal justified>
+			<slot name="footer"></slot>
+		</div>
 	</div>
+
 
 </template>
 
 
-<script id="content-menu">
+<script>
 	(function(doc) {
 		const Menu = wwi.element(doc).extension('behavior','Selector')
 		Menu(class extends Menu.Element {
@@ -36,18 +100,18 @@
 			}
 		})
 		//shared actions
-		function remove_attributes(element,...x){ return x.map(name=>element.removeAttribute(name)) }
-		function set_attributes(element,...x){ return x.map(name=>element.setAttribute(name,'')) }
 		function set_as_grid(element){
 			remove_attributes(element.view,'vertical')
-			set_attributes(element.view,'horizontal','wrap','between','start-aligned')
+			set_attributes(element.view,'horizontal','wrap')
 			return element
 		}
 		function set_as_list(element){
-			remove_attributes(element.view,'horizontal','wrap','between','start-aligned')
+			remove_attributes(element.view,'horizontal','wrap')
 			set_attributes(element.view,'vertical')
 			return element
 		}
+		function set_attributes(element,...x){ return x.map(name=>element.setAttribute(name,'')) }
+		function remove_attributes(element,...x){ return x.map(name=>element.removeAttribute(name)) }
 
 	})(document)
 </script>

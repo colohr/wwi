@@ -1,9 +1,8 @@
-wwi.exports('element', (element, fxy) => {
-	
+window.fxy.exports('element', (element, fxy) => {
 	
 	const not_aria_name = ['role','tabindex','outline','state']
 	
-	
+	//exports
 	element.aria = (el) => {
 		return new Proxy(el, {
 			get(o, name){
@@ -25,7 +24,7 @@ wwi.exports('element', (element, fxy) => {
 		})
 	}
 	
-	
+	//exports
 	function get_name(name) {
 		if (fxy.is.string(name)) {
 			if(name.includes('aria')) return name

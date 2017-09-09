@@ -1,0 +1,49 @@
+
+/*source is copied into container*/
+[aria-dropeffect="copy"]{
+
+}
+
+/*source is moved to a new location*/
+[aria-dropeffect="move"]{
+
+}
+
+/*reference for source is created*/
+[aria-dropeffect="reference"]{
+
+}
+
+/*execute action for input*/
+[aria-dropeffect="execute"]{
+
+}
+
+/*a popup should be presented to select a drop effect by the user*/
+[aria-dropeffect="popup"]{
+
+}
+
+/*target will not accept drops*/
+[aria-dropeffect="none"]{
+    cursor: not-allowed;
+}
+
+[aria-grabbed="true"]{
+    cursor: grabbing; cursor: -moz-grabbing; cursor: -webkit-grabbing;
+}
+[aria-grabbed="false"]{
+    cursor: move; cursor: grab; cursor: -moz-grab; cursor: -webkit-grab;
+}
+
+[aria-grabbed="true"] > *{
+    z-index: 10;
+    cursor: grabbing; cursor: -moz-grabbing; cursor: -webkit-grabbing;
+}
+
+[aria-grabbed="false"] > *{
+    z-index: 0;
+}
+
+
+

@@ -1,0 +1,6 @@
+library = {}
+library.elements = [
+	'remote-control.html',
+	'component.html'
+]
+library.wait=  ['optimus-prime','remote-control']

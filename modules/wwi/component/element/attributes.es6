@@ -1,4 +1,4 @@
-wwi.exports('element',(element_module,fxy)=>{
+window.fxy.exports('element',(element_module,fxy)=>{
 	const getting_attribute = Symbol('get attribute')
 	
 	const Symbols = fxy.symbols

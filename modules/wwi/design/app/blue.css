@@ -6,3 +6,6 @@
     --menu-item-color: var(--blue-dark);
     --menu-item-focus-color: var(--blue-dark);
 }
+[app-drawer] :not([grid]) [action-item]{
+    border-radius: 5px;
+}

@@ -54,7 +54,7 @@
 	}
 
 }, function wwi_export(icons){
-	wwi.exports('media',(media)=>{
+	window.fxy.exports('media',(media)=>{
 		media.icons = icons
 	})
 })

@@ -1,0 +1,12 @@
+:host{
+    --drawer-background:var(--purple-fuchsia-bg);
+    --text:var(--purple);
+    --focus-color:var(--bubblegum-bright);
+    --menu-item-background-color: var(--grape-50);
+    --menu-item-color: var(--day);
+}
+[app-drawer] [action-item]{
+    --action-radius:100px;
+    --action-font-weight:900;
+    text-rendering: geometricPrecision;
+}

@@ -1,0 +1,14 @@
+:host{
+    --bar-color:var(--sea-black);
+    --drawer-background:var(--sea-black);
+    --text:var(--aqua-light);
+    --focus-color:var(--aqua);
+    --menu-item-background-color: var(--sea-50);
+    --menu-item-color: var(--aqua-light);
+    --menu-item-focus-color: var(--aqua-bright);
+}
+[app-drawer] [action-item]{
+    --action-radius:100px;
+    --action-font-weight:900;
+    text-rendering: geometricPrecision;
+}

@@ -1,4 +1,4 @@
-wwi.exports('behavior',(behavior)=>{
+window.fxy.exports('behavior',(behavior)=>{
 	const client_rect = Symbol('client rect')
 	const position_bounds = Symbol('position bounds')
 	const position_data = Symbol('position data')

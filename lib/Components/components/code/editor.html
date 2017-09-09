@@ -1,41 +1,21 @@
-<template id="code-editor-template">
+<template id="code-editor">
 	<style>
-		@import "/custom-elements/code/design.css";
-
+		@import "/components/code/design.css";
 		:host {
+			--code-font-size:var(--code-size,15px);
 			display: block;
 			position: relative;
 		}
+		[initial-value]{display: none !important;}
 	</style>
-
-	<div frame>
-		<div code name="code"></div>
-	</div>
+	<div frame><div code name="code"></div></div>
+	<div initial-value><slot id="value"></slot></div>
 	<code-bar></code-bar>
-
 </template>
 <script>
-	(doc => {
-		const CodeEditor = wwi.element(doc)
-		const Editor = fxy.require('code/Editor')
-
-		CodeEditor(class extends Editor(CodeEditor.Element) {
-			constructor(){
-				super('routes',{
-					language(value){
-						if(value !== null) this.code.option = ["mode", value]
-					},
-					theme(value){
-						if(value !== null) this.code.option = ["theme", value]
-					}
-				})
-			}
-			get bar() { return this.query('code-bar') }
-			connected(){
-				super.connected(this.bar)
-			}
-			get cursor() { return this.code.getCursor() }
-			get view() { return this.query('[code]') }
-		})
+	(function(doc){
+		let extension = [{name:'Timeout',module:'behavior'}].concat(components.code.mix('Editor'))
+		const CodeEditor = wwi.element(doc).extension(...extension)
+		CodeEditor(class extends CodeEditor.Element {})
 	})(document)
 </script>

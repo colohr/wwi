@@ -1,11 +1,12 @@
 library = {}
 library.logic = [
 	'control/memory.es6',
-	'control/types.es6',
-	'control/browser.es6'
+	'control/types.es6'
 ]
 library.elements = [
-	'item.html',
+	
+	'item-expander.html',
+	{path:'item.html',wait:['item-expander']},
 	{path:'list.html',wait:['browser-item']}
 ]
-
+library.wait = ['browser-list']

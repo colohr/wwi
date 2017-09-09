@@ -8,7 +8,14 @@
         :host(:focus){
 	        background-color: rgba(0,0,0,0.3);
         }
-	    [directions] content-action{
+        a{
+	        display: block;
+	        height:30px;
+	        width:30px;
+	        position: relative;
+	        cursor: pointer;
+        }
+	    [directions] a{
 		    box-sizing: border-box;
 		    margin:var(--margin,0 5px 0 5px);
 		    background:var(--background,white);
@@ -17,21 +24,26 @@
 		    border-radius: var(--radius,initial);
 		    color:var(--color,var(--berry));
 	    }
+	    content-icon{
+		    position: relative;
+		    height:25px;
+		    width: 25px;
+	    }
 
     </style>
 	<div gui view directions horizontal center-center>
-		<content-action left name="left">
+		<a left name="left">
 			<content-icon name="left"></content-icon>
-		</content-action>
-		<content-action up name="up">
+		</a>
+		<a up name="up">
 			<content-icon name="up"></content-icon>
-		</content-action>
-		<content-action down name="down">
+		</a>
+		<a down name="down">
 			<content-icon name="down"></content-icon>
-		</content-action>
-		<content-action right name="right">
+		</a>
+		<a right name="right">
 			<content-icon name="right"></content-icon>
-		</content-action>
+		</a>
 	</div>
 </template>
 <script>
@@ -43,15 +55,13 @@
             }
             connected(){
             	this.kind = 'button'
-	            fxy.when('content-action').then(_=>{
-		            let buttons = this.all('content-action')
-		            for(let button of buttons){
-			            button.on('click',e=>{
-				            let name = e.currentTarget.getAttribute('name')
-				            this.move(name)
-			            })
+	            let buttons = this.all('a')
+	            for(let button of buttons){
+		            button.onclick = e=>{
+			            let name = e.currentTarget.getAttribute('name')
+			            this.move(name)
 		            }
-	            })
+	            }
 
             }
             move(name){

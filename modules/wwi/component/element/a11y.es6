@@ -1,9 +1,7 @@
-wwi.exports('element',(element,fxy)=>{
-	
+window.fxy.exports('element',(element,fxy)=>{
 	const a11y_data = Symbol('a11y data')
 	const a11y_actions = Symbol('a11y container type actions')
 	const a11y_container = Symbol('is a11y container element')
-	const a11y_type = Symbol('is a11y custom element type')
 	const is_ready = Symbol('a11y type is ready')
 	
 	const allies = {
@@ -59,6 +57,12 @@ wwi.exports('element',(element,fxy)=>{
 		},
 		menuitem:{
 			role:'menuitem',
+			tabindex:'0',
+			triggers:['click','keydown','focus','blur'],
+			activates:true
+		},
+		tab:{
+			role:'tab',
 			tabindex:'0',
 			triggers:['click','keydown','focus','blur'],
 			activates:true
@@ -176,11 +180,6 @@ wwi.exports('element',(element,fxy)=>{
 	}
 	
 	
-	//==============================================
-	//----------------wwi memory--------------------
-	
-	
-	//-----------------wwi dependent----------------
 	const A11yMix = Base => class extends Base{
 		get [fxy.symbols.a11y.element](){
 			if(allies.map.has(this)) return fxy.symbols.a11y.type
@@ -197,7 +196,8 @@ wwi.exports('element',(element,fxy)=>{
 	A11yMix.disconnect = disconnect_element
 	A11yMix.is = allies.is
 	
-	//---------------a11y exports-------------------
+	
+	//exports
 	element.a11y = A11yMix
 	wwi.ally = new Proxy(ally_event,{
 		get(o,name){
@@ -206,6 +206,7 @@ wwi.exports('element',(element,fxy)=>{
 		}
 	})
 	
+	//shared actions
 	function ally_event(original,name,clicks){
 			let target = original.currentTarget
 			let action = original.type
@@ -228,30 +229,28 @@ wwi.exports('element',(element,fxy)=>{
 			}
 	}
 	
-	//--------------tricycle----------------
 	function change_element({el,name,old,value}){
 		console.log({el,name,old,value})
 		return el
 	}
+	
 	function connect_element(e){
-		var kind = e.hasAttribute('kind') ? e.getAttribute('kind') : null
+		let kind = e.hasAttribute('kind') ? e.getAttribute('kind') : null
 		if(kind === null && 'kind' in e){
 			kind = e.kind
 			e.setAttribute('kind',kind)
 		}
 		if(kind) e.a11y = kind
-		
 		if('a11y_connected' in e) e.a11y_connected(e.a11y)
 		return e
 	}
+	
 	function disconnect_element(e){
 		if( has_data(e) ){
 			let type = get_data(e)
 			let actions = delete_ally_actions(type)
-			if(type.connected){
-				type.container.removeEventListener('a11y',type.on_action.bind(type),false)
-			}
-			if( type.has('contents') ){
+			if(type.connected) type.container.removeEventListener('a11y',type.on_action.bind(type),false)
+			if(type.has('contents')){
 				let contents = type.get('contents')
 				let binder = type.trigger_binder( 'contains.triggers' )
 				for(let content of contents) type.remove(content)
@@ -262,7 +261,7 @@ wwi.exports('element',(element,fxy)=>{
 		return undefined
 	}
 	
-	//-------------a11y actions-------------
+	
 	function delete_ally_actions(type){
 		if(has_ally_actions(type)) {
 			let actions = get_ally_actions(type)
@@ -271,15 +270,18 @@ wwi.exports('element',(element,fxy)=>{
 		}
 		return null
 	}
+	
 	function get_ally_actions(type){
 		if(has_ally_actions(type)) return allies.actions.get(type)
 		allies.actions.set(type, new Map())
 		return allies.actions.get(type)
 	}
+	
 	function get_ally_container_contents(type){
 		if(type.has('contents')) return type.get('contents')
 		return type.set('contents',new Set())
 	}
+	
 	function get_ally_key(e){
 		let alt = e.altKey || null
 		let code = e.keyCode || e.which || e.charCode || null
@@ -290,6 +292,7 @@ wwi.exports('element',(element,fxy)=>{
 		let key = 'key' in e ? e.key:null
 		let type = e.type
 		let action = type.replace('key','')
+		if(name && (name === 'down' || name==="up" || name === 'space')) e.preventDefault()
 		return {
 			action,
 			alt,
@@ -318,7 +321,6 @@ wwi.exports('element',(element,fxy)=>{
 	
 	function has_ally_actions(type){ return a11y_actions in allies && allies.actions.has(type) }
 	
-	//--------------activates actions-----------------
 	function get_activates_key(event){
 		//activate or move to element when event is from keyboard
 		if('key' in event){
@@ -340,6 +342,7 @@ wwi.exports('element',(element,fxy)=>{
 		}
 		return false
 	}
+	
 	function get_activates_siblings(event){
 		let target = event.target
 		let after = target.nextElementSibling
@@ -354,14 +357,16 @@ wwi.exports('element',(element,fxy)=>{
 			return false
 		}
 	}
+	
 	function get_activates_target_id(event){
-		var target_id = event.target.hasAttribute('id') ? event.target.getAttribute('id') : null
+		let target_id = event.target.hasAttribute('id') ? event.target.getAttribute('id') : null
 		if(target_id === null){
 			target_id = `${event.name}-${event.original.timeStamp.toFixed(0)}`
 			event.target.setAttribute('id',target_id)
 		}
 		return target_id
 	}
+	
 	function set_activates(trigger,event){
 		let activates = trigger.activates
 		let target = event.target
@@ -388,6 +393,7 @@ wwi.exports('element',(element,fxy)=>{
 		
 		return event
 	}
+	
 	function set_activates_attribute(event,as){
 		if(event.target.hasAttribute(as)) {
 			event.target.removeAttribute(as)
@@ -399,7 +405,7 @@ wwi.exports('element',(element,fxy)=>{
 		return event
 	}
 	
-	//----------------data actions--------------------
+	//data
 	function delete_data(el){
 		return allies.map.delete(el)
 	}
@@ -413,7 +419,7 @@ wwi.exports('element',(element,fxy)=>{
 		return allies.map.set(el, new A11y(type,el))
 	}
 	
-	//-------------type actions-----------------------
+	//type
 	function get_type_map(name,container){
 		let map = []
 		name = typeof name === 'string' ? name : 'nil'
@@ -421,11 +427,13 @@ wwi.exports('element',(element,fxy)=>{
 		if( container instanceof HTMLElement) map.push(['container',container])
 		return map
 	}
-	function set_type_data(type,container){
+	
+	function set_type_data(type){
 		let data = type.valid ? ally_types[type.name] : {}
 		for(let name in data) set_type_value(name,data[name],type)
 		return true
 	}
+	
 	function set_type_value(name,value,type){
 		switch (name){
 			case 'contains':
@@ -444,6 +452,7 @@ wwi.exports('element',(element,fxy)=>{
 		}
 		return type
 	}
+	
 	function set_type_container(type,container){
 		if(container instanceof HTMLElement){
 			container.setAttribute('role',type.role)

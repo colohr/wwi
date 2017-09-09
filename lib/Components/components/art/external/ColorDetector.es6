@@ -3,45 +3,33 @@
     return function export_tracking(art,fxy){
 	
 	    const color_tracker = Symbol('color tracker')
-	    const colors = fxy.require('design/colors')
 	    const color_names = new Set()
-	    const color_limit = 60
+	    const colors = fxy.require('design/colors')
 	    
 	    class ColorTracker{
 	    	constructor(element){
-	    		let tracking = art.detector.tracking
-	    		let tracker = new tracking.ColorTracker(Array.from(color_names))
-			    
-			    let image = element.query('[target-image]')
-			    tracker.on('track', function(event) {
-				    event.data.forEach(function(target) {
-					    set_frame(element,image,target)
-				    });
-			    });
-	    		
-	    		app.on('resized',()=>{
-	    			if(this.tracked && this.clear()) this.start()
-			    })
-			    
-			    this.clear = ()=>{
-	    			let frames = element.all('[color-detected-frame]')
+	    		this.element = element
+			    window.tracker = this
+		    }
+		    clear(){
+	    		if(this.tracked){
+				    let frames = this.frames
 				    for(let frame of frames) frame.remove()
 				    delete this.tracked
-				    return true
 			    }
-			    
-			    this.start = ()=>{
-			    	if(!this.tracked){
-					    tracking.track(image,tracker)
-					    this.tracked=true
-				    }
-				    return this
-			    }
+			    return true
+		    }
+		    get frames(){ return this.element.all('[color-detector-frame]') }
+		    get image(){ return this.element.query('img[color-detector-target]') }
+		    start(){
+		    	if(!this.tracker) this.tracker = set_color_tracker(this)
+			    else start_tracking(this)
+			    return this
 		    }
 	    }
 	    
     	const ColorDetector = Base => class extends Base{
-			get color_tracker(){
+			get color_detector(){
 				return get_color_tracker(this)
 			}
 	    }
@@ -49,29 +37,30 @@
         
         //exports
         return load()
+	    
 	    //shared actions
 	    function load(){
         	art.detector.load().then(_=>{
         		if(colors_registered()) art.ColorDetector = ColorDetector
-        		
 	        })
+		    
+	        //return value
         	return null
+		    
+		    //shared actions
 		    function colors_registered(){
-        		let tracking = art.detector.tracking
-        		for(let name of colors.keys()){
-        			if(name.includes('-50')!==true&&name.includes('-bg')!==true) register_color(name)
-		        }
+			    const color_limit = 'color_limit' in art.detector ? art.detector.color_limit:60
+        		const tracking = art.detector.tracking
+			    
+        		for(let name of colors.keys()) if(name.includes('-50')!==true && name.includes('-bg') !== true) register_color(name)
+		        
 		        //return value
 		        return true
-			    //shared actions
-			    function register_color(name){
-				    tracking.ColorTracker.registerColor(name,color_matches(colors.color(name)))
-				    return color_names.add(name)
-			    }
 			    
+			    //shared actions
 			    function color_matches(color){
-				    return (red,green,blue)=>{
-					    if(red <= 50 && green <= 50 && blue <=50) return false
+				    return function check_red_green_blue(red,green,blue){
+					    if(red <= color_limit && green <= color_limit && blue <= color_limit) return false
 					    let reds = color.red - red
 					    if(reds < 0) reds = reds * -1
 					    if(reds >= 0 && reds <= color_limit){
@@ -80,16 +69,18 @@
 						    if(blues >= 0 && blues <= color_limit){
 							    let greens = color.green - green
 							    if(greens < 0) greens = greens * -1
-							    if(greens >= 0 && greens <= color_limit){
-								    return true
-							    }
+							    if(greens >= 0 && greens <= color_limit) return true
 						    }
 					    }
 					    return false
 				    }
 			    }
+			    
+			    function register_color(name){
+				    tracking.ColorTracker.registerColor(name,color_matches(colors.color(name)))
+				    return color_names.add(name)
+			    }
 		    }
-		    
 	    }
 	    
 	    function get_color_tracker(element){
@@ -97,23 +88,13 @@
 		    return element[color_tracker] = new ColorTracker(element)
 	    }
 	    
-	    function set_frame(element, image, target){
-		    target.x += image.offsetLeft
-		    target.y += image.offsetTop
-		    
-		    let view = element.view
-		    let frame = get_rectangle(target)
-		    view.appendChild(frame)
-		    return target
-	    }
-	    
-	    function get_rectangle({height,width,x,y,color}){
-	    	color = colors.color(color)
+	    function get_color_frame({height,width,x,y,color}){
+		    color = colors.color(color)
 		    let color_shadow = color.value(0.5)
 		    let rectangle = document.createElement('div')
-		    rectangle.setAttribute('color-detected-frame','')
+		    rectangle.setAttribute('color-detector-frame','')
 		    Object.assign(rectangle.style,{
-		    	width:`${width}px`,
+			    width:`${width}px`,
 			    height:`${height}px`,
 			    position:'absolute',
 			    left:`${x}px`,
@@ -125,7 +106,59 @@
 			    transitionDuration:app.help.numbers.random(100,800)+'ms',
 			    transitionDelay:app.help.numbers.random(0,700)+'ms'
 		    })
-			return rectangle
+		    return rectangle
 	    }
+	    
+	    function set_color_tracker(controller){
+		    const tracker = new art.detector.tracking.ColorTracker(Array.from(color_names))
+		    let resizing = null
+		    tracker.on('track', on_track)
+		    window.app.on('resized',on_resize)
+		    
+		    if(controller.image.hasAttribute('loaded') === false) controller.image.addEventListener('loaded',on_image_load,false)
+		    else on_image_load()
+		    //return value
+		    return tracker
+		    
+		    //shared actions
+		    function on_image_load(){ start_tracking(controller) }
+		    function on_resize(){
+		    	if(controller.tracked){
+				    controller.clear()
+				    if(resizing) resizing = window.clearTimeout(resizing)
+				    resizing = window.setTimeout(()=>controller.start(),200)
+			    }
+		    }
+		    function on_track(event){
+			    event.data.forEach(function(target) {
+				    set_color_frame(controller.element,controller.image,target)
+			    })
+		    }
+	    }
+	    
+	    function start_tracking(controller){
+	    	if('timer' in controller) window.clearTimeout(controller.timer)
+		    return controller.timer = window.setTimeout(()=>{
+			    window.requestAnimationFrame(()=>{
+				    if(!controller.tracked){
+					    art.detector.tracking.track(controller.image,controller.tracker)
+					    controller.tracked=true
+					    delete controller.timer
+				    }
+			    })
+		    })
+	    }
+	    
+	    function set_color_frame(element, image, target){
+		    return window.requestAnimationFrame(()=>{
+			    target.x += image.offsetLeft
+			    target.y += image.offsetTop
+			    let view = element.view
+			    let frame = get_color_frame(target)
+			    view.appendChild(frame)
+		    })
+	    }
+	    
+	    
     }
 })

@@ -8,6 +8,8 @@
 		    if(name in components_index) return get_component_proxy(components_index[name])
 		    if(name === 'library') return get_component_library_proxy()
 		    if(name in o) value = o[name]
+		    if(name === 'index') return components_index
+		    else if(name === 'index_names') return Object.keys(components_index)
 		    return value
 	    },
 	    has(o,name){

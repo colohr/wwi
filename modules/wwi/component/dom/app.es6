@@ -1,98 +1,89 @@
-window.fxy.exports('dom',(dom)=>{
+window.fxy.exports('dom',(dom,fxy)=>{
 	
+	const App = Base => class extends Base{
+		constructor(){
+			super('routes',{ loading(value){ this.query('[app-pages]').loading = value === null ? false:true } })
+			this.options = new AppOptions(this)
+		}
+		connected(){
+			fxy.when('content-library').then(()=>set_elements(this))
+			   .then(()=>this.show())
+			   .catch(console.error)
+		}
+		get drawer(){ return this.site.drawer }
+		get menu(){ return this.query('content-menu') }
+		get pages() { return get_pages(this) }
+		show(){ /*app is showing*/ }
+		
+	}
+	
+	class AppOptions{
+		constructor(element){
+			this.has = (name)=>element.hasAttribute(name)
+			this.get = (name)=>element.getAttribute(name)
+		}
+		get folder(){ return fxy.file.join(this.route_path,this.route_folder) }
+		get route_folder(){ return this.has('route-folder') ? this.get('route-folder'):'pages' }
+		get route_path(){ return this.has('route-path') ? this.get('route-path'):window.kit.path }
+		get route_type(){ return this.has('route-type') ? this.get('route-type'):'page' }
+		get routes(){ return { type:this.route_type, folder:this.route_folder } }
+	}
 	
 	class Site{
 		constructor(element){
-			window.app.site = this
 			this.element = element
 			let drawer_button = this.drawer_button
-			this.element.setAttribute('role','application')
+			element.setAttribute('role','application')
 			if(drawer_button){
 				drawer_button.setAttribute('opens','')
 				drawer_button.define('routes',{
 					opened(opened){
-						if(opened === null) window.app.site.drawer.opened = false
-						else window.app.site.drawer.opened = true
+						if(opened === null) element.site.drawer.opened = false
+						else element.site.drawer.opened = true
 					}
 				})
-				this.element.onfocus = e => drawer_button.focus()
-				window.document.body.onfocus = e => drawer_button.focus()
-				window.onfocus = e => drawer_button.focus()
 			}
 			let drawer = this.drawer
 			if(drawer && drawer_button){
-				this.drawer.on('transition',e=>{
+				drawer.on('transition',e=>{
 					let detail = e.detail
-					if(detail.closed && this.drawer_button.opened) this.drawer_button.opened=false
-					else if(detail.opened && !this.drawer_button.opened) this.drawer_button.opened=true
+					if(detail.closed && drawer_button.opened) drawer_button.opened=false
+					else if(detail.opened && !drawer_button.opened) drawer_button.opened=true
 				})
 			}
+			this.app_title = window.app.title
 		}
 		get bar(){ return this.query('[app-bar]') }
 		get drawer(){ return this.element.query('[app-drawer]') }
-		get drawer_button(){ return this.bar ? this.bar.drawer_button:null }
+		get drawer_button(){ return this.element.query('[app-drawer-button]') }
 		query(name){ return this.element.query(`${name}`) }
-	}
-	
-	get_wwi_content().then(_=>{
-	
-	})
-	
-	dom.app = Base => class extends Base{
-		constructor(){
-			super('routes',{
-				loading(value){
-					this.query('[app-pages]').loading = value === null ? false:true
-				}
-			})
-		}
-		
-		connected(){
-			this.setAttribute('id','app')
-			this.on('module opened',e=>set_active_module(this,e.detail))
-				fxy.when('content-library').then(()=>set_app_elements(this))
-				.then(()=>this.show())
-				.catch(console.error)
-		}
-		
-		get drawer(){ return this.site.drawer }
-		get module_routes(){ return {type:'page',folder:window.app.kit.path+'/pages'}}
-		get menu(){ return this.query('content-menu') }
-		get pages() { return get_pages(this) }
-		show(){ /*app is showing*/ }
-	}
-	
-	function set_active_module(element,module){
-		element.page = module.name
-		wwi.when(module.element.localName).then(()=>{
-			module.element.dispatch('active')
-			element.router.loading = null
-			if(!element.pages.animates && 'transitioned' in module.element) {
-				window.requestAnimationFrame(()=>{
-					window.setTimeout(()=>module.element.transitioned(null),200)
-				})
+		get_title(){
+			let element = this.query('[app-title]')
+			let title = this.app_title
+			if(element) {
+				let text = element.innerText.trim()
+				if(text.length) title += `: ${text}`
 			}
-			if('will_show_page' in element) element.will_show_page(element.page)
-		})
+			return title
+		}
+		get title(){ return this.get_title() }
+		set title(value){
+			let element = this.query('[app-title]')
+			if(element) element.innerText = value
+			window.app.title = this.get_title()
+		}
 	}
 	
-	function set_app_elements(e){
-		return new Promise((success,error)=>{
-			e.site = new Site(e)
-			if(e.menu) e.menu.item_selector_options = {item:'content-button',role:'option'}
-			if(e.drawer) e.drawer.app = true
-			e.router = new dom.Router(e.module_routes)
-			return window.requestAnimationFrame(()=>{
-				let pages = e.query('[app-pages]')
-				if(!pages) return success()
-				pages.connect_menu(e).router.goto().then(x=>e.drawer.set_tabindex(false)).then(success).catch(error)
-			})
-		})
-	}
 	
+	//load
+	load_wwi_content()
+	
+	//exports
+	dom.app = App
+	
+	//shared actions
 	function get_pages(e){
-		let pages = e.query('[app-pages]')
-		return new Proxy(pages,{
+		return new Proxy(e.query('[app-pages]'),{
 			get(o,name){
 				let value = null
 				if(name in o) {
@@ -110,26 +101,38 @@ window.fxy.exports('dom',(dom)=>{
 		})
 	}
 	
-	function get_wwi_content(){
-		return new Promise((success,error)=>{
-			if(fxy.is.defined('content-library')) return success()
-			return get_wwi_components_code().then(_=>{
-				return fxy.port(components.content.index_url)
-				          .then(_=>fxy.when('content-library'))
-				          .then(success)
-				          .catch(error)
-			})
-		})
-		
+	function load_wwi_content(){
+		if(!fxy.is.defined('content-library')){
+			get_wwi_components_code().then(_=>fxy.port(window.components.content.index_url).then(_=>{})).catch(console.error)
+			//shared actions
+			function get_wwi_components_code(){
+				return new Promise((success,error)=>{
+					if(fxy.is.defined('components-code')) return success()
+					return fxy.port(window.url('components.js'))
+					          .then(_=>fxy.when('components-code'))
+					          .then(success)
+					          .catch(error)
+				})
+			}
+		}
 	}
-	//shared actions
-	function get_wwi_components_code(){
+	
+	function set_elements(e){
 		return new Promise((success,error)=>{
-			if(fxy.is.defined('components-code')) return success()
-			return fxy.port(url('components.js'))
-			          .then(_=>fxy.when('components-code'))
-			          .then(success)
-			          .catch(error)
+			e.site = new Site(e)
+			if(e.menu) e.menu.item_selector_options = {role:'option'}
+			if(e.drawer) e.drawer.app = true
+			e.router = new dom.Router(e,e.options.routes)
+			return window.requestAnimationFrame(()=>{
+				let pages = e.query('[app-pages]')
+				if(pages) pages.connect_menu(e)
+				return e.router
+				        .goto()
+				        .then(x=>e.drawer.set_tabindex(false))
+				        .then(_=>e.setAttribute('id','app'))
+				        .then(success)
+				        .catch(error)
+			})
 		})
 	}
 	

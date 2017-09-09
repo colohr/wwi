@@ -1,4 +1,4 @@
-wwi.exports('design',(design,fxy)=>{
+window.fxy.exports('design',(design,fxy)=>{
 	const alpha_opacity_transparency = Symbol('color alpha, opacity or transparency')
 	const color_names = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
 		"beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
@@ -11,7 +11,7 @@ wwi.exports('design',(design,fxy)=>{
 		"honeydew":"#f0fff0","hotpink":"#ff69b4",
 		"indianred ":"#cd5c5c","indigo":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
 		"lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00","lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080","lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
-		"lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
+		"lightgray":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
 		"lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32","linen":"#faf0e6",
 		"magenta":"#ff00ff","maroon":"#800000","mediumaquamarine":"#66cdaa","mediumblue":"#0000cd","mediumorchid":"#ba55d3","mediumpurple":"#9370d8","mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
 		"mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc","mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa","mistyrose":"#ffe4e1","moccasin":"#ffe4b5",
@@ -45,8 +45,8 @@ wwi.exports('design',(design,fxy)=>{
 		value(transparency){ return `rgba(${this.red},${this.green},${this.blue},${fxy.is.numeric(transparency) ? transparency:this.transparency})` }
 	}
 	
-	//external
-	window.app.cloud.doc(url.component('design/css/colors.css'),'regulate').then(set_colors).catch(console.error)
+	//load
+	window.fxy.doc(url.component('design/css/colors.css'),'regulate').then(set_colors).catch(console.error)
 	
 	//exports
 	design.Color = Color
@@ -56,7 +56,7 @@ wwi.exports('design',(design,fxy)=>{
 	design.icon = get_icon
 	design.icon.set = get_icon_set
 	design.icon.get = get_icon_named
-	design.icons = wwi.exports().icons
+	design.icons = fxy.exports().icons
 	
 	//shared actions
 	function get_clean_svg(html) { return html.replace(/\n/g, '').replace(/\r/g, '').replace(/\t/g, '') }

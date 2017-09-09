@@ -1,6 +1,6 @@
 :host{
     backface-visibility: hidden;
-    bottom:0px;
+    bottom:0;
 
     color: #f01f64;
     cursor: default;
@@ -14,7 +14,7 @@
 
     position: absolute;
 
-    right:0px;
+    right:0;
 
     text-align: center;
     text-rendering: geometricPrecision;
@@ -28,8 +28,8 @@
 }
 :host([hash]){
     position:fixed;
-
 }
+
 :host([active]){
     pointer-events: auto;
     -webkit-filter:saturate(1);

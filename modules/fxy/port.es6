@@ -10,6 +10,8 @@
 				case 'module':
 					return get_eval
 					break
+				case 'style':
+					return port_style
 			}
 			if(name in o){
 				let value = o[name]
@@ -34,6 +36,8 @@
 				case 'query':
 					return query
 					break
+				case 'style':
+					return get_style
 			}
 			if(name in o){
 				let value = o[name]
@@ -48,7 +52,7 @@
 	fxy.dom = fxy_dom
     return fxy.port = fxy_port
 	
-	//----------shared actions---------
+	//shared actions
 	function element( tag, options ){
 		let el = window.document.createElement(tag)
 		if( options ) for( let name in options ) el.setAttribute( name,options[name] )
@@ -86,6 +90,25 @@
 			xhttp.onerror = function refineGetError(e){return reject(e)}
 			xhttp.open('GET', url, true)
 			return xhttp.send(null)
+		})
+	}
+	
+	function get_style(attributes,...imports){
+		let value = element('style',attributes)
+		if(imports.length) value.innerHTML = imports.map(item=>fxy.file.url(item)).map(item=>`@import "${item}";`).join('\n')
+		return value
+	}
+	
+	function port_style(...x){
+		let attributes = x.filter(item=>fxy.is.data(item))[0] || null
+		let imports = x.filter(item=>fxy.is.array(item))[0] || []
+		let style = get_style(attributes,...imports)
+		let files = x.filter(item=>fxy.is.text(item))
+		let fetches = files.map(file=>window.fetch(fxy.file.url(file)).then(x=>x.text()))
+		return Promise.all(...fetches).then(results=>{
+			let html = results.filter(text=>fxy.is.text(text)).join('\n')
+			style.innerHTML += html
+			return style
 		})
 	}
 	

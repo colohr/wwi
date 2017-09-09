@@ -1,0 +1,149 @@
+<template id="search-results">
+	<style>
+		@import "/components/search/design/results.css";
+
+		:host {
+			position: fixed;
+			top: 0;
+			z-index: 100;
+			left: 0;
+			display: none;
+		}
+
+		:host([aria-expanded="true"]) {
+			display: block;
+		}
+
+		[view] {
+			left: var(--input-left, -45px);
+		}
+        [result-list] {
+            font-weight: 300;
+            color: #202020;
+            font-size: 15px;
+            line-height: 24px;
+            text-align: left;
+            width: 600px;
+            padding: 0;
+            border: none;
+            border-radius: 7px;
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+        }
+        footer {
+            border-top: 1px solid #606060;
+            text-align: right;
+            font-size: 12px;
+            padding: 4px 2px 0 0;
+            color: #333
+        }
+
+        footer [logo] {
+            display: inline-block !important;
+            width: 111px;
+            height: 15px;
+            text-indent: 101%;
+            overflow: hidden;
+            white-space: nowrap;
+            background-repeat: no-repeat;
+            background-size: contain;
+            vertical-align: middle;
+            padding: 0 !important
+        }
+
+    </style>
+	<div view result-list class="aa-with-1">
+		<div class="aa-dataset-1">
+
+                 <div class="aa-suggestion" role="option" id="option-60125546">
+                        <div class="algolia-docsearch-suggestion algolia-docsearch-suggestion__secondary" style="white-space: normal;">
+                          <div class="algolia-docsearch-suggestion--category-header">Documentation</div>
+                          <div class="algolia-docsearch-suggestion--wrapper">
+                            <div class="algolia-docsearch-suggestion--subcategory-column">
+                              <span class="algolia-docsearch-suggestion--subcategory-column-text">Serving over HTTP</span>
+                            </div>
+                            <div class="algolia-docsearch-suggestion--content">
+                              <div class="algolia-docsearch-suggestion--subcategory-inline ">Serving over HTTP</div>
+                              <div class="algolia-docsearch-suggestion--title ">HTTP Methods, Headers, and Body<span class="aa-suggestion-title-separator" aria-hidden="true"> › </span>POST request</div>
+                              <div class="algolia-docsearch-suggestion--text">In <span class="algolia-docsearch-suggestion--highlight">add</span>ition to the above, we recommend supporting two <span class="algolia-docsearch-suggestion--highlight">add</span>itional…</div>
+                            </div>
+                          </div>
+                        </div>
+                  </div>
+                  <div class="aa-suggestion" role="option" id="option-1335069">
+                      <div class="algolia-docsearch-suggestion algolia-docsearch-suggestion__secondary" style="white-space: normal;">
+                        <div class="algolia-docsearch-suggestion--category-header">Documentation</div>
+                        <div class="algolia-docsearch-suggestion--wrapper">
+                          <div class="algolia-docsearch-suggestion--subcategory-column ">
+                            <span class="algolia-docsearch-suggestion--subcategory-column-text">Thinking in Graphs</span>
+                          </div>
+                          <div class="algolia-docsearch-suggestion--content">
+                            <div class="algolia-docsearch-suggestion--subcategory-inline ">Thinking in Graphs</div>
+                            <div class="algolia-docsearch-suggestion--title ">Shared Language</div>
+                            <div class="algolia-docsearch-suggestion--text">Each email account has an <span
+                                class="algolia-docsearch-suggestion--highlight">add</span>ress, inbox, drafts, deleted items…</div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                 <div class="aa-suggestion" role="option" id="option-69702109">
+                      <div class="algolia-docsearch-suggestion algolia-docsearch-suggestion__secondary" style="white-space: normal;">
+                        <div class="algolia-docsearch-suggestion--category-header">Documentation</div>
+                        <div class="algolia-docsearch-suggestion--wrapper">
+                          <div class="algolia-docsearch-suggestion--subcategory-column ">
+                            <span class="algolia-docsearch-suggestion--subcategory-column-text">Pagination</span>
+                          </div>
+                          <div class="algolia-docsearch-suggestion--content">
+                            <div class="algolia-docsearch-suggestion--subcategory-inline ">Pagination</div>
+                            <div class="algolia-docsearch-suggestion--title ">Slicing</div>
+                            <div class="algolia-docsearch-suggestion--text">Quickly, though, we realize that there are <span
+                                class="algolia-docsearch-suggestion--highlight">add</span>itional behaviors a…</div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                 <div class="aa-suggestion" role="option" id="option-20872671">
+                      <div class="algolia-docsearch-suggestion" style="white-space: normal;">
+                        <div class="algolia-docsearch-suggestion--category-header">Documentation</div>
+                        <div class="algolia-docsearch-suggestion--wrapper">
+                          <div class="algolia-docsearch-suggestion--subcategory-column ">
+                            <span class="algolia-docsearch-suggestion--subcategory-column-text">Pagination</span>
+                          </div>
+                          <div class="algolia-docsearch-suggestion--content">
+                            <div class="algolia-docsearch-suggestion--subcategory-inline ">Pagination</div>
+                            <div class="algolia-docsearch-suggestion--title ">Complete Connection Model</div>
+                            <div class="algolia-docsearch-suggestion--text">To see this in action, there's an <span
+                                class="algolia-docsearch-suggestion--highlight">add</span>itional field…</div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+
+			<footer>
+				<a class="algolia-docsearch-footer--logo">WWI</a>
+			</footer>
+		</div>
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const SearchResults = wwi.element(doc)
+		SearchResults(class extends SearchResults.Element {
+			connected() {
+				this.setAttribute('role', 'listbox')
+				this.setAttribute('aria-expanded', 'false')
+				this.setAttribute('aria-disabled', 'false')
+			}
+
+			present(element) {
+				let size = element.size
+				this.target = element
+				this.setAttribute('aria-expanded', 'true')
+				this.style.top = ( size.top + size.height ) + 'px'
+				this.style.left = ((size.left + (size.width / 2)) - this.size.width / 2) + 'px'
+			}
+
+			hide() {this.setAttribute('aria-expanded', 'false')}
+		})
+	})(document)
+</script>

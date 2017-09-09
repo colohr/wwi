@@ -1,8 +1,8 @@
 <template id="frame-component">
     <style>
-        @import "/library/modules/wwi/component/design/host.css";
+        @import "/modules/wwi/component/design/host.css";
         :host{
-            display:block;
+	        display: none;
 	        position: absolute;
 	        box-shadow: 0 1px 19px rgba(0,0,0,0.3);
 	        box-sizing: border-box;
@@ -15,6 +15,14 @@
 	        z-index:1;
 	        border-radius: 7px;
 	        overflow: hidden;
+        }
+        :host([full]){
+	        top:0;
+	        left:0;
+	        height: 100%;
+	        width: 100%;
+	        position: relative;
+	        box-shadow: none;
         }
         :host([aria-expanded="false"]){
 	        display: none;
@@ -43,10 +51,13 @@
         				if(value) this.view.src = value
 			        }
 		        })
-
 	        }
 	        connected(){
 		        this.setAttribute('aria-expanded','false')
+		        this.view.onload = e =>{
+		        	this.loaded = true
+		        	this.dispatch('loaded',this)
+		        }
 	        }
             hide(){
         		let button = this.button

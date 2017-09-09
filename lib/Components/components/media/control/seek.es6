@@ -1,4 +1,4 @@
-wwi.exports('media',(media,fxy)=>{
+window.fxy.exports('media',(media,fxy)=>{
 	
 	const seek_control = Symbol('seek control')
 	const MediaSeek = {
@@ -8,9 +8,6 @@ wwi.exports('media',(media,fxy)=>{
 		seeking_volume:false,
 		active:false
 	}
-	
-	document.documentElement.addEventListener('mouseup', remove_seek, false)
-	
 	
 	class SeekControl{
 		constructor(){
@@ -60,6 +57,15 @@ wwi.exports('media',(media,fxy)=>{
 		}
 	}
 	
+	MediaSeek.Mix = SeekMix
+	
+	//load
+	document.documentElement.addEventListener('mouseup', remove_seek, false)
+	
+	//exports
+	media.seek = MediaSeek
+	
+	//shared actions
 	function move(e, target, type) {
 		var value
 		if (type === 'seek') {
@@ -93,17 +99,6 @@ wwi.exports('media',(media,fxy)=>{
 		volume(e)
 	}
 	
-	function seek(e) {
-		e.preventDefault()
-		let target = e.currentTarget
-		let control = target.control
-		if (control.seeking && control.right_click === false && target.audio.readyState !== 0) {
-			control.seek_value = move(e, control.element.design.of(target.bar), 'seek')
-			control.element.bar.value = control.seek_value + '%'
-			control.element.bar.style.width = control.element.bar.value
-		}
-	}
-	
 	function remove_seek() {
 		let target = MediaSeek.target
 		if(!target) return
@@ -119,6 +114,17 @@ wwi.exports('media',(media,fxy)=>{
 		target.seeking_volume = false
 		delete MediaSeek.target
 		
+	}
+	
+	function seek(e) {
+		e.preventDefault()
+		let target = e.currentTarget
+		let control = target.control
+		if (control.seeking && control.right_click === false && target.audio.readyState !== 0) {
+			control.seek_value = move(e, control.element.design.of(target.bar), 'seek')
+			control.element.bar.value = control.seek_value + '%'
+			control.element.bar.style.width = control.element.bar.value
+		}
 	}
 	
 	function volume(e) {
@@ -167,12 +173,4 @@ wwi.exports('media',(media,fxy)=>{
 			button.state = fxy.symbols.disable
 		}
 	}
-	
-
-	
-	
-	
-	MediaSeek.Mix = SeekMix
-	
-	media.seek = MediaSeek
 })

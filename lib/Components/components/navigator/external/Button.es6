@@ -2,7 +2,6 @@
 (function(){
     return function export_button(navigator,fxy){
      
-        
         //exports
         return load()
 	    //shared actions
@@ -11,10 +10,12 @@
 			    module:'behavior',
 			    name:'AriaTrigger'
     		}).then(AriaTrigger=>{
-    			
 			    navigator.Button = Base => class extends AriaTrigger(Base){
-				    constructor(...x){
-					    super(...x)
+				    connectedCallback(){
+					    super.connectedCallback()
+					    this.setAttribute('tabindex','0')
+					    this.setAttribute('role','button')
+					    this.aria.selected='false'
 					    this.define('routes',{
 						    icon:true,
 						    selected(value){
@@ -22,18 +23,13 @@
 							    else this.aria.selected=false
 						    }
 					    })
-					    
-					    this.setAttribute('tabindex','0')
-					    this.setAttribute('role','button')
-					    this.aria.selected='false'
 					    this.on('aria trigger',e=>{
-					    	let data = e.detail.action
+						    let data = e.detail.action
 						    if(data.activates) this.dispatch(this.event_name,data)
 					    })
 				    }
 				    get event_name(){ return this.hasAttribute('event-name') ? this.getAttribute('event-name'):this.localName.replace('navigator-','') }
 			    }
-				   
 		    })
 		    return null
 	    }

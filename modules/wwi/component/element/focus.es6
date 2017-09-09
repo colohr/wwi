@@ -1,4 +1,4 @@
-wwi.exports('element',(element,fxy)=>{
+window.fxy.exports('element',(element,fxy)=>{
 	
 	const Focus = Base => class extends Base{
 		get act(){ return get_act(this) }

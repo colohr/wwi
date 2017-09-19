@@ -19,7 +19,7 @@
 		//shared actions
 		function evaluate_file(file_url){ return window.fetch(file_url).then(response=>response.text()).then(source=>window.eval(source)) }
 		function get_logic(){
-			let files = ['window.es6', 'class.es6']
+			let files = ['window.es6']
 			let loaded = []
 			
 			//return value

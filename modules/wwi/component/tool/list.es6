@@ -1,7 +1,5 @@
 (function(get_list){ return get_list() })
 (function(){
-    
-	
 	    let data_list_change = Symbol('DataList Change')
 	    let data_list_info = Symbol('DataList Type Info')
 	    let data_list_identity = Symbol.for('DataList Identity')

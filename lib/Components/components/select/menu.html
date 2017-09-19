@@ -30,7 +30,6 @@
 			display: block;
 			height: 44px;
 			position: relative;
-			/*transition: height 300ms cubic-bezier(0.5, -0.1, 0.05, -0.18);*/
 			transition: height 300ms ease;
 			transform-style: flat;
 			transform-origin: top center;
@@ -106,7 +105,7 @@
 		Select(class extends Select.Element {
 			constructor() {
 				super()
-				this.setAttribute('role', 'list')
+				this.setAttribute('role', 'listbox')
 				this.setAttribute('tabindex', '0')
 				this.setAttribute('aria-expanded', 'false')
 				this.container.addEventListener('transitionend',(e)=>{
@@ -119,16 +118,12 @@
 					}
 				},false)
 			}
-
 			get button() { return this.query('[selected-option]') }
-
 			close() {
 				this.button.removeAttribute('opened')
 				this.container.style.height = ''
 				return clear_item_transform(this)
 			}
-
-
 			connected() {
 				this.button.addEventListener('click',e=>{
 					if(this.opened) this.close()
@@ -137,26 +132,21 @@
 
 				this.query('[button]').on('toggle',this.toggle.bind(this))
 				this.query('[button]').on('focus item',this.focus_item.bind(this))
+				let items = this.items
+				if(items.length){
+					items[0].focuses_item = true
+					items[0].on('focus button',this.focus_item.bind(this))
+				}
 
+				let option_slot = this.slots.select_option.item
+				if(option_slot){
+					option_slot.addEventListener('slotchange',e=>{
+						console.log(e)
+						this.update_items()
+					})
+				}
 
-				window.wwi.when('select-option').then(()=>{
-					let items = this.items
-					if(items.length){
-						items[0].focuses_item = true
-						items[0].on('focus button',this.focus_item.bind(this))
-					}
-
-					let option_slot = this.slots.select_option.item
-					if(option_slot){
-						option_slot.addEventListener('slotchange',e=>{
-							console.log(e)
-							this.update_items()
-						})
-					}
-
-					this.update_items()
-				})
-
+				this.update_items()
 			}
 
 			get container() {return this.query('[container]')}

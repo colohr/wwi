@@ -2,13 +2,11 @@
 (function(){
     //return function export_id(fxy){
 	
-	    const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	    const numbers = '0123456789'
-	    
 	    class ID extends String{
 		    static generate(count = 5) {
-			    let id = alphabet.charAt(Math.floor(Math.random() * alphabet.length))
-			    let all = numbers+alphabet
+		    	let characters = fxy.characters.all
+			    let id = characters.all.charAt(Math.floor(Math.random() * characters.all.length))
+			    let all = characters.numbers+characters.all
 			    for (let i = 0; i < count-1; i++) id += all.charAt(Math.floor(Math.random() * all.length))
 			    return id
 		    }

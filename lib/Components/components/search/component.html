@@ -86,7 +86,6 @@
 	(function(doc){
 		let extension = [{module:'behavior', name:'Timeout'}]
 		const SearchComponent = wwi.element(doc).extension(...extension)
-
 		SearchComponent(class extends SearchComponent.Element{
 			constructor(){
 				super('routes',{
@@ -106,14 +105,12 @@
 			connected(){
 				this.input.onkeyup = e => !this.empty ? this.timeout(()=>this.dispatch('search',this.keywords)):false
 				this.input.onsearch = e => this.timeout(()=>this.dispatch('search',this.keywords))
-
 				this.query('slot[name="close-button"]').addEventListener('slotchange',e=>{
 					fxy.when('navigator-clear','navigator-close').then(_=>{
 						this.close_button.on('clear',e=>this.expanded=false)
 						this.close_button.on('close',e=>this.expanded=false)
 					})
 				},false)
-
 			}
 			get empty(){ return this.value.length <= 0}
 			expand(value){
@@ -142,8 +139,6 @@
 				return this
 			}
 			get value(){ return this.input.value.trim() }
-
-
 		})
 		//shared actions
 		function get_button(element){
@@ -158,7 +153,5 @@
 			})
 			return element[symbol] = button
 		}
-
-
 	})(document)
 </script>

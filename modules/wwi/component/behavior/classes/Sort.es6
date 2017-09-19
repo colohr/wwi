@@ -6,14 +6,12 @@ window.fxy.exports('sort',(sort,fxy)=>{
 			})
 			element.setAttribute('sort-view','')
 			this.element = element
-			//if(!('sort' in sorted_view)) sorted_view.sort = this
 			this.container = get_container(this)
 			this.current = null
 		}
 		
 		get active(){ return this.get('aria-activedescendant') }
 		set active(value){ return this.set('aria-activedescendant',value) }
-		//get draggables(){ return this.element.query('[draggable="true"]') }
 		get current(){ return this.active_element || null }
 		set current(element){
 			var last = this.active

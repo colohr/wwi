@@ -14,11 +14,8 @@
     border:1px solid transparent;
     border-radius: 4px;
 }
-
-
 [role] > a[role]:hover{
     text-decoration: underline;
-
 }
 [role] > a[role]:focus{
     border:1px dotted;

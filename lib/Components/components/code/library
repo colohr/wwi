@@ -5,7 +5,7 @@ library.logic = [
 library.elements = [
 	'π/π.html',
 	'bar.html',
-	{path:'editor.html',wait:['code-bar','code-π']},
+	{path:'editor.html',wait:['fxy.modules.code.logic','code-bar','code-π']},
 	{path:'snippet/index.html',wait:['code-editor']}
 ]
 library.wait = ['code-snippet','code-editor']

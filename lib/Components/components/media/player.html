@@ -7,14 +7,8 @@
 			position: relative;
 			box-sizing: border-box;
 			outline: none;
+			overflow: visible;
 		}
-
-		div {
-			display: block;
-			position: relative;
-			width: 100%;
-		}
-
 		media-audio{
 			border-bottom: 1px solid rgba(185, 185, 199, 0.4);
 			border-right: 1px solid rgba(185, 185, 199, 0.4);
@@ -25,24 +19,25 @@
 
 	</style>
 
-	<window-frame gui fit>
-		<content-menu></content-menu>
+	<window-frame view overflow>
+		<content-menu no-footer></content-menu>
 	</window-frame>
 
 </template>
 
 <script>
 	(function (doc) {
-		const MediaPlayer = wwi.element(doc)
-		const MediaPlaylist = fxy.require('media/playlist')
+		const MediaPlayer = wwi.element(doc).extension(...window.components.media.mix('Playlist'))
+
 		const player_track = Symbol.for('audio is in a media player')
 
-		MediaPlayer(class extends MediaPlaylist.Mix(MediaPlayer.Element) {
+		MediaPlayer(class extends MediaPlayer.Element {
 				add(...items) {
 					let audio_items = items.map(item => get_audio_item(item)).filter(item => item !== null)
 					let count = audio_items.length
 					for (let i=0;i<count;i++) {
 						let item = audio_items[i]
+						item.is_player_item=true
 						item[player_track] = i+1
 						this.content_menu.appendChild(item)
 					}
@@ -53,21 +48,15 @@
 				}
 
 				connected() {
-
-					wwi.when('content-menu').then(_ => {
-						this.content_menu.item_selector_options = {item:'media-audio'}
-						this.content_menu.on('select', e => {
-							let data = e.detail
-							if (data.select) {
-								data.item.play()
-								if (!data.item.playing) data.item.aria.selected = false
-							}
-						})
-
+					this.content_menu.item_selector_options = {item:'media-audio'}
+					this.content_menu.on('select', e => {
+						let data = e.detail
+						if (data.select) {
+							data.item.play()
+							if (!data.item.playing) data.item.aria.selected = false
+						}
 					})
-
-					app.on('media library', this.route_media_library_action.bind(this))
-
+					window.addEventListener('media library', this.route_media_library_action.bind(this))
 				}
 
 				get content_menu() { return this.query('content-menu') }
@@ -111,7 +100,7 @@
 			else if (fxy.is.text(item_value)) {
 				let media_audio = document.createElement('media-audio')
 				let colors = fxy.require('design/colors')
-				let color = colors.random({ skip: ['gray', 'day', 'dusk', 'navy', 'night', '-50', '-solid', '-bg', '-color'] })
+				let color = colors.random({ skip: ['cream','rose','silver','gray', '-light','-bright','day', 'dusk', 'navy', 'night', '-50', '-solid', '-bg', '-color'] })
 				media_audio.setAttribute('color', color)
 				media_audio.setAttribute('url', item_value)
 				media_audio.option = true

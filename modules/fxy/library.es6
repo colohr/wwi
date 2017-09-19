@@ -1,7 +1,29 @@
 (function(get_library){ return get_library() })
 (function(){
     return (function export_library(){
+    	
+    	class LibraryItem{
+    		constructor(item,type,library){
+    			Object.assign(this,get_item(item,library.path))
+			    this.type = type
+		    }
+		    get waits(){ return 'wait' in this }
+		    before(success){
+		    	if(!this.waits) return success(this)
+			    let waits = this.wait.filter(wait=>wait.includes('-'))
+			    let ons = this.wait.filter(wait=>wait.includes('-')!==true)
+			    return load_waits(()=>load_ons(()=>success(this),...ons),...waits)
+		    }
+		    after(success){
+		    	if(this.type !== 'elements') return success(this)
+			    if('name' in this){
+				    return window.fxy.when(this.name).then(()=>success(this))
+			    }
+			    return success(this)
+		    }
+	    }
 		
+		//exports
 		return window.fxy.library  = create_library
 	
 	    //shared actions
@@ -17,15 +39,26 @@
 			    .then(data=>load_logic(data))
 			    .then(data=>load_elements(data))
 			    .then(data=>load_wait(data))
-			    .then(data=>window.customElements.define(data.element_name,class extends HTMLElement{constructor(){super()}}))
-		
+			    .then(data=>{
+				    if(data.log) console.groupEnd()
+			    	window.customElements.define(data.element_name,class extends HTMLElement{constructor(){super()}})
+				    return data
+			    })
+		    
 	    }
 	    
-	    function get_library_data(library){
-		    return window.fetch(`${library.path}/library`)
-		                 .then(response=>response.text())
-		                 .then(text=>get_library_module(text,library))
+	    function get_item(item,path) {
+		    let data = window.fxy.is.data(item) ? item:{path:item}
+		    if(!data.path.includes('http')) data.path = window.fxy.file.url(path,data.path)
+		    return data
 	    }
+	    
+	    function get_items(library,type){
+		    let items = type in library ? library[type]:[]
+		    return items.map(item=>new LibraryItem(item,type,library))
+	    }
+	    
+	    function get_library_data(library){ return window.fetch(`${library.path}/library`).then(response=>response.text()).then(text=>get_library_module(text,library)) }
 	
 	    function get_library_module(text,library){
 		    let lines = text.split('\n')
@@ -40,90 +73,57 @@
 		    throw new Error(`Nothing found in ${library.path}/library file`)
 	    }
 	
-	    function load_elements(library) {
-	    	let items = 'elements' in library ? library.elements:[]
-		    return load_items(library,get_element,...items)
-		    //shared actions
-		    function get_element(element_data) {
-			    element_data = get_element_data(element_data)
-			    return new Promise((success,error)=>{
-				    let waits = element_data.wait || []
-				    return window.fxy.when(...waits).then(_=>{
-					    return window.fxy.port(element_data.path, {'from-library': library.name})
-					                 .then(()=>{
-						                 if(!window.fxy.is.text(element_data.name)) return success(element_data)
-						                 return window.fxy.when(element_data.name).then(()=>success(element_data))
-					                 })
-					                 .catch(e=>{
-						                 console.error(`Library: ${library.name}`)
-						                 console.error(`Error loading element at: ${element_data.path}`)
-						                 console.error(`Element waits on: ${element_data.wait}`)
-						                 return error(e)
-					                 })
-				    })
+	
+	    function load_elements(library) { return load_items(library,...get_items(library,'elements')) }
+	    
+	    function load_item(item,library){
+		    return new Promise((success,error)=>{
+			    return item.before(()=>{
+				    return window.fxy.port(item.path, {'from-library': library.name, async:'', defer:''})
+				                 .then(()=>item.after(success))
+				                 .catch(error)
 			    })
-		    }
-		
-		    function get_element_data(data) {
-			    let output = {}
-			    if (window.fxy.is.text(data)) output.file = data
-			    else if(window.fxy.is.data(data)) output = data
-			    if (!('path' in output)) output.path = `${library.path}/${output.file}`
-			    else output.path = `${library.path}/${output.path}`
-			    if (!('wait' in output)) output.wait = data.wait
-			    return output
-		    }
-	    }
-	
-	    function load_logic(library) {
-		    let items = 'logic' in library ? library.logic:[]
-		    return load_items(library,get_logic,...items)
-		    
-		    //shared actions
-		    function get_logic(name) {
-			    let item = {path:`${library.path}/${name}`}
-			    return window.fxy.port.eval(item.path).then(()=>item)
-		    }
-	    }
-	
-	    function load_ports(library) {
-		    let items = 'ports' in library ? library.ports:[]
-		    return load_items(library,get_port,...items)
-		    //shared actions
-		    function get_port(item) {
-			    item = window.fxy.is.text(item) ? {path:item}:item
-			    let file_url = item.path.includes('http') ? item.path:window.url(item.path)
-			    return window.fxy.port(file_url).then(()=>item)
-		    }
+		    })
 	    }
 	    
-	    function load_items(library,loader,...items){
+	    function load_items(library,...items){
 		    let count = items.length
 		    let loaded = 0
 		    return new Promise((success, error)=>{
-		    	if(library.log) console.groupCollapsed('Library: '+library.name+' -> '+loader.name)
-			    function get_element_items(){
+		    	if(count === 0) return success(library)
+			    function next(){
 				    for(let i = loaded; i < count; i++){
-					    let item = loader(items[i])
-					    return item.then(file=>{
-					    	if(library.log) console.log(file)
+					    let item = items[i]
+					    return load_item(item,library).then(item=>{
+					    	if(library.log) console.log(item)
 						    loaded++
-						    return get_element_items()
+						    return next()
 					    }).catch(e=>{
 					    	console.error(`Library Error: ${library.name}`)
-						    console.error('loader: ',loader.name)
-						    console.error('item: ',items[i])
+						    console.error('item: ',item)
 						    console.error(e)
 						    return error(e)
 					    })
 				    }
-				    if(library.log) console.groupEnd()
+				    
 				    return success(library)
 			    }
-			    return get_element_items()
+			    return next()
 		    })
 	    }
 	
+	    function load_logic(library) { return load_items(library,...get_items(library,'logic')) }
+	    
+	    function load_ons(success,...ons){
+		    if(ons.length === 0) return success()
+		    window.fxy.on(success,...ons)
+	    }
+	
+	    function load_ports(library) {
+		    if(library.log) console.groupCollapsed('Library: '+library.name)
+		    return load_items(library,...get_items(library,'ports'))
+	    }
+	    
 	    function load_wait(library){
 		    return new Promise((success,error)=>{
 			    if('wait' in library) return window.fxy.when(...library.wait).then(_=>success(library)).catch(error)
@@ -131,7 +131,11 @@
 		    })
 	    }
 	
-	
+	    function load_waits(success,...waits){
+		    if(waits.length === 0) return success()
+		    window.fxy.when(...waits).then(()=>success())
+	    }
+	    
     })()
 })
 

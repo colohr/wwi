@@ -21,8 +21,33 @@
             height: 100%;
         }
 
+        [content]{
+            z-index: 0;
+            position: relative;
+            height:100%;
+            width: 100%;
+        }
+        [transformations]{
+            position: absolute;
+            bottom:10px;
+            left:10px;
+            right:10px;
+        }
+        [transformations] div{
+            font-weight: normal;
+            font-size:12px;
+            background-color: white;
+            border-radius: 100px;
+            padding: 3px 10px 3px 10px;
+            margin:3px;
+        }
+
     </style>
-    <slot id="content"></slot>
+    <div content>
+        <slot id="content"></slot>
+        <div transformations gui horizontal center-center wrap></div>
+    </div>
+
     <canvas canvas-view></canvas>
 </template>
 <script>
@@ -102,6 +127,7 @@
 	                this.rotate_y = travel.offset.x
 	                this.rotate_deg = travel.axis.vertical ? (travel.axis.y/this.height) * 100:(travel.axis.x/this.width) * 100
                     this.dispatch('travel',travel)
+                    this.update_transformations()
                 })
 
 		    }
@@ -112,9 +138,20 @@
 				this.off('mousemove')
                 this.dispatch('travel',this.draw.travel(this.start,to))
 		    }
+		    update_transformations(){
+			    this.query('[transformations]').innerHTML = get_transformations(this)
+            }
 
         })
 
+        //shared actions
+        function get_transformations(prime){
+	        let style = prime.style.transform.replace(/ ,/g,',').replace(/, /g,',')
+            let items = style.split(' ')
+            let html = ''
+            for(let item of items) html += `<div>${item}</div>`
+            return html
+        }
         function set_remote_control(prime,container){
         	let remote = document.createElement('remote-control')
 	        remote.id = fxy.uid()

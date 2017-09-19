@@ -1,4 +1,4 @@
-<template id="media-volume-template">
+<template id="media-volume">
 	<style>
 		:host {
 			display: block;
@@ -103,7 +103,7 @@
 		</div>
 	</div>
 </template>
-<script id="media-volume">
+<script>
 	(function (doc) {
 		const Seek = wwi.element(doc)
 		const SeekMix = fxy.require('media/seek').Mix
@@ -122,6 +122,7 @@
 				}
 			}
 			connected(){
+				if(this.fill) this.button.fill=this.fill
 				this.control.connect(this,'volume')
 			}
 			get container(){ return this.query('[container]') }

@@ -1,5 +1,4 @@
-<link rel="import" href="volume.html">
-<template id="media-seek-template">
+<template id="media-seek">
 	<style>
 		:host {
 			--bar-size:var(--bar,6px);
@@ -59,7 +58,7 @@
 		<div preload class="progress__preload"></div>
 	</div>
 </template>
-<script id="media-seek">
+<script>
 	(function (doc) {
 		const Seek = wwi.element(doc)
 		const SeekMix = fxy.require('media/seek').Mix

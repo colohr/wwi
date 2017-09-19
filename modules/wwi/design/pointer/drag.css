@@ -29,12 +29,7 @@
     cursor: not-allowed;
 }
 
-[aria-grabbed="true"]{
-    cursor: grabbing; cursor: -moz-grabbing; cursor: -webkit-grabbing;
-}
-[aria-grabbed="false"]{
-    cursor: move; cursor: grab; cursor: -moz-grab; cursor: -webkit-grab;
-}
+
 
 [aria-grabbed="true"] > *{
     z-index: 10;

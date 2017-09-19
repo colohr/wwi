@@ -1,10 +1,12 @@
 (function(get_fxy,window){ return get_fxy(window) })
 (function(window){
 	return (function export_fxy(){
-		const Externals = new Map()
+		const alphabet = 'abcdefghijklmnopqrstuvwxyz'
 		const element_selector_data = Symbol('fxy element selector data')
 		const email_regular_expression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+		const externals = new Map()
 		const modules = Symbol('fxy modules')
+		const numbers = '0123456789'
 		
 		class Fxy extends Map{
 			static get element_selector_data(){
@@ -29,6 +31,19 @@
 				})
 			}
 			get all(){ return all_promises }
+			get characters(){
+				return new Proxy({},{
+					get(o,name){
+						switch(name){
+							case 'alphabet':
+							case 'abc': return alphabet
+							case 'ABC': return alphabet.toUpperCase()
+							case 'numbers': return numbers
+						}
+						return null
+					}
+				})
+			}
 			get define(){ return define_element }
 			get deep(){ return get_deep_value }
 			get deeper(){ return get_deeper_value }
@@ -68,6 +83,7 @@
 					instance:is_instance,
 					json:is_json,
 					map:is_map,
+					module:is_module,
 					nothing:is_nothing,
 					number:is_number,
 					numeric:is_numeric,
@@ -113,6 +129,7 @@
 				return null
 			}
 			get modules(){ return get_modules() }
+			get not(){ return get_not() }
 			get numeral(){return get_numeral }
 			paths(pathname){ return this[modules].get(pathname) }
 			require(...paths){
@@ -143,6 +160,7 @@
 			get tag(){ return tag_closure }
 			get uid(){ return get_uid }
 			get when(){ return when_element_is_defined }
+			get wrap(){ return get_wrap() }
 		}
 		
 		//exports
@@ -385,7 +403,7 @@
 				
 				let has_module = has_external(module,name,target)
 				if(has_module || loading_module) return promise
-				Externals.set(path,true)
+				externals.set(path,true)
 				load_module(folder, module, name, 'path' in options ? options.path:null).then(result => set_module(path,module,name,result)).catch(e=>set_module(path,module,name,e))
 				return promise
 			}
@@ -396,7 +414,7 @@
 				else if(target && !(target in fxy_module_value)) return false
 				return true
 			}
-			function is_loading(path){ return Externals.has(path) }
+			function is_loading(path){ return externals.has(path) }
 			function is_module_exports(module_result){
 				if(is_function(module_result)){
 					let name = module_result.name
@@ -431,7 +449,7 @@
 					if(is_module_exports(module_result)) exports = module_result(module_block,fxy)
 					else exports = module_result
 					if(fxy.is.nothing(exports) === false) module_block[name] = exports
-					Externals.delete(path)
+					externals.delete(path)
 				})
 			}
 		}
@@ -461,6 +479,14 @@
 				has(o,name){ return fxy.has(name) }
 			})
 		}
+		function get_not(...names){
+			return new Proxy((target)=>{
+				return fxy.is.nothing(get_deeper_value(target,names.join('.')))
+			},{get(o,name){
+				names.push(name)
+				return get_not(...names)
+			}})
+		}
 		function get_numeral(x){
 			let value
 			let type = typeof x
@@ -484,12 +510,65 @@
 			return null
 		}
 		function get_uid(count = 5){
-			const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-			const numbers = '0123456789'
-			let id = alphabet.charAt(Math.floor(Math.random() * alphabet.length))
-			let all = numbers+alphabet
+			let abc = alphabet+alphabet.toUpperCase()
+			let id = abc.charAt(Math.floor(Math.random() * abc.length))
+			let all = numbers+abc
 			for (let i = 0; i < count-1; i++) id += all.charAt(Math.floor(Math.random() * all.length))
 			return id
+		}
+		function get_wrap(options){
+			return new Proxy(wrap_array,{
+				get(o,name){
+					if(is_data(options)){
+						switch(name){
+							case 'html':
+							case 'text':
+								return 'wrapped' in options ? options.wrapped:options.list.join('')
+							case 'attributes':
+								return x=>{
+									options.elements = wrap_attributes(options,x)
+									options.wrapped = options.elements.map(item=>item.outerHTML).join('')
+									return get_wrap(options)
+								}
+							case 'elements':
+								if('elements' in options) return options.elements
+								return wrap_elements(options)
+						}
+						return get_wrap(options)
+					}
+					
+					if(!is_data(options)) options = {tag:name}
+					return (...x)=>wrap_array(options,...x)
+				}
+			})
+			
+			function wrap_array(data,...x){
+				data.list = x.map(item=>`<${options.tag}>${item}</${options.tag}>`)
+				return get_wrap(data)
+			}
+			function wrap_element(...x){
+				let div = document.createElement('div')
+				div.innerHTML = x.join('')
+				return div
+			}
+			function wrap_attributes(data,attributes){
+				let all = null
+				if('all' in data) all = data.all
+				else all = wrap_elements(data)
+				return all.map(element=>{
+					for(let name in attributes) element.setAttribute(name,attributes[name])
+					return element
+				})
+			}
+			function wrap_elements(data,attributes){
+				let wrap = wrap_element(...data.list)
+				let all = Array.from(wrap.querySelectorAll(data.tag))
+				if(is_data(attributes)) {
+					data.all = all
+					return wrap_attributes(data,attributes)
+				}
+				return all
+			}
 		}
 		
 		function is_array(value){ return is_object(value) && Array.isArray(value) }
@@ -513,6 +592,7 @@
 		function is_instance(value,type){ return is_object(value) && is_function(type) && value instanceof type }
 		function is_json(value){ return is_text(value) && /^[\],:{}\s]*$/.test(value.replace(/\\["\\\/bfnrtu]/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, '')) }
 		function is_map(value){ return is_object(value) && value instanceof Map }
+		function is_module(value){ return !is_nothing(fxy.require(value)) }
 		function is_nothing(value){ return typeof value === 'undefined' || value === null || (typeof value === 'number' && isNaN(value)) }
 		function is_number(value){ return typeof value === 'number' && !isNaN(value) && isFinite(value) }
 		function is_numeric(value){ return get_numeral(value).valuable }

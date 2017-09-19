@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/colohr/wwi#readme",
   "dependencies": {
-    "fxy": "^0.1.65"
+    "fxy": "^0.1.67",
+    "wxy": "^0.0.46"
   }
 }

@@ -8,10 +8,8 @@
 	    return load()
 	    //shared actions
 	    function load(){
-    		if(!fxy.is.nothing(fxy.require('tool/pointers'))) return Pointers
-		    window.fxy.port.eval(window.url.wwi('component/logic/pointers.es6'))
-		          .then(()=>behavior.Pointers = Pointers)
-		          .catch(console.error)
+    		if(fxy.is.defined('tool/pointers')) return Pointers
+		    window.wwi.tool('pointers').then(()=>behavior.Pointers=Pointers)
 		    return null
 	    }
     }

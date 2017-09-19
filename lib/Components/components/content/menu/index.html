@@ -19,7 +19,7 @@
 		[sticky]{
 			position: -webkit-sticky;
 			position: sticky;
-			z-index: 1;
+			z-index: 5;
 			padding-left:10px;
 			padding-right:10px;
 			width: calc(100% - 20px);
@@ -67,6 +67,10 @@
 		:host([grid]) [footer] slot::slotted(*:focus),
 		[sticky] slot::slotted(*:focus){
 			opacity: 1;
+		}
+
+		:host([no-footer]) [footer]{
+			display: none;
 		}
 
 	</style>

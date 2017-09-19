@@ -5,7 +5,6 @@
 			display: block;
 			position: relative;
 			height: 100%;
-			contain: paint;
 			box-sizing: border-box;
 			padding-left:2px;
 			padding-right:2px;
@@ -63,17 +62,15 @@
 
 	</style>
 	<div view gui horizontal center-center>
-		<media-button id=back class="ap__controls ap__controls--prev"></media-button>
+		<!--<media-button id=back class="ap__controls ap__controls&#45;&#45;prev"></media-button>-->
 		<media-button id=play icons="play,pause"></media-button>
-		<media-button id=next class="ap__controls ap__controls--next"></media-button>
+		<!--<media-button id=next class="ap__controls ap__controls&#45;&#45;next"></media-button>-->
 	</div>
 
 </template>
 <script id="media-playback">
 	(function (doc) {
 		const Playback = wwi.element(doc)
-		const connected_events = ['back', 'play', 'next']
-		const connected_elements = Symbol.for('connected elements')
 		Playback(class extends Playback.Element{
 			constructor(){super({fill:true,showControls:true})}
 			get back(){ return this.query('#back') }
@@ -93,71 +90,38 @@
 				}
 			}
 			connected(){
-				this[connected_elements] = new Set()
-				for (let type of connected_events) {
-					let element = this[type]
-					if (element.isConnected) {
-						this.connected_element({type: `${type} connected`, currentTarget: element})
-					} else {
-						element.on(`${type} connected`, this.connected_element.bind(this))
-					}
-				}
-			}
-			connected_element(e) {
-				if(fxy.is.data(e) && 'type' in e) this[connected_elements].add(e.type)
-				let element = e.currentTarget
-				if(element){
-					if(element === this.button){
-						this.button.a11y_callback = (e)=>{
-							let detail = e.detail
-							if('key' in detail){
-								let key = detail.key
-								if(key.activates) return this.dispatch('play')
-							}
-						}
-
-//						this.button.on('enter',(e)=>{
-//							clear_hide_timer()
-//							this.showControls = true
-//						})
-//						this.button.on('leave',()=>{
-//							set_hide_timer()
-//						})
-					}
-					if(element === this.button || element === this.next || element === this.back){
-//						this.next.on('enter',()=>{
-//							clear_hide_timer()
-//							this.showControls = true
-//						})
-//						this.next.on('leave',()=>{
-//							set_hide_timer()
-//						})
-						element.onmouseenter = (e)=>{
-							clear_hide_timer()
-							this.showControls = true
-						}
-						element.onmouseleave= (e)=>{
-							set_hide_timer()
-						}
-					}
-
-					let playback = this
-					function clear_hide_timer(){
-						if(typeof playback.button.hide_timer === 'number'){
-							window.clearTimeout(playback.button.hide_timer)
-							delete playback.button.hide_timer
-						}
-					}
-					function set_hide_timer(){
+				let buttons = this.all('media-button')
+				for(let button of buttons){
+					button.onmouseenter = (e)=>{
 						clear_hide_timer()
-						playback.button.hide_timer = window.setTimeout(()=>{
-							playback.showControls = null
-							delete playback.button.hide_timer
-						},320)
+						this.showControls = true
+					}
+					button.onmouseleave= (e)=>{
+						set_hide_timer()
+					}
+					button.a11y_callback = (e)=>{
+						let detail = e.detail
+						if('key' in detail){
+							let key = detail.key
+							if(key.activates) return this.dispatch('play')
+						}
+					}
+					if(this.fill) button.fill=this.fill
+				}
+
+				let playback = this
+				function clear_hide_timer(){
+					if(typeof playback.button.hide_timer === 'number'){
+						window.clearTimeout(playback.button.hide_timer)
+						delete playback.button.hide_timer
 					}
 				}
-				if (this[connected_elements].size === connected_events.length) {
-
+				function set_hide_timer(){
+					clear_hide_timer()
+					playback.button.hide_timer = window.setTimeout(()=>{
+						playback.showControls = null
+						delete playback.button.hide_timer
+					},320)
 				}
 			}
 			get next(){ return this.query('#next') }

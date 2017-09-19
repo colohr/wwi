@@ -1,22 +1,24 @@
 library = {}
-library.ports = [window.components.window.index_url]
+library.ports = [window.components.content.index_url,window.components.window.index_url]
 library.logic = [
 	'control/library.es6',
 	'control/time.es6',
 	'control/metadata.es6',
 	'control/sound.es6',
-	'control/playlist.es6',
 	'control/seek.es6',
 	'control/icons.es6',
 	'control/Video.es6'
 ]
 library.elements = [
 	'button.html',
-	'playback.html',
-	{path:'seek/index.html'},
-	{path:'track/index.html',wait:['media-seek','media-volume']},
-	{path:'audio.html',wait:['track-time','track-lyrics','track-item']},
-	{path:'player.html',wait:['window-frame']}
+	'seek.html',
+	'track/time.html',
+	'track/lyrics.html',
+	{path:'playback.html',wait:['media-button']},
+	{path:'volume.html',wait:['media-button']},
+	{path:'track/item.html',wait:['track-time','media-seek']},
+	{path:'audio.html',wait:['media-playback','media-button','media-volume','track-lyrics','track-item']},
+	{path:'player.html',wait:['content-menu','window-frame','media-audio']}
 ]
 library.wait=['media-player']
 

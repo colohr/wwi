@@ -28,7 +28,7 @@
 		    get as(){ return get_read_as(this) }
 		    get changed(){ return this.blob.lastModified }
 		    get changed_date(){ return this.blob.lastModifiedDate }
-		    get extension(){ return window.app.source.type(this.name) }
+		    get extension(){ return window.fxy.file.type(this.name) }
 		    get id(){ return fxy.id.dash(this.name) }
 		    get name(){ return this.blob.name }
 		    get path(){ return 'webkitRelativePath' in this.blob && this.blob.webkitRelativePath ? this.blob.webkitRelativePath:this.name }
@@ -36,6 +36,7 @@
 	        	this.state = name
 		        if('total' in event) this.total = event.total
 		        if('loaded' in event) this.loaded = event.loaded
+		        if(this.total === this.loaded) this.state = 'done'
 		        this.progress = ((100 / this.total) * this.loaded).toFixed(0)
 		        this.dispatch(name,{value:this.progress,percent:`${this.progress}%`})
 		        return this

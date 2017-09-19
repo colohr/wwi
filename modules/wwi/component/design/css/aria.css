@@ -1,0 +1,29 @@
+button{
+    -webkit-appearance: none;
+    appearance:none;
+    border:2px solid transparent;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-weight: 900;
+    color:var(--azul);
+    border-radius: 7px;
+    background: white;
+    outline: none;
+}
+
+button:hover{
+    color:var(--azul-bright);
+    border-color:var(--day);
+}
+button:focus{
+    border-color:var(--azul-bright);
+}
+button:active{
+    color:var(--azul-dark);
+    border-color:var(--azul-dark);
+}
+button[aria-selected="true"]{
+    color:var(--azul-dark);
+}
+[aria-grabbed="false"]{ cursor: move; cursor: grab; cursor: -moz-grab; cursor: -webkit-grab;  }
+[aria-grabbed="true"]{  cursor: grabbing; cursor: -moz-grabbing; cursor: -webkit-grabbing;  }

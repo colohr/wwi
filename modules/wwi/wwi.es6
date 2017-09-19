@@ -34,6 +34,15 @@
 		get symbols(){return fxy.symbols }
 		get when(){ return fxy.when }
 		get modules(){ return fxy.modules }
+		tool(name){
+			return new Promise((success,error)=>{
+				let tool = `tool/${name}`
+				if(window.fxy.is.module(tool)) return success(window.fxy.require(tool))
+				else window.fxy.port(window.url.component(tool+'.es6'),{async:'',defer:''}).then(_=>success(window.fxy.require(tool))).catch(e=>{
+					console.error(e)
+				})
+			})
+		}
 	}
 	
 	class WorldWideListener extends Map{ constructor(element){ super(); this.dispatch = (name)=>{ return function dispatch_action(event){ return element.dispatch(name,event) } } } }

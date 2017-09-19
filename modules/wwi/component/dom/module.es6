@@ -13,7 +13,11 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		}
 		get active() { return this.element.hasAttribute('active') }
 		set active(active) { return active !== true ? this.element.removeAttribute('active'):this.element.setAttribute('active','') }
-		close(container,next) {
+		close(container,next,preloaded) {
+			if(preloaded === true) {
+				set_active(this,false,preloaded)
+				return this
+			}
 			if('will_close_page' in container) container.will_close_page(this,next).then(_=>set_active(this,false)).catch(console.error)
 			else set_active(this,false)
 			return this
@@ -25,7 +29,9 @@ window.fxy.exports('dom',(dom,fxy)=>{
 			return this
 		}
 		get title(){ return this.element.hasAttribute('page-title') ? this.element.getAttribute('page-title'):fxy.id.proper(module.name) }
-		
+		preload(router){
+			return load_module(router,this.name,true)
+		}
 	}
 	
 	class Router extends Map {
@@ -110,7 +116,7 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		return null
 	}
 	
-	function load_module(element,name){
+	function load_module(element,name,preloading){
 		if(!fxy.is.text(name)) element.loading = false
 		let module = element.get_module(name)
 		//return value
@@ -120,12 +126,12 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		})
 		//shared actions
 		function get_element(){
-			element.loading = true
+			if(preloading !== true) element.loading = true
 			let page_url = fxy.file.url(element.folder, module.data.file || '')
 			return fxy.port(page_url).then(on_port).then(e=>module.loaded=true).catch(e=>module.loaded=e)
 		}
 		function get_loads(ports){ return fxy.all(ports).then(_=>fxy.when(...module.waits)).then(_=>fxy.when(module.element.localName)) }
-		function on_port(e){ return e === fxy.port.loading ? e:get_loads(module.loads.map(source=>fxy.port(source))) }
+		function on_port(e){ return e === fxy.port.loading ? e:get_loads(module.loads.map(source=>fxy.port(source,{async:'',defer:''}))) }
 	}
 	
 	function on_route(element,e){
@@ -134,7 +140,7 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		              .catch(error=>element.on_error(error))
 	}
 	
-	function set_active(module,active){
+	function set_active(module,active,preloaded){
 		let element = module.element
 		let set = element.setAttribute.bind(element)
 		let remove = element.removeAttribute.bind(element)
@@ -143,13 +149,13 @@ window.fxy.exports('dom',(dom,fxy)=>{
 				set('aria-hidden','false')
 				set('aria-expanded','true')
 				remove('tabindex')
-				element.dispatch('active')
+				if(preloaded !== true) element.dispatch('active')
 				break
 			default:
 				set('aria-hidden','true')
 				set('aria-expanded','false')
 				set('tabindex','-1')
-				element.dispatch('inactive')
+				if(preloaded !== true) element.dispatch('inactive')
 				break
 		}
 		window.requestAnimationFrame(_=>{

@@ -134,6 +134,7 @@
 		    this.data = data
 		    this.events = { mousedown: mousedown.bind(this), mouseup: mouseup.bind(this), touchstart: touchstart.bind(this), touchstop: touchstop.bind(this) }
 		    this.handle.addEventListener('mousedown', this.events.mousedown, false)
+		    this.handle.setAttribute('aria-grabbed','false')
 		    if(touch_events) this.handle.addEventListener('touchstart', this.events.touchstart, passive ? { passive: true } : false)
 		    this.opts = opts
 		    return this
@@ -151,6 +152,7 @@
 		    let hOff = e.clientY - el.offsetTop
 		    events.mousemove = mousemove.bind(this, wOff, hOff)
 		    Displace.active = this
+		    this.handle.setAttribute('aria-grabbed','true')
 		    document.addEventListener('mousemove', events.mousemove, false)
 		    document.addEventListener('mouseup', events.mouseup, false)
 	    }
@@ -176,6 +178,7 @@
 		    let events = this.events
 		    let opts = this.opts
 		    if (typeof opts.onMouseUp === 'function') opts.onMouseUp(el, e)
+		    this.handle.setAttribute('aria-grabbed','false')
 		    document.removeEventListener('mouseup', events.mouseup, false)
 		    document.removeEventListener('mousemove', events.mousemove, false)
 	    }

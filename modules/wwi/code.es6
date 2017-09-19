@@ -40,19 +40,15 @@ function wwi_get_kit(port_module,window){
 },
 function wwi_module( query, resource, source, window){
 	const kit_components = {
-		account:{
-			get firebase(){
-				if(kit.has('firebase-account')) return kit.get('firebase-account')
-				return 'firebase-account.js'
-			}
-		},
 		get imports(){ return kit.has('import') ? kit.get('import') : false },
-		extensions: {
-			get firebase(){
-				let firebase_file = kit.get('firebase')
-				if(firebase_file) return firebase_file
-				return 'https://www.gstatic.com/firebasejs/4.3.1/firebase.js'
-			}
+		get firebase(){
+			let firebase_file = kit.get('firebase')
+			if(firebase_file) return firebase_file
+			return 'https://www.gstatic.com/firebasejs/4.3.1/firebase.js'
+		},
+		get firebase_account(){
+			if(kit.has('firebase-account')) return kit.get('firebase-account')
+			return 'firebase-account.js'
 		}
 	}
 	
@@ -83,7 +79,7 @@ function wwi_module( query, resource, source, window){
 							if(file.includes('http')) return file
 							return window.url(file)
 						})
-						return Promise.all(codes.map(file=>get_eval(file))).then(success).catch(error)
+						return Promise.all(codes.map(file=>window.fxy.port(file,{defer:'',async:''}))).then(success).catch(error)
 					}
 				}
 				return success()
@@ -91,53 +87,26 @@ function wwi_module( query, resource, source, window){
 		}
 		
 		function window_finish(){
+			world_wide_internet.components(kit).map(kit_url=>resource(kit_url))[0].then(()=>load_rest())
 			window.fxy.service_worker()
 			window.document.body.removeAttribute('unresolved')
 			let app_element = window.app.element
 			if(app_element) window.fxy.when(app_element.localName).then(()=>window.document.body.setAttribute('components-ported',''))
 			else window.document.body.setAttribute('components-ported','')
 			return window.dispatchEvent( new CustomEvent('app', { bubbles: true, detail: window.app } ))
+			//shared actions
+			function load_rest(){
+				if(kit.has('firebase')){
+					window.fxy.port(kit_components.firebase,{async:'',defer:''}).then(()=>{
+						if(kit.has('firebase-account')) window.fxy.port(window.url.site(kit_components.firebase_account),{async:'',defer:''}).catch(console.error)
+					}).catch(console.error)
+				}
+			}
 		}
-		
-		function window_firebase(){
-			return new Promise((success,error)=>{
-				if(kit.has('firebase')) return get_eval(window.url.site(kit_components.account.firebase)).then(success).catch(error)
-				return success()
-			})
-		}
-		
-		function window_imports(){ return Promise.all(world_wide_internet.components(kit).map(kit_url=>resource(kit_url))) }
 		
 		function window_ports(){
 			//exports
-			return finish()
-			//shared actions
-			function finish(){
-				return load_library().then(_=>window_code())
-				                     .then(_=>load_extensions())
-				                     .then(_=>window_firebase())
-				                     .then(_=>get_eval(window.url.component('component.es6')))
-				                     .then(window_imports)
-			}
-			function load_extensions(){
-				let extensions = []
-				for(let name in kit_components.extensions){
-					if(kit.has(name)){
-						let extension_value = kit_components.extensions[name]
-						switch(name){
-							case 'firebase':
-								extensions.push(resource(extension_value))
-								break
-							default:
-								let extension_url = window.url.wwi(extension_value)
-								extensions.push(get_eval(extension_url))
-								break
-						}
-					}
-				}
-				return Promise.all(extensions)
-			}
-			function load_library(){ return get_eval(window.url.library('library.es6')) }
+			return  window_code().then(_=>get_eval(window.url.component('component.es6')))
 		}
 		
 		function window_resources(){

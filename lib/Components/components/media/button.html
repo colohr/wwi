@@ -3,82 +3,54 @@
 		@import "modules/wwi/component/design/gui.css";
 
 		:host {
-			/*--background:inherit;*/
 			--height:var(--h,34px);
 			--width:var(--w,34px);
-
 			will-change: filter, box-shadow;
 			transition: filter 200ms linear, box-shadow 200ms ease;
 			text-rendering: optimizeLegibility;
 			font-weight: 400;
-			backface-visibility: hidden;
 			background: var(--background, inherit);
 			border: 1px solid #dedee5;
 			border-radius: var(--radius,100px);
 			box-sizing: border-box;
-
 			cursor: pointer;
 			font-size: 16px;
-
 			min-height: var(--height);
 			min-width: var(--width);
 			max-height: var(--height);
 			max-width: var(--width);
-
 			outline: none;
 			text-indent: -4px;
 			text-align: center;
-
-
 			position: relative;
-
 			-moz-appearance: none;
 			-webkit-appearance: none;
 			z-index: 0;
-
 		}
-
-		:host(:active) {
-			/*filter: drop-shadow(0 0 0 rgba(60, 50, 70, 0));*/
-		}
-
 		:host(:hover) {
-			/*filter: drop-shadow(0 1px 2px rgba(60, 50, 70, 0.3));*/
 			box-shadow: 0 0 0 1px currentColor;
 			z-index: 1;
 		}
-
-		:host([no-border]){
-			border: none;
-		}
-
-		:host([no-border]:hover){
-			box-shadow: none;
-		}
-
+		:host([no-border]){  border: none;  }
+		:host([no-border]:hover){  box-shadow: none;  }
 		:host(:focus) {
-			box-shadow: 0 0 0px 1px currentColor;
+			box-shadow: 0 0 0 1px currentColor;
 			z-index: 1;
-
 		}
-
 		[view] {
 			position: absolute;
 			height: 100%;
 			width: 100%;
 			left: 0;
 		}
-
 		[view] > svg{
 			height: var(--size,auto);
 			width: var(--size,auto);
 		}
-
 		:host([disable]) {
 			filter: saturate(0);
 			opacity: 0.7;
 		}
-
 		:host-context(media-player){
 			--w:26px;
 			--h:26px;
@@ -90,8 +62,6 @@
 			padding-right:0;
 			margin:0;
 		}
-
-
 	</style>
 	<div view gui horizontal center-center>
 		<slot></slot>
@@ -137,7 +107,7 @@
 				this.kind = 'button'
 				let icon_list = this.icon_list
 				if (icon_list.length) this.state = icon_list[0]
-				this.dispatch(`${this.id} connected`,this)
+				if(this.fill && this.icon) this.icon.setAttribute('fill', this.fill)
 			}
 
 			get icon() { return this.query('[view] svg') }
@@ -167,7 +137,7 @@
 					else if (this.hasAttribute('disable')) this.removeAttribute('disable')
 					if (name in icons) this.view.innerHTML = icons[name]
 				}
-				if (button_fill in this) {
+				if (this.hasAttribute('fill')) {
 					let icon = this.icon
 					if (icon) {
 						let state = this.state

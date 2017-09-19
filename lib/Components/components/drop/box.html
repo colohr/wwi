@@ -45,7 +45,7 @@
     (function(doc){
         const DropBox = wwi.element(doc).extension(
         	{module:'behavior',name:'Drop'},
-            {module:'control',name:'Files'})
+            {module:'behavior',name:'Files'})
 
         DropBox(class extends DropBox.Element{
 	        add(file){
@@ -61,7 +61,11 @@
 			        let items = this.files.read(...e.detail.files).items
                     for(let file of items) this.add(file)
 		        })
-                this.on('file data',e=>this.dispatch('data',e.detail))
+                this.on('file data',e=>{
+                	let file = e.detail
+	                file.element = this.query(`[name="${file.id}"]`)
+                	this.dispatch('data',file)
+                })
             }
             get_read_as(file){
         		let type = file.type

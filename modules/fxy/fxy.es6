@@ -11,7 +11,6 @@
 				'class.es6',
 				'symbols.es6',
 				'browser.es6',
-				//'uid.es6',
 				'file.es6',
 				'port.es6',
 				'library.es6',

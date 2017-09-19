@@ -2,6 +2,8 @@ window.fxy.exports('dom',(dom,fxy)=>{
 	
 	const App = Base => class extends Base{
 		constructor(){
+			//load
+			load_wwi_content()
 			super('routes',{ loading(value){ this.query('[app-pages]').loading = value === null ? false:true } })
 			this.options = new AppOptions(this)
 		}
@@ -75,8 +77,7 @@ window.fxy.exports('dom',(dom,fxy)=>{
 	}
 	
 	
-	//load
-	load_wwi_content()
+	
 	
 	//exports
 	dom.app = App

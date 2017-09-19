@@ -7,8 +7,6 @@ wwi.exports('sticky',(sticky,fxy)=>{
 		theme = fxy.require('sticky/theme')(theme)
 		const selectors = list.selectors
 		return `
-		        
-		            @import "/modules/wwi/component/design/host/scroll-view.css";
 		            @import "/modules/wwi/component/design/css/attr.css";
 
 		              :host{

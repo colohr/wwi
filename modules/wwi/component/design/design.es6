@@ -46,7 +46,7 @@ window.fxy.exports('design',(design,fxy)=>{
 	}
 	
 	//load
-	window.fxy.doc(url.component('design/css/colors.css'),'regulate').then(set_colors).catch(console.error)
+	load()
 	
 	//exports
 	design.Color = Color
@@ -80,7 +80,7 @@ window.fxy.exports('design',(design,fxy)=>{
 	}
 	
 	function get_color_theme(file_url){
-		return window.app.cloud.doc(file_url,'regulate').then(theme_colors=>set_colors(theme_colors,true)).catch(console.error)
+		return window.fxy.doc(file_url,'regulate').then(theme_colors=>set_colors(theme_colors,true)).catch(console.error)
 	}
 	
 	function get_component_to_hex(c) {
@@ -176,6 +176,14 @@ window.fxy.exports('design',(design,fxy)=>{
 		}
 		if(custom_theme !== true) design.colors = colors
 		return colors
+	}
+	
+	function load(){
+		let docs = [[url.component('design/css/colors.css'),'regulate'],[url.component('design/css/attr.css'),'design']]
+		fxy.doc(...docs[0]).then(set_colors).then(()=>fxy.doc(...docs[1])).then(gui=>{
+			gui.rekey('gui.')
+			design.gui=gui
+		}).catch(console.error)
 	}
 	
 })

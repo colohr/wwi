@@ -118,7 +118,6 @@
 					icon:true,
 					selected:true
 				})
-
 			}
 			a11y_connected(ally) {
 				if(ally){
@@ -141,7 +140,7 @@
 				switch(name){
 					case 'icon':
 						let icon_container = this.query('[icon-container]')
-						var icon = icon_container ? icon_container.querySelector('[icon]'):null
+						let icon = icon_container ? icon_container.querySelector('[icon]'):null
 						if(value){
 							icon_container.style.display = ''
 							icon = create_icon_element(value,this.hasAttribute('wwi'))
@@ -162,7 +161,6 @@
 				}
 			}
 			connected(){
-//				if(!this.hasAttribute('button')) this.setAttribute('slot','select-option')
 				if(!this.hasAttribute('button')) this.kind = 'menuitem'
 				else this.kind = 'button'
 			}
@@ -174,9 +172,7 @@
 
 		function create_icon_element(src,from_wwi){
 			let img = document.createElement('div')
-			if(from_wwi){
-				src = url.component('design/icons',src)
-			}
+			if(from_wwi) src = window.url.component('design/icons',src)
 			img.style.backgroundImage = `url(${src})`
 			img.setAttribute('icon','')
 			img.setAttribute('gui','')

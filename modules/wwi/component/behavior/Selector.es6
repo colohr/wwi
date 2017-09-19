@@ -13,20 +13,14 @@
 	    }
 	    
 	    const Selectable = Base => class extends Base {
-	    	
-	    	get item_selector_options(){ return item_selector_options in this ? this[item_selector_options]:default_item_selector_options }
-		    set item_selector_options(values){
-	    		if(fxy.is.text(values) || fxy.is.data(values)) return this[item_selector_options] = get_item_selector_options(values)
-		        return delete this[item_selector_options]
-		    }
+	    	get item_selector_options(){ return item_selector_options in this ? this[item_selector_options]:this[item_selector_options]=get_item_selector_options() }
+		    set item_selector_options(values){ return this[item_selector_options] = get_item_selector_options(values) }
 	    	get options_slot(){ return get_option_container(this) }
 		    get option_items(){ return get_option_items(this) }
 		    get items(){ return this.option_items }
 		    get_item(name,value){ return this.option_items.filter(item=>item.hasAttribute(name) && item.getAttribute(name) === value)[0] || null }
 		    has_item(name,value){ return this.option_items.filter(item=>item.hasAttribute(name) && item.getAttribute(name) === value).length > 0 }
-		    get selected(){
-		    	return this.items.filter(item=>is_selected(item))
-		    }
+		    get selected(){ return this.items.filter(item=>is_selected(item)) }
 		    get selector(){ return get_selector(this) }
 		    set_selector_items(items){ return configure_items(this,items) }
 		    set_tabindex(active) {
@@ -35,9 +29,7 @@
 			    return this
 		    }
 	    }
-	
 	    
-	
 	    const Selector = Base => class extends Selectable(Base){
 	    	constructor(...x){
 	    		super(...x)
@@ -135,8 +127,7 @@
 	    }
 	
 	    function get_item_selector_options(values){
-		    let new_options = {}
-		    for(let name in default_item_selector_options) new_options[name] = default_item_selector_options[name]
+		    let new_options = JSON.parse(JSON.stringify(default_item_selector_options))
 		    if(fxy.is.text(values)) new_options.item = values
 		    else if(fxy.is.data(values)){
 			    for(let name in values){
@@ -312,7 +303,5 @@
 			    }, 100)
 		    })
 	    }
-	    
-	    
     }
 })

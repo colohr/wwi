@@ -36,21 +36,12 @@ window.fxy.exports('data',(data,fxy)=>{
 		}
 		get(name) {
 			return this.read.then(({store})=>store.get(name))
-			return this.db.then(db => {
-				return db.transaction('keyval')
-				         .objectStore('keyval').get(key);
-			});
 		}
 		set(name, value) {
 			return this.write.then(({store,transaction})=>{
 				store.put(value,name)
 				return transaction.complete
 			})
-			return this.db.then(db => {
-				const tx = db.transaction('keyval', 'readwrite');
-				tx.objectStore('keyval').put(val, key);
-				return tx.complete;
-			});
 		}
 		delete(name) {
 			return this.write.then(({store,transaction})=>{
@@ -68,11 +59,6 @@ window.fxy.exports('data',(data,fxy)=>{
 				store.clear()
 				return transaction.complete
 			})
-			return this.db.then(db => {
-				const tx = db.transaction('keyval', 'readwrite');
-				tx.objectStore('keyval').clear();
-				return tx.complete;
-			});
 		}
 		get names(){ return this.keys() }
 		keys() {
@@ -91,21 +77,6 @@ window.fxy.exports('data',(data,fxy)=>{
 					return transaction
 				}
 			})
-			return this.db.then(db => {
-				const tx = db.transaction('keyval');
-				const keys = [];
-				const store = tx.objectStore('keyval');
-				
-				// This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
-				// openKeyCursor isn't supported by Safari, so we fall back
-				(store.iterateKeyCursor || store.iterateCursor).call(store, cursor => {
-					if (!cursor) return;
-					keys.push(cursor.key);
-					cursor.continue();
-				});
-				
-				return tx.complete.then(() => keys);
-			});
 		}
 	}
 	

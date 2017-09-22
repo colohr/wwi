@@ -1,24 +1,52 @@
 const π = 3.141592653589793;
 (function wwi_port( ...io ){return io[0](...(io.slice(1,io.length)))})(
 function wwi_get_base( get_fxy, get_kit, get_module, load_window, window){
-	let base_element = window.document.currentScript
-	base_element.setAttribute('url-kit','')
+	let element = window.document.currentScript
+	element.setAttribute('url-kit','')
 	window.addEventListener('load',load_window)
-	return get_fxy(base_element, get_kit, get_module, window)
+	return get_fxy(element, get_kit, get_module, window)
 },
 function wwi_get_fxy(element, export_base, port_module, window){
-	let base = {
+	let data = {
 		element,
 		host:window.location.origin,
-		modules:element.hasAttribute('modules') ? element.getAttribute('modules'):'modules',
+		modules:get_modules_location(),
+		location:get_location(),
 		remote:window.location.host.includes('localhost') === false
 	}
+	data.base_element = get_base()
 	//return value
 	return get_modules().then(_=>export_base(port_module,window)).catch(console.error)
 	//shared action
-	function get_fxy(){ return window.fetch(`${base.host}/${base.modules}/fxy/fxy.es6`).then(response=>response.text()).then(fxy_script=>window.eval(fxy_script)(base.modules)) }
+	function get_fxy(){ return window.fetch(`${data.location}/${data.modules}/fxy/fxy.es6`).then(response=>response.text()).then(fxy_script=>window.eval(fxy_script)(data.modules)) }
 	function get_modules(){return new Promise((success,error)=>get_fxy().then(_=>get_url()).then(success).catch(error))}
-	function get_url(){ return window.fetch(`${base.host}/${base.modules}/url/url.es6`).then(response=>response.text()).then(url_source=>window.eval(url_source)(base.modules,base)) }
+	function get_url(){ return window.fetch(`${data.location}/${data.modules}/url/url.es6`).then(response=>response.text()).then(url_source=>window.eval(url_source)(data.modules,data)) }
+	
+	function get_location(){
+		let host = window.location.host
+		let path = window.location.pathname
+		let paths = path.split('/').filter(item=>item.length)
+		if(paths.length){
+			let last = paths[paths.length-1]
+			if(last.includes('.')) paths.filter(item=>item===last)
+		}
+		paths.unshift(host)
+		return `${window.location.protocol}//${paths.join('/')}`
+	}
+	function get_modules_location(){
+		let value = 'modules'
+		if(element.hasAttribute('modules')) value = element.getAttribute('modules')
+		return value.split('/').filter(item=>item.length).join('/')
+	}
+	function get_base(){
+		let base_element = window.document.head.querySelector('base')
+		if(base_element === null){
+			base_element = window.document.createElement('base')
+			base_element.href = data.location
+			window.document.head.insertBefore(base_element,element)
+		}
+		return base_element
+	}
 },
 function wwi_get_kit(port_module,window){
 	//return value
@@ -26,14 +54,7 @@ function wwi_get_kit(port_module,window){
 	//shared actions
 	function setup(){
 		let kit = window.kit
-		let base_element = document.head.querySelector('base')
-		if(base_element === null){
-			base_element = document.createElement('base')
-			base_element.href = window.fxy.file.url(kit.base.element.hasAttribute('path') ? kit.base.element.getAttribute('path') :'/')
-			document.head.insertBefore(base_element,kit.base.element)
-		}
 		kit.base.element.setAttribute('wwi-port-load','')
-		kit.base_element = base_element
 		kit.javascript = kit.base.element.src.includes('es6') ? 'es6':'js'
 		return port_module(...[ window.fxy.dom.query, window.fxy.port, window.fxy.file, window ])
 	}

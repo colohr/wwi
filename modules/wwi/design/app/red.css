@@ -1,6 +1,6 @@
 :host{
     --bar-color:var(--apple);
-    --drawer-background:var(--apple-mandarine-bg);
+    --drawer-background:var(--cherry-mandarine-bg);
     --text:var(--pink-light);
     --focus-color:var(--pink);
     --menu-item-background-color: rgba(255,255,255,0.14);

@@ -154,23 +154,19 @@
 
 	--karrot: #ff5e4c;
 
-	--tomato:#de4747;
+	--tomato-light:#DF7065;
+	--tomato-bright:rgb(255, 82, 82);
+	--tomato: #de4747;
+	--tomato-dark: #dc3b3b;
 
-	--pepper-bright:rgb(255, 82, 82);
-	--pepper: #dc3b3b;
+	--apple:rgb(239,24,56);
 
-	--berry-light:#DF7065;
-	--berry: #ff5074;
-
-	--watermelon-bright: rgb(250, 69, 96);
+	--watermelon-light: #ff5074;
 	--watermelon: #fb4062;
 
-	--cherry: crimson;
-	--cherry-50: rgba(220, 20, 60, 0.51);
+	--cherry: rgb(255, 42, 104);
 
 	--lily-dark:rgb(255, 117, 181);
-
-	--apple: rgb(255, 42, 104);
 
 	--bubblegum-light: rgb(255, 77, 197);
 	--bubblegum-bright:#ff28a9;
@@ -204,6 +200,8 @@
 	--tangerine-yellow-bg: linear-gradient(135deg, var(--tangerine-bright) 0%, var(--yellow) 100%);
 
 	--apple-mandarine-bg: linear-gradient(135deg, var(--apple) 0%, var(--mandarine) 100%);
+
+	--cherry-mandarine-bg: radial-gradient(ellipse at left,  var(--cherry) 0%, var(--cherry) 60%, var(--mandarine) 100%);
 
 	--purple-fuchsia-bg: linear-gradient(135deg, var(--purple) 0%, var(--purple-bright) 49%, var(--fuchsia-bright) 100%);
 

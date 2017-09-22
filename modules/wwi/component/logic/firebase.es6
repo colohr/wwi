@@ -28,6 +28,9 @@ window.fxy.exports('google',(google,fxy)=>{
 	const collection_events = [ 'added','removed','changed','moved' ]
 	
 	class Api{
+		static get provider(){ return get_provider }
+		static get providers(){ return get_providers() }
+		static get savable(){ return get_savable }
 		constructor(){
 			this.database = new Data()
 			this.users = new Users()
@@ -48,7 +51,6 @@ window.fxy.exports('google',(google,fxy)=>{
 	class Collection extends Map{
 		constructor(reference){
 			super()
-			console.log('collection path:',reference.key)
 			this.name = reference.ref.key
 			this.child = name=>reference.child(name)
 			this.data = ()=>{
@@ -151,6 +153,31 @@ window.fxy.exports('google',(google,fxy)=>{
 			}
 			return collection
 		}
+	}
+	
+	function get_provider(name){
+		name = get_provider_name(name)
+		if(name) return new (window.firebase.auth[name])()
+		return null
+	}
+	
+	function get_provider_name(provider){
+		if(!fxy.is.text(provider)) provider = 'google'
+		let providers = get_providers()
+		if(provider in providers) return provider
+		provider = fxy.id.class(provider)
+		if(provider in providers) return provider
+		provider = `${provider}AuthProvider`
+		if(provider in providers) return provider
+		return null
+	}
+	
+	function get_providers(){
+		let names = Object.keys(window.firebase.auth).filter(name=>name.includes('Provider'))
+		return new Proxy(names,{
+			get(o,name){ return o.includes(name) ? window.firebase.auth[name]:null },
+			has(o,name){ return o.includes(name) }
+		})
 	}
 	
 	function get_savable(value){

@@ -11,7 +11,8 @@
 			paths = paths.slice(0,paths.length-1)
 			modules = paths.join('/')
 		}
-		let folder = `${window.location.origin}/${modules}/url`
+		if(typeof base_data !== 'object') base_data = {}
+		let folder = `${base_data.location || window.location.origin}/${modules}/url`
 		
 		//return value
 		return get_logic().catch(console.error)

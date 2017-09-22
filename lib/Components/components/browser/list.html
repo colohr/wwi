@@ -1,4 +1,4 @@
-<template id="browser-list-template">
+<template id="browser-list">
 	<style>
 		:host {
 			display: block;
@@ -43,33 +43,10 @@
 </template>
 <script>
 	(function (doc) {
-
 		let extension = [{module:'behavior',name:'UID'}].concat(components.browser.mix('List'))
 		const Browser = wwi.element(doc).extension(...extension)
-//		const Mix = fxy.require('browser/Mix')
-//		Mix(Browser.Element)
 		Browser(class extends Browser.Element {
-			connected(){
-				this.dispatch('connected')
-//				let called = false
-//				try{
-//					super.connectedCallback()
-//					called = true
-//				}
-//				catch(e){ console.error(e) }
-//				if(!called){
-//					try{
-//						if('connectedCallback' in this.constructor){
-//							this.constructor.connectedCallback()
-//							called = true
-//						}
-//					}
-//					catch(e){ console.error(e) }
-//				}
-//				if('browser_connected' in this) this.browser_connected()
-//				if(!called)
-
-			}
+			connected(){ this.dispatch('connected') }
 		})
 	})(document)
 </script>

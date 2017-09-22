@@ -1,12 +1,9 @@
-<template id="select-menu-template">
+<template id="select-menu">
 	<style>
-		@import "/modules/wwi/component/design/host.css";
-
+		@import "modules/wwi/component/design/host.css";
 		:host {
 			--bg: var(--background,rgba(210, 211, 221, 0.7));
 			--border: 1px solid rgb(237, 239, 241);
-
-
 			background-color: var(--bg);
 			border-radius: 7px;
 			box-sizing: border-box;
@@ -21,11 +18,9 @@
 			width: 100%;
 			z-index: 1000;
 		}
-
 		:host([aria-expanded="true"]){
 			filter:var(--expanded-menu-filter,drop-shadow(0 2px 15px rgba(0,0,0,0.2)));
 		}
-
 		[container] {
 			display: block;
 			height: 44px;
@@ -35,7 +30,6 @@
 			transform-origin: top center;
 			will-change: height;
 		}
-
 		[dropdown] {
 			position: absolute;
 			top:0;
@@ -51,12 +45,10 @@
 			overflow: hidden;
 			opacity:0;
 		}
-
 		:host([aria-expanded="true"]) [dropdown] {
 			opacity:1;
 			pointer-events: auto;
 		}
-
 		[selected-option] {
 			position: absolute;
 			top: 0;
@@ -64,7 +56,6 @@
 			right: 0;
 			height:44px;
 		}
-
 		[selected-option] select-option{
 			color:currentColor;
 			border-radius: 7px;
@@ -74,17 +65,14 @@
 			transition-timing-function: cubic-bezier(0.25, 0.1, 0, 1.03);
 			will-change: transform,border-radius,background,color;
 		}
-
 		[selected-option][opened] select-option,
 		[selected-option]:active select-option {
 			border-radius: 7px 7px 0 0;
 			transform: rotateX(45deg);
 		}
-
 		[id="select-option"]::slotted(select-option) { color:currentColor; }
 		[id="select-option"]::slotted(select-option:first-child) {  border-radius: 7px 7px 0 0;  }
 		[id="select-option"]::slotted(select-option:last-child) {  border-radius: 0 0 7px 7px; }
-
 	</style>
 	<div view gui vertical>
 		<div container>

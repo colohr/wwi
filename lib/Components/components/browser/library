@@ -4,7 +4,6 @@ library.logic = [
 	'control/types.es6'
 ]
 library.elements = [
-	
 	'item-expander.html',
 	{path:'item.html',wait:['item-expander']},
 	{path:'list.html',wait:['browser-item']}

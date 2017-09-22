@@ -1,6 +1,6 @@
-<template id="browser-item-template">
+<template id="browser-item">
 	<style>
-		@import "/modules/wwi/component/design/host.css";
+		@import "modules/wwi/component/design/host.css";
 		:host {
 			--item-content-padding:4px 10px 4px 10px;
 			--item-content-border-top:solid 1px #dededf;
@@ -121,10 +121,6 @@
 			text-overflow: ellipsis;
 			max-width: calc(100% - 25px);
 		}
-
-
-
-
 	</style>
 	<div background></div>
 	<div content gui vertical center-justified select-text>
@@ -140,32 +136,23 @@
 	(function (doc) {
 		let extension = [{module:'behavior',name:'UID'}].concat(components.browser.mix('Item'))
 		const Item = wwi.element(doc,'a11y').extension(...extension)
-//		const Memory = fxy.require('browser/memory').Mix
-//		Memory(Item.Element)
 		Item(class extends Item.Element {
-
 			constructor(){
-
 				super('routes',{
 					selected(value){
 						this.aria.selected = value !== null
 						this.expanded = value !== null
 					},
 					expanded(value){
-						if(value === null){
-							this.expand.expanded = false
-						}else{
-							this.expand.expanded = true
-						}
+						if(value === null) this.expand.expanded = false
+						else this.expand.expanded = true
 					},
 					item(value){
 						if(value === null) this.expand.removeAttribute('open')
 						else this.expand.setAttribute('open','')
 					}
 				})
-
 			}
-			get expand(){ return this.query('item-expander') }
 			connected(){
 				this.kind="item"
 				this.aria.role = "option"
@@ -173,7 +160,6 @@
 				this.aria.selected = "false"
 				this.aria.disabled = "false"
 				this.onclick = e => this.select()
-
 				window.requestAnimationFrame(()=>{
 					setTimeout(()=>{
 						this.html('title',this.data.title)
@@ -182,22 +168,15 @@
 					},200)
 				})
 			}
-			diconnected(){
-				this.style.opacity="0"
-			}
-
+			diconnected(){ this.style.opacity="0" }
+			get expand(){ return this.query('item-expander') }
 			html(attribute,value){
 				this.query(`[${attribute}]`).innerHTML = value
 				return this
 			}
 			select(){
-				if(this.item) {
-
-					this.dispatch(new CustomEvent('select',{bubbles:true,composed:true,detail:this}))
-				}
-				else{
-					this.data.toggle()
-				}
+				if(this.item) this.dispatch(new CustomEvent('select',{bubbles:true,composed:true,detail:this}))
+				else this.data.toggle()
 				return this
 			}
 		})

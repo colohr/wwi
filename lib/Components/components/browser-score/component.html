@@ -1,7 +1,7 @@
 <template id="browser-score">
 	<style>
-		@import "/modules/wwi/component/design/host.css";
-		@import "/modules/wwi/design/action-item.css";
+		@import "modules/wwi/component/design/host.css";
+		@import "modules/wwi/design/action-item.css";
 		:host {
 			display: block;
 			position: relative;
@@ -14,11 +14,7 @@
 			background: -webkit-radial-gradient(center, ellipse cover, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
 			background: radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
 		}
-
-		[container]{
-			position: relative;
-		}
-
+		[container]{  position: relative;  }
 		[box]{
 			display:block;
 			box-sizing: border-box;
@@ -82,26 +78,18 @@
 			filter: drop-shadow(0 0 4px);
 			background: rgba(31, 31, 31, 0.46);
 		}
-
 		tagger-element{
 			margin-top:calc(120vh + 50px);
 			margin-bottom:50px;
-
 		}
-
-		a{
-			-webkit-text-stroke: 0;
-		}
+		a{  -webkit-text-stroke: 0;  }
 		[box]:nth-of-type(3):hover a{
 			color:var(--turquoise);
 		}
-
 		[view]{
 			overflow-y:auto;
 			max-height:100%;
 		}
-
-
 	</style>
 	<div container view gui vertical center-center>
 		<div box gui>
@@ -109,7 +97,6 @@
 				<div>World</div>
 				<div>Wide</div>
 				<div>Internet</div>
-
 			</div>
 		</div>
 		<div box gui>

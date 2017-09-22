@@ -1,7 +1,7 @@
 (function(get_fxy){ return get_fxy() })
 (function(){
 	return function export_fxy(modules){
-		let folder = `${window.location.origin}/${modules}/fxy`
+		let folder = `${modules}/fxy`
 		//return value
 		return get_logic().then(_=>window.fxy).catch(console.error)
 		//shared actions

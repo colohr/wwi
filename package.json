@@ -1,6 +1,6 @@
 {
   "name": "wwi",
-  "version": "0.0.57",
+  "version": "0.0.58",
   "description": "World Wide Internet: A Web Component Tool",
   "main": "./lib/index.js",
   "repository": {

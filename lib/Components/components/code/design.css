@@ -51,7 +51,7 @@
 /*addons*/
 @import "codemirror/addon/fold/foldgutter.css";
 @import "codemirror/addon/hint/show-hint.css";
-@import "/modules/wwi/component/design/host.css";
+@import "../../modules/wwi/component/design/host.css";
 
 
 .CodeMirror {
@@ -217,9 +217,6 @@
 :host([no-symbols]) [symbols]{
     display: none;
 }
-
-
-
 .CodeMirror-cursors{
     position: relative;
     z-index: 4 !important;

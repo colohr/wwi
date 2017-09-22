@@ -18,7 +18,7 @@ function wwi_get_fxy(element, export_base, port_module, window){
 	//return value
 	return get_modules().then(_=>export_base(port_module,window)).catch(console.error)
 	//shared action
-	function get_fxy(){ return window.fetch(`${data.location}/${data.modules}/fxy/fxy.es6`).then(response=>response.text()).then(fxy_script=>window.eval(fxy_script)(data.modules)) }
+	function get_fxy(){ return window.fetch(`${data.location}/${data.modules}/fxy/fxy.es6`).then(response=>response.text()).then(fxy_script=>window.eval(fxy_script)(`${data.location}/${data.modules}`)) }
 	function get_modules(){return new Promise((success,error)=>get_fxy().then(_=>get_url()).then(success).catch(error))}
 	function get_url(){ return window.fetch(`${data.location}/${data.modules}/url/url.es6`).then(response=>response.text()).then(url_source=>window.eval(url_source)(data.modules,data)) }
 	

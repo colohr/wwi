@@ -7,7 +7,7 @@
 		}
 		
 		//exports
-		return load_search()
+		return Controller
 		
 		//shared actions
 		function get_search(element){
@@ -83,15 +83,6 @@
 			return false
 		}
 		
-		function load_search(){
-			if(!fxy.is.defined('components-search-library')) {
-				fxy.port(components.search.url+'/index.html')
-				   .then(_=>fxy.when('components-search-library'))
-				   .then(_=>search.Controller = Controller).catch(console.error)
-			}
-			else search.Controller = Controller
-			return null
-		}
 		
 	}
 })

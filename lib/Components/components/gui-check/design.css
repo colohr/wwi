@@ -1,0 +1,87 @@
+@import "../gui-action/design.css";
+
+:host{
+    --check-size:var(--size,16px);
+    --check-height:var(--height,var(--check-size));
+    --check-label-size:calc(var(--check-size) / 1.75);
+    --check-padding:2px;
+    --check-icon-size:calc(var(--check-size));
+    --radius:100px;
+    height:var(--check-height);
+    cursor:pointer;
+    padding:var(--padding,var(--check-padding));
+}
+[checkbox-container],[icon-container]{
+    position:relative;
+    pointer-events:auto;
+    height:var(--check-height);
+    overflow: hidden;
+}
+
+[checkbox-container]{
+    padding-right:var(--check-height);
+    z-index:0;
+}
+
+[icon-container]{
+    position:absolute;
+    top:0;
+    bottom:0;
+    right:0;
+    height:var(--check-height);
+    width:100%;
+    left:0;
+    z-index:2;
+    cursor:pointer;
+ }
+
+fieldset{
+    border: none;
+    position:relative;
+    max-height: 100%;
+    box-sizing: border-box;
+    padding:0;
+    overflow: hidden;
+    z-index: 0;
+}
+
+label{
+    display:inline-block;
+    box-sizing: border-box;
+    position: relative;
+    text-align:left;
+    font-size:var(--check-label-size);
+    overflow: hidden;
+    color:var(--label-color,rgb(100,100,100));
+    font-style: italic;
+    line-height:var(--check-height);
+}
+
+input{
+    box-sizing: border-box;
+    position: relative;
+}
+
+gui-icon{
+    /*margin-top:calc(var(--check-icon-size) * 0.075);*/
+    height:var(--check-icon-size);
+    width:var(--check-icon-size);
+}
+
+
+
+:host([icons]) input{
+    display:none;
+}
+
+[checked-icon]{
+    display:none;
+}
+
+:host([checked]) [checked-icon]{
+    display:block;
+}
+
+:host([checked]) [unchecked-icon]{
+    display:none;
+}

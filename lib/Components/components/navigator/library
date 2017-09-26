@@ -1,6 +1,8 @@
 library = {}
-library.id = 'components-navigator-library'
-
+library.id = 'navigator-library'
+library.ports = [
+	window.components.search.index_url
+]
 library.elements = [
 	'buttons/index.html',
 	'component.html'

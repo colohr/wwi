@@ -1,9 +1,9 @@
 @import "../component/design/host.css";
-[role=listbox]{
+[role="listbox"]{
     overflow:hidden;
     overflow-y:auto;
 }
-[role] > a[role]{
+[role="listbox"] > a[role=option]{
     display: block;
     width: 100%;
     padding:8px;
@@ -12,17 +12,31 @@
     text-decoration: none;
     cursor: pointer;
     border:1px solid transparent;
-    border-radius: 4px;
+    color:var(--azul);
 }
-[role] > a[role]:hover{
+[role="listbox"] > a[role=option]:first-of-type{
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+[role="listbox"] > a[role=option]:nth-child(even){
+    background: rgba(255,255,255,1);
+}
+[role="listbox"] > a[role=option]:nth-child(odd){
+    background: rgba(250,250,250,1);
+}
+[role="listbox"] > a[role=option]:last-of-type{
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+[role="listbox"] > a[role=option]:hover{
     text-decoration: underline;
 }
-[role] > a[role]:focus{
+[role="listbox"] > a[role=option]:focus{
     border:1px dotted;
 }
-[role] > a[role]:active{
+[role="listbox"] > a[role=option]:active{
     border:1px solid;
 }
-[role] > a[role][aria-selected="true"]{
+[role=listbox] > a[role=option][aria-selected="true"]{
     text-decoration: underline;
 }

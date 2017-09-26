@@ -11,12 +11,12 @@
 	    //shared actions
 	    function get_database(element){
 		    if(database_value in element) return element[database_value]
-		    return element[database_value] = new data.LocalDatabase(element)
+		    return element[database_value] = new data.LocalDatabase(element.getAttribute('database-name') || 'shared')
 	    }
 	    function load(){
-	    	fxy.on((LocalDatabase)=>{
-			    LocalDatabase.load().then(_=>data.Local = Local).catch(console.error)
-		    },'fxy.modules.data.LocalDatabase')
+	    	fxy.on(()=>{
+			   data.Local = Local
+		    },'fxy.modules.data.local_forage')
 		    return null
 	    }
     }

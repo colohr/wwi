@@ -30,6 +30,7 @@
 					has(o,name){ return name in o }
 				})
 			}
+			get Authority(){ return get_authority() }
 			get all(){ return all_promises }
 			get characters(){
 				return new Proxy({},{
@@ -199,7 +200,6 @@
 				return done()
 			}
 		}
-		
 		function aria(...elements){
 			let items = elements.map(element=>aria_element(element))
 			return new Proxy(items,{
@@ -211,13 +211,11 @@
 				has(o,name){ return o.includes(name) }
 			})
 		}
-		
 		function aria_attributes(element,...x){
 			let value = aria_value(...x)
 			for(let name in value) element.setAttribute(name,value[name])
 			return element
 		}
-		
 		function aria_element(element){
 			return new Proxy(element,{
 				deleteProperty(o,name){
@@ -241,7 +239,6 @@
 				}
 			})
 		}
-		
 		function aria_name(name){
 			if(is_text(name)){
 				if(name === 'role' || name === 'tabindex') return name
@@ -251,7 +248,6 @@
 			}
 			return null
 		}
-		
 		function aria_value(...x){
 			let values = {}
 			if(is_data(x[0])) values = x[0]
@@ -265,7 +261,6 @@
 			}
 			return output
 		}
-		
 		
 		function define_element(tag_name,custom_element,extension){ return define_element_action( tag_name, define_element_class( tag_name, custom_element, extension ) ) }
 		function define_element_ability(tag_name){
@@ -308,6 +303,51 @@
 			})
 		}
 		
+		function get_authority(){
+			const prefix = 'authority-'
+			return new Proxy(function authority_mixin(Base){
+				if(is_nothing(Base)) Base = Map
+				if(!('prototype' in Base) || !Base.prototype[Symbol.toStringTag]) throw new Error('Authority Mixin must mix into a Map class')
+				return class extends Base{
+					authority_token(){
+						let inputs = this.get_token_input()
+						if(!is_array(inputs)) inputs = [inputs]
+						return this.get_token(...inputs)
+						           .then(token=>this.set('token',token))
+						           .catch(console.error)
+					}
+					authority_headers(){
+						let headers = {}
+						if(!this.has('token')) return headers
+						headers.Authorization=`Basic: ${this.get('token')}`
+						return headers
+					}
+				}
+			},{
+				get(o,name){
+					switch(name){
+						case 'options': return authority_options
+						case 'prefix': return prefix
+						default: if(name in o) return o[name]
+					}
+					return null
+				}
+			})
+			
+			//shared actions
+			function authority_options(data){
+				let map = null
+				if(is_map(data)) map = Array.from(data)
+				else if(is_array(data)) map = data
+				else if(is_data(data)) map = Object.keys(data).map(name=>[name,data[name]])
+				else map = []
+				return map.map(item=>{
+					let name = item[0]
+					if(name.includes(prefix)) name = name.replace(prefix,'')
+					return [name,item[1]]
+				})
+			}
+		}
 		function get_deep_value(object, query){
 			try{return window._.get(object, query)}
 			catch(e){return null}

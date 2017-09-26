@@ -1,0 +1,53 @@
+<template id="mini-tag">
+    <style>
+        :host{
+	        font-size:13px;
+	        display: inline-block;
+	        position: relative;
+	        text-align: center;
+	        padding:1px 7px 2px 7px;
+	        border-radius: 100px;
+	        border:1px solid;
+	        box-sizing: border-box;
+	        line-height:1;
+	        white-space: nowrap;
+        }
+        :host([grape]){
+	        color:var(--grape);
+        }
+        :host([turquoise]){
+	        color:var(--turquoise);
+        }
+        :host([orange]){
+	        color:var(--orange);
+        }
+        :host([emerald]){
+	        color:var(--emerald);
+        }
+        :host([apple]){
+	        color:var(--apple);
+        }
+        :host([indigo]){
+	        color:var(--indigo);
+        }
+        :host([tangerine]){
+	        color:var(--tangerine);
+        }
+    </style>
+	<slot></slot>
+</template>
+<script>
+    (function(doc){
+        const MiniTag = wwi.element(doc)
+        MiniTag(class extends MiniTag.Element{
+        	static get observedAttributes(){return ['color']}
+			constructor(){
+				super('routes',{
+					color(value){
+						if(value) this.style.color=value
+					}
+				})
+			}
+        })
+    })(document)
+</script>

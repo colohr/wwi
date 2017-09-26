@@ -1,116 +1,61 @@
 window.fxy.exports('data',(data,fxy)=>{
 	
-	class Database{
-		static get load(){ return load_idb }
-		constructor(container){
-			if(fxy.is.element(container)){
-				this.element = container
-			}
-			if(fxy.is.text(container)) this.name = container
-			else if(this.element){
-				if(this.element.hasAttribute('database-name')) this.name = this.element.getAttribute('database-name')
-			}
-			if(!this.name) this.name = 'local-database'
-		}
-		get db(){
-			return get_idb(this)
-		}
-		get write(){
+	class LocalStorage{
+		static get load(){ return load() }
+		constructor(name){ this.name = name }
+		clear(){ return this.driver.clear() }
+		get count(){ return this.driver.length() }
+		delete(name) { return this.driver.removeItem(name) }
+		get driver(){ return get_driver(this) }
+		filter(on_item){ return this.values().then(values=>values.filter(on_item)) }
+		get(name){ return this.driver.getItem(name) }
+		map(on_item){ return this.values().then(values=>values.map(on_item)) }
+		name(index){ return this.driver.key(index) }
+		get names(){ return this.driver.keys() }
+		set(name, value) { return this.driver.setItem(name,value) }
+		values(){
 			return new Promise((success,error)=>{
-				return this.db.then(db=>{
-					const transaction = db.transaction(this.name,'readwrite')
-					const store = transaction.objectStore(this.name)
-					return success({store,transaction})
-				}).catch(error)
-			})
-			
-		}
-		get read(){
-			return new Promise((success,error)=>{
-				return this.db.then(db=>{
-					const transaction = db.transaction(this.name)
-					const store = transaction.objectStore(this.name)
-					return success({store,transaction})
-				}).catch(error)
-			})
-		}
-		get(name) {
-			return this.read.then(({store})=>store.get(name))
-		}
-		set(name, value) {
-			return this.write.then(({store,transaction})=>{
-				store.put(value,name)
-				return transaction.complete
-			})
-		}
-		delete(name) {
-			return this.write.then(({store,transaction})=>{
-				store.delete(name)
-				return transaction.complete
-			})
-			return this.db.then(db => {
-				const tx = db.transaction('keyval', 'readwrite');
-				tx.objectStore('keyval').delete(key);
-				return tx.complete;
-			});
-		}
-		clear() {
-			return this.write.then(({store,transaction})=>{
-				store.clear()
-				return transaction.complete
-			})
-		}
-		get names(){ return this.keys() }
-		keys() {
-			return this.read.then(({store,transaction})=>{
-				const keys = []
-				return get_keys().complete.then(() => keys)
-				//shared actions
-				function get_keys(){
-					// This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
-					// openKeyCursor isn't supported by Safari, so we fall back
-					(store.iterateKeyCursor || store.iterateCursor).call(store, cursor => {
-						if (!cursor) return
-						keys.push(cursor.key)
-						cursor.continue()
-					})
-					return transaction
-				}
+				const values = []
+				return this.driver
+				           .iterate((value)=>values.push(value))
+				           .then(()=>success(values))
+				           .catch(error)
 			})
 		}
 	}
 	
+	
+	//load
+	load()
 	//exports
-	data.LocalDatabase = Database
+	data.LocalDatabase = LocalStorage
 	
 	//shared actions
-	function get_idb(database){
+	function get_driver(database){
 		//return value
-		
-		return get_database_idb(database.name)
+		return get_store(database.name)
 		//shared actions
-		function get_database_data(){
-			if('data' in Database) return Database.data
-			return Database.data = new Map()
+		function get_data(){
+			if('data' in LocalStorage) return LocalStorage.data
+			return LocalStorage.data = new Map()
 		}
-		function get_database_idb(name){
-			if(!has_database_idb(name)){
-				get_database_data().set(name,data.idb.open(`${name}-store`, 1, upgradeDB => {
-					upgradeDB.createObjectStore(name)
-				}))
-			}
-			return get_database_data().get(name)
+		function get_store(name){
+			if(!has_store(name)) get_data().set(name,data.local_forage.createInstance({name}))
+			return get_data().get(name)
 		}
-		function has_database_idb(name){
-			if('data' in Database) return Database.data.has(name)
+		function has_store(name){
+			if('data' in LocalStorage) return LocalStorage.data.has(name)
 			return false
 		}
 	}
 	
-	function load_idb(){
+	function load(){
 		return new Promise((success,error)=>{
-			if('idb' in data) return success(data.idb)
-			return fxy.port.eval(components.data.url+'/logic/scripts/idb.js').then(idb=>success(data.idb=idb)).catch(error)
+			if('local_forage' in data) return success(data.local_forage)
+			fxy.port.eval(fxy.file.url(window.components.data.url,'/logic/scripts/local-forage.js'))
+			   .then(local_forage=>success(data.local_forage=local_forage))
+			   .catch(error)
+			return null
 		})
 	}
 })

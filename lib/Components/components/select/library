@@ -6,3 +6,4 @@ library.elements = [
 		wait:['select-option']
 	}
 ]
+library.wait = ['select-menu']

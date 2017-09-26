@@ -1,0 +1,3 @@
+library = {}
+library.id = 'design-library'
+library.logic = ['index.es6']

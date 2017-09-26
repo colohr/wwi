@@ -2,7 +2,7 @@
 :host{
     --color:var(--watermelon);
     --background:rgba(255,255,255,0.1);
-    --focus-shadow:inset 0 -1px 3px rgba(0,0,0,0.35), 0 0 0 1px var(--color);
+    --focus-shadow:inset 0 -1px 3px rgba(0,0,0,0.35), 0 0 0 1.5px var(--color);
     --button-width:var(--width,30px);
     display:inline-block;
     position: relative;
@@ -12,13 +12,14 @@
     height:30px;
     width: var(--button-width,30px);
     border-radius: 100px;
-    box-shadow: inset 0 0px 0px rgba(0,0,0,0.2);
+    box-shadow: inset 0 0 0 rgba(0,0,0,0.2);
     filter:none;
-    transition:box-shadow 100ms linear;
-    will-change:box-shadow;
+    transition:box-shadow 100ms linear,opacity 300ms linear;
+    will-change:box-shadow,opacity;
     outline: none;
     box-sizing: border-box;
     font-size:14px;
+    opacity:1;
 }
 
 :host([auto]){
@@ -40,7 +41,7 @@
 }
 
 :host([no-shadow]){
-    --focus-shadow:none;
+    /*--focus-shadow:none;*/
 }
 
 :host(:focus),

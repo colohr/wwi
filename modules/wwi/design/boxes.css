@@ -1,7 +1,8 @@
-@import "Selector.css";
+@import "selector.css";
 :host{
     --bg-color:rgba(100, 101, 103, 0.7);
 }
+
 [view]{
     overflow: hidden;
     overflow-y: auto;
@@ -16,8 +17,6 @@
     border-radius: 4px;
     margin:5px;
     background-color:rgba(255,255,255,0.4);
-    backface-visibility: hidden;
-
 }
 
 [box] > [title]{
@@ -31,19 +30,6 @@
 [item]{
     position: relative;
     height:200px;
-    overflow: hidden;
-}
-
-[item] > content-drawer{
-    width:50%;
-    border-radius: 4px;
-    background-color: rgba(255,255,255,0.4);
-}
-
-content-menu{
-    width: calc(100% - 10px);
-    height: calc(100% - 10px);
-    padding:5px;
 }
 
 [box-view]{
@@ -69,38 +55,4 @@ content-menu{
     padding:10px;
 }
 
-#action{
-    width:calc(80% - 20px);
 
-}
-
-[links]{
-    padding:10px;
-}
-
-[links] content-link{
-    border-radius: 4px;
-    padding:5px 10px 5px 10px;
-    font-family: serif;
-    font-size:16px;
-    margin-top:5px;
-
-
-}
-content-action{
-    margin:10px;
-    --background:var(--clean);
-    --color:var(--berry);
-}
-
-content-expand{
-    box-shadow:0 0 0 3px white;
-    border-radius:100px;
-    overflow:hidden;
-    backface-visibility: visible;
-}
-content-expand > *{
-    border-radius: 100px;
-    overflow:hidden;
-    background:transparent;
-}

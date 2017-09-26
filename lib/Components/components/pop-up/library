@@ -1,0 +1,9 @@
+library = {}
+library.logic = [
+	'logic/position.es6'
+]
+library.elements = [
+	'component.html'
+]
+
+library.wait = ['pop-up']

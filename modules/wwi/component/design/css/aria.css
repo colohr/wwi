@@ -27,24 +27,22 @@ button{
 }
 
 button:hover{
-    color:var(--azul-bright);
     border-color:var(--day);
-    box-shadow: 0 0 1px 2px var(--day);
+    box-shadow: 0 0 1px 2px;
 }
 
 button:focus{
-    border-color:var(--azul-bright);
-    box-shadow: 0 0 1px 2px var(--azul);
+    border-color:currentColor;
+    box-shadow: 0 0 1px 2px;
 }
 
 button:active{
-    color:var(--azul-dark);
-    border-color:var(--azul);
-    box-shadow: 0 0 2px 0px var(--azul-dark);
+    border-color:currentColor;
+    box-shadow: 0 0 2px 0;
 }
 
 button[aria-selected="true"]{
-    color:var(--azul-dark);
+
 }
 
 input{

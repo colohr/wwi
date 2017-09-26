@@ -1,0 +1,75 @@
+<template id="gui-icon">
+	<style>
+		:host{
+			display:inline-block;
+			position:relative;
+			color:var(--color,inherit);
+		}
+		svg{
+			position:relative;
+			display:block;
+			height:100%;
+			width:100%;
+			fill:currentColor;
+		}
+		:host([image]){
+			height:100%;
+			width:100%;
+		}
+		[graphic]{
+			position: relative;
+			display: block;
+			height:100%;
+			width: 100%;
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: 100% auto;
+		}
+	</style>
+
+</template>
+<script>
+	(function(doc){
+		const Icon = wwi.element(doc)
+		if(fxy.is.nothing(fxy.require('design/icons'))) fxy.port(window.url.modules('design/index.html')).then()
+		fxy.on(()=>{
+			Icon(class extends Icon.Element{
+				constructor(){
+					super('routes',{
+						image(value){ if(value !== null) this.set_graphic_icon(value) },
+						['image-size'](value){
+							if(value !== null) this.graphic.style.backgroundSize = value;
+						},
+						['image-position'](value){
+							if(value !== null) this.graphic.style.backgroundPosition = value;
+						},
+						name(value){ if(value !== null) this.set_icon(value) }
+					})
+				}
+				get graphic(){
+					let graphic = this.query('[graphic]')
+					if(!graphic){
+						graphic = document.createElement('div')
+						graphic.setAttribute('graphic','')
+						this.shadow.appendChild(graphic)
+					}
+					return graphic
+				}
+				get svg(){ return this.query('svg') }
+				set_graphic_icon(value){
+					this.graphic.style.backgroundImage = `url(${value})`
+					return this
+				}
+				set_icon(value){
+					let svg = this.svg
+					if(svg) svg.remove()
+					if(value !== null){
+						let icon = fxy.require('design/icon').get(value)
+						if(icon) this.shadow.appendChild(icon)
+					}
+				}
+			})
+		},'fxy.modules.design.icons')
+
+	})(document)
+</script>

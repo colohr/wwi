@@ -2,12 +2,18 @@
 	<style>
 		@import "modules/wwi/component/design/host.css";
 		:host {
-			--bg: var(--background,rgba(210, 211, 221, 0.7));
-			--border: 1px solid rgb(237, 239, 241);
-			background-color: var(--bg);
-			border-radius: 7px;
+
+			--menu-background: var(--background,rgba(210, 211, 221, 0.7));
+			--menu-border: 1px solid rgb(237, 239, 241);
+			--menu-color: var(--color,var(--azul));
+			--menu-radius: var(--radius,7px);
+			--menu-height: var(--height,44px);
+			--option-height:var(--menu-height);
+
+			background-color: var(--menu-background);
+			border-radius: var(--menu-radius);
 			box-sizing: border-box;
-			color:var(--color,var(--blue));
+			color:var(--menu-color);
 			display: block;
 			outline: none;
 			height: 100%;
@@ -19,11 +25,11 @@
 			z-index: 1000;
 		}
 		:host([aria-expanded="true"]){
-			filter:var(--expanded-menu-filter,drop-shadow(0 2px 15px rgba(0,0,0,0.2)));
+			-webkit-filter:var(--expanded-menu-filter,drop-shadow(0 2px 15px rgba(0,0,0,0.2))); filter:var(--expanded-menu-filter,drop-shadow(0 2px 15px rgba(0,0,0,0.2)));
 		}
 		[container] {
 			display: block;
-			height: 44px;
+			height: var(--menu-height);
 			position: relative;
 			transition: height 300ms ease;
 			transform-style: flat;
@@ -37,7 +43,6 @@
 			left:0;
 			right:0;
 			bottom: 0;
-			z-index: 0;
 			pointer-events: none;
 			max-width: calc(100% - 28px);
 			margin: 14px;
@@ -45,30 +50,37 @@
 			overflow: hidden;
 			opacity:0;
 		}
-		:host([aria-expanded="true"]) [dropdown] {
+
+		:host([aria-expanded="true"]) [dropdown]{
 			opacity:1;
 			pointer-events: auto;
 		}
+
 		[selected-option] {
+
 			position: absolute;
 			top: 0;
 			left: 0;
 			right: 0;
-			height:44px;
+			height:var(--menu-height);
 		}
+
 		[selected-option] select-option{
+
 			color:currentColor;
 			border-radius: 7px;
-			transform: rotateX(0deg);
+			transform: rotate3d(0,0,0,0deg);
+			transform-style:preserve-3d;
 			transition-duration: 500ms;
 			transition-property: transform, border-radius,background,color;
 			transition-timing-function: cubic-bezier(0.25, 0.1, 0, 1.03);
 			will-change: transform,border-radius,background,color;
 		}
+
 		[selected-option][opened] select-option,
 		[selected-option]:active select-option {
 			border-radius: 7px 7px 0 0;
-			transform: rotateX(45deg);
+			transform: rotate3d(1,0,0,45deg);
 		}
 		[id="select-option"]::slotted(select-option) { color:currentColor; }
 		[id="select-option"]::slotted(select-option:first-child) {  border-radius: 7px 7px 0 0;  }
@@ -80,7 +92,7 @@
 				<slot id="select-option"></slot>
 			</div>
 			<div selected-option>
-				<select-option button name="Choose" wwi icon="provider/internet.svg">
+				<select-option button name="Choose" wwi icon="gems/doughnut.svg">
 					<div class="chooseLabel" style="opacity:0.95;">Choose</div>
 				</select-option>
 			</div>
@@ -94,7 +106,6 @@
 			constructor() {
 				super()
 				this.setAttribute('role', 'listbox')
-				this.setAttribute('tabindex', '0')
 				this.setAttribute('aria-expanded', 'false')
 				this.container.addEventListener('transitionend',(e)=>{
 					if(e.propertyName === 'height' && e.target === this.container){
@@ -113,23 +124,29 @@
 				return clear_item_transform(this)
 			}
 			connected() {
+
 				this.button.addEventListener('click',e=>{
 					if(this.opened) this.close()
 					else this.open()
 				})
 
+				if(this.hasAttribute('icon')) this.query('[button]').setAttribute('icon',this.getAttribute('icon'))
 				this.query('[button]').on('toggle',this.toggle.bind(this))
 				this.query('[button]').on('focus item',this.focus_item.bind(this))
+
 				let items = this.items
 				if(items.length){
-					items[0].focuses_item = true
-					items[0].on('focus button',this.focus_item.bind(this))
+					let first = items[0]
+					fxy.on(()=>{
+						first.focuses_item = true
+						first.on('focus button',this.focus_item.bind(this))
+						this.update_items()
+					},first,'on')
 				}
 
 				let option_slot = this.slots.select_option.item
 				if(option_slot){
 					option_slot.addEventListener('slotchange',e=>{
-						console.log(e)
 						this.update_items()
 					})
 				}
@@ -183,7 +200,10 @@
 				for (let item of items) {
 					if(item.is_menu_option !== true) {
 						item.is_menu_option = true
-						item.on('selected', e => this.select(e.currentTarget))
+						fxy.on(()=>{
+							item.on('selected', e => this.select(e.currentTarget))
+							item.setAttribute('tabindex','-1')
+						},item,'on')
 					}
 				}
 				return this.close()
@@ -204,7 +224,7 @@
 		}
 
 		function get_container_height(menu) {
-			let height = 45
+			let height = (menu.query('[button]').height+1) // 45
 			set_item_transition(menu,height)
 			let h = (menu.items.length + 1) * height
 			h = h + 30

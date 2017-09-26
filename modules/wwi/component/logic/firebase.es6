@@ -25,27 +25,53 @@ window.fxy.exports('google',(google,fxy)=>{
 			remove_listener:'removeAuthTokenListener'
 		}
 	}
+	
 	const collection_events = [ 'added','removed','changed','moved' ]
 	
 	class Api{
 		static get provider(){ return get_provider }
 		static get providers(){ return get_providers() }
 		static get savable(){ return get_savable }
-		constructor(){
+		constructor(options){
+			this.options = fxy.is.data(options) ? options:{}
 			this.database = new Data()
-			this.users = new Users()
+			this.users = new Users(this)
 		}
 		get app(){ return window.firebase.app() }
 		get firebase(){ return window.firebase }
 		get name(){ return this.constructor.name }
 	}
 	
-	class Users{
+	class Users extends fxy.Authority(){
+		constructor(api){
+			super(fxy.Authority.options(api.options))
+			this.get_token_input = function get_account(){
+				let user = this.user
+				if(user && user.uid) return user.uid
+				return null
+			}
+			this.get_token = function get_token(uid){
+				return new Promise((success,error)=>{
+					if(uid) return api.database.collection[this.get('tokens')].value[uid].then(x=>x.value).then(success)
+					return error(new Error('Unable to request the account token'))
+				})
+			}
+			this.changed(user=>{
+				if(user){
+					if(this.has('tokens')) return this.authority_token().then(()=>api.changed_user(user)).catch(console.error)
+				}
+				else this.delete('token')
+				if('changed_user' in api) api.changed_user(user)
+			})
+		}
 		get account(){ return get_action('account',this.auth) }
 		get action_code(){ return get_action('action_code',this.auth) }
 		get auth(){ return window.firebase.auth() }
+		get changed(){ return this.account.changed }
 		get sign_in(){ return get_action('sign_in',this.auth,'signIn') }
+		get sign_out(){ return this.auth.signOut() }
 		get user(){ return this.auth.currentUser }
+	
 	}
 	
 	class Collection extends Map{
@@ -72,7 +98,9 @@ window.fxy.exports('google',(google,fxy)=>{
 	google.firebase = {
 		get Api(){ return Api },
 		get Data(){ return Data },
-		get Users(){ return Users }
+		get Users(){ return Users },
+		get provider(){ return get_provider },
+		get providers(){ return get_providers() }
 	}
 	
 	//shared actions

@@ -1,6 +1,6 @@
-<template id="wwe-background-template">
+<template id="wwe-background">
 	<style>
-		@import "/components/wwe/background/design.css";
+		@import "components/wwe/background/design.css";
 	</style>
 	<slot></slot>
 </template>
@@ -8,12 +8,6 @@
 	(function (doc) {
 		let extensions = window.components.wwe.mix('background')
 		extensions[0].target = 'Element'
-//		const BG = wwi.element(doc).extension({
-//			path:"custom-elements/wwe/external",
-//			module:"wwe",
-//			name:"background",
-//			target:"Element"
-//		})
 		const BG = wwi.element(doc).extension(...extensions)
 
 		BG(class extends BG.Element {
@@ -61,7 +55,10 @@
 				if(this.hasAttribute('alpha')) a = parseFloat(this.alpha)
 				return a
 			}
-			get mask_color(){ return fxy.require('design/colors').transparent(this.color,this.mask_alpha) }
+			get mask_color(){
+				if(!this.color) return 'rgba(255,255,255,0)'
+				return fxy.require('design/colors').transparent(this.color,this.mask_alpha)
+			}
 
 		})
 	})(document)

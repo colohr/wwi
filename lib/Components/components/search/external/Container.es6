@@ -9,14 +9,9 @@
 	    }
 	    
         //exports
-        return load_search()
+        return Container
 	    
 	    //shared actions
-	    function load_search(){
-		    if(!fxy.is.defined('components-search-library')) fxy.port(components.search.url+'/index.html').then(_=>fxy.when('search-component')).then(_=>search.Container = Container)
-		    else search.Container = Container
-		    return null
-	    }
 	    
 	    function get_search(element){
 		    if(!(controller in element)) element[controller] = new search.Controller(get_search_field(element))

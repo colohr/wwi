@@ -1,0 +1,11 @@
+library = {}
+library.id = 'struct-library'
+library.logic = [
+	'logic/load.es6',
+	{
+		path:'logic/index.es6',
+		wait:['fxy.modules.struct.Interface']
+	},
+	'logic/client.es6',
+	'logic/Actions.es6'
+]

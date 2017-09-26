@@ -1,12 +1,16 @@
 <template id="navigator-search">
 	<style>
 		@import "components/navigator/buttons/design.css";
+		:host(:last-of-type){
+			margin-right:5px;
+		}
 		:host [find]{
 			display: none;
 		}
 		:host([find]) [find]{
 			display: block;
 		}
+
 	</style>
 	<div box gui vertical center-center>
 		<svg search height="24" width="24" viewBox="0 0 24px 24px" preserveAspectRatio="xMidYMid meet" >

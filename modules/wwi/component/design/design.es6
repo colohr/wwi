@@ -24,7 +24,6 @@ window.fxy.exports('design',(design,fxy)=>{
 		"violet":"#ee82ee",
 		"wheat":"#f5deb3","white":"#ffffff","whitesmoke":"#f5f5f5",
 		"yellow":"#ffff00","yellowgreen":"#9acd32"};
-	const default_icon_size = 24
 	const shorthand_hex_reg = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
 	const hex_to_rgb_reg = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
 	
@@ -33,16 +32,18 @@ window.fxy.exports('design',(design,fxy)=>{
 			this[alpha_opacity_transparency] = 1
 			let colors = fxy.is.map(custom_colors) ? custom_colors:design.colors
 			if(fxy.is.map(colors) && colors.has(value)) value = colors.get(value)
-			this.rgb = get_color(value)
+			this.identity = value
 		}
 		get blue(){ return this.rgb[2] }
 		get green(){ return this.rgb[1] }
 		get hex(){ return get_rgb_to_hex(this.red,this.green,this.blue) }
 		get red(){ return this.rgb[0] }
+		get rgb(){ return get_color(this.identity) }
 		get transparency(){ return this[alpha_opacity_transparency] }
 		set transparency(value){ return !fxy.is.numeric(value) ? this[alpha_opacity_transparency]:this[alpha_opacity_transparency] = value }
 		transparent(x){ return this.value(fxy.is.number(x) ? x:1) }
 		value(transparency){ return `rgba(${this.red},${this.green},${this.blue},${fxy.is.numeric(transparency) ? transparency:this.transparency})` }
+		toString(){ return this.value() }
 	}
 	
 	//load
@@ -51,15 +52,17 @@ window.fxy.exports('design',(design,fxy)=>{
 	//exports
 	design.Color = Color
 	design.color = (...x) =>  new Color(...x)
+	design.color.is = {
+		color:is_color,
+		dark:is_dark,
+		light:is_light,
+		mid:is_mid
+	}
 	design.color_names = ()=>color_names
 	design.color_theme = get_color_theme
-	design.icon = get_icon
-	design.icon.set = get_icon_set
-	design.icon.get = get_icon_named
-	design.icons = fxy.exports().icons
+	
 	
 	//shared actions
-	function get_clean_svg(html) { return html.replace(/\n/g, '').replace(/\r/g, '').replace(/\t/g, '') }
 	
 	function get_color(value){
 		if(fxy.is.array(value)) return value
@@ -89,7 +92,6 @@ window.fxy.exports('design',(design,fxy)=>{
 	}
 	
 	function get_hex_to_rgb(hex) {
-		// Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
 		hex = hex.replace(shorthand_hex_reg, (m, r, g, b)=>r + r + g + g + b + b)
 		let result = hex_to_rgb_reg.exec(hex)
 		return result ? {
@@ -97,37 +99,6 @@ window.fxy.exports('design',(design,fxy)=>{
 			g: parseInt(result[2], 16),
 			b: parseInt(result[3], 16)
 		} : null;
-	}
-	
-	function get_icon(data){
-		let info = get_icon_info(data)
-		let container = document.createElement('div')
-		container.innerHTML = info.html
-		let icon = container.querySelector(info.selector)
-		icon.setAttribute('design-icon','')
-		icon.slot = 'icon'
-		return icon
-	}
-	
-	function get_icon_named(name){
-		if(name in design.icons) return get_icon(design.icons[name])
-		return null
-	}
-	
-	function get_icon_set(set){
-		return new Proxy(set, {
-			get(o,name){
-				if(name in o) return get_icon(o[name])
-				return null
-			},
-			has(o,name){
-				return name in o
-			},
-			set(o,name,value){
-				o[name] = value
-				return true
-			}
-		})
 	}
 	
 	function get_random_color(options){
@@ -141,31 +112,6 @@ window.fxy.exports('design',(design,fxy)=>{
 	
 	function get_rgb_to_hex(r, g, b) { return "#" + get_component_to_hex(r) + get_component_to_hex(g) + get_component_to_hex(b) }
 	
-	function get_icon_info(value) {
-		let size = default_icon_size
-		let info = {}
-		if(fxy.is.text(value)){
-			if(value.includes('<g')) info.svg = value
-			else if(value.includes('<')) info.html = value
-			else info.url = value
-		}
-		else if(fxy.is.data(value)) info = value
-		
-		if('size' in info) size = info.size
-		else if('svg' in info) size = default_icon_size
-		else if('url' in info) size = 'auto 100%'
-		
-		if('svg' in info) {
-			info.selector = 'svg'
-			info.html = get_clean_svg(`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet" >${info.svg}</svg>`)
-		}
-		else if('url' in info) info.html = `<div style="background-image:url(${info.url});background-repeat:no-repeat;background-position:center center;background-size:${size};"></div>`
-		
-		if(!('selector' in info)) info.selector = 'div'
-		
-		return info
-	}
-	
 	function set_colors(colors,custom_theme=false){
 		colors.color = function(color){ return new Color(color,colors) }
 		colors.custom_theme = custom_theme
@@ -176,6 +122,37 @@ window.fxy.exports('design',(design,fxy)=>{
 		}
 		if(custom_theme !== true) design.colors = colors
 		return colors
+	}
+	
+	function is_dark(value){
+		let color = get_color(value)
+		let points = color.red+color.green+color.blue
+		let mid = ((255*3) / 2)-50
+		console.log({points,mid})
+		if(points < mid) return true
+		return false
+	}
+	
+	function is_light(value){
+		let color = get_color(value)
+		let points = color.red+color.green+color.blue
+		let mid = ((255*3) / 2)+50
+		console.log({points,mid})
+		if(points > mid) return true
+		return false
+	}
+	
+	function is_mid(value){
+		let color = get_color(value)
+		let points = color.red+color.green+color.blue
+		let mid = ((255*3) / 2)
+		console.log({points,mid})
+		if(points < mid+50 && points > mid-50 ) return true
+		return false
+	}
+	
+	function is_color(value){
+	
 	}
 	
 	function load(){

@@ -2,32 +2,39 @@
 	<style>
 		@import "modules/wwi/component/design/host.css";
 		:host {
-			--margin:var(--option-margin,8px);
-			--bg:var(--option-background,rgba(245, 245, 255, 0.91));
-			background-color: var(--bg);
+			--option-view-margin:var(--option-margin,8px);
+			--option-background-value:var(--option-background,rgba(247, 246, 250, 0.9));
+			--option-font-size:var(--font-size,18px);
+			--option-view-height:var(--option-height,44px);
+			--option-icon-offset:calc(var(--option-font-size) / 2);
+			--option-icon-size:calc(var(--option-view-height) - var(--option-icon-offset));
+			--option-icon-padding:calc(var(--option-icon-offset) + 1px);
+			-webkit-backface-visibility: hidden;  backface-visibility: hidden;
+			background-color: var(--option-background-value);
 			box-sizing: content-box;
 			cursor: pointer;
 			display: block;
-			font-size: 18px;
-			height:44px;
+			font-size: var(--option-font-size);
+			height:var(--option-view-height);
 			outline: none;
 			position: absolute;
 			top: 0;
 			transform:translate3d(0,0,0);
-			transition-property: transform, opacity,background, color;
+			transition-property: transform, opacity, background, color;
 			transform-origin: center center;
 			width: 100%;
 			will-change: transform, opacity, background, color;
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
 		}
 
 		:host(:focus){
 			background-color: currentColor;
-			color: var(--bg);
+			color: var(--option-background-value);
+		}
+		:host(:hover) [title]{
+			text-decoration: underline;
 		}
 		:host(:focus) [title]{
-			color: var(--bg);
+			color: var(--option-background-value);
 		}
 
 		[view] *{
@@ -38,12 +45,15 @@
 
 		[icon-container]{
 			display: inline-block;
-			height:35px;
-			width: 35px;
-			overflow: visible;
+			min-width: var(--icon-width,var(--option-icon-size));
+			min-height:var(--icon-height,var(--option-icon-size));
+			width: var(--icon-width,var(--option-icon-size));
+			height:var(--icon-height,var(--option-icon-size));
+			max-width: var(--icon-width,var(--option-icon-size));
+			max-height:var(--icon-height,var(--option-icon-size));
 			border-radius: 100px;
-			margin-left:var(--margin);
-			margin-right:var(--margin);
+			margin-left:var(--option-view-margin);
+			margin-right:var(--option-view-margin);
 		}
 
 		[icon-container] > [icon]{
@@ -52,12 +62,14 @@
 			left:0;
 			bottom:0;
 			right:0;
-			height:35px;
-			width: 35px;
+			width: 100%;
+			height:100%;
+			max-width: 100%;
+			max-height:100%;
 			display: block;
-			background-color:white;
+			background-color:var(--icon-background,white);
 			background-repeat: no-repeat;
-			background-size: calc(100% - 10px) auto;
+			background-size: calc(100% - var(--icon-padding,var(--option-icon-padding))) auto;
 			background-position: center center;
 			border-radius: 100px;
 		}
@@ -77,15 +89,15 @@
 		:host([button]):after {
 			content: '\25BC';
 			position: absolute;
-			bottom:0px;
-			right: 0px;
-			top: 0px;
+			bottom:0;
+			right: 0;
+			top: 0;
 			width: 50px;
 			text-align: center;
 			font-size: 12px;
 			height: 100%;
 			box-sizing: border-box;
-			line-height: 44px;
+			line-height: var(--option-view-height);
 			color: inherit;
 		}
 
@@ -94,9 +106,9 @@
 		}
 
 		[title]{
-			margin-right:var(--margin);
+			margin-right:var(--option-view-margin);
 			display: inline-block;
-			width: calc(100% - 40px);
+			width: calc(100% - var(--icon-width,var(--option-icon-size)));
 		}
 
 	</style>
@@ -111,6 +123,7 @@
 	(function (doc) {
 		const Option = wwi.element(doc,'a11y')
 		Option(class extends Option.Element{
+			static get observedAttributes(){return ['icon']}
 			constructor(){
 				super({
 					name:true,
@@ -160,8 +173,10 @@
 				}
 			}
 			connected(){
+
 				if(!this.hasAttribute('button')) this.kind = 'menuitem'
 				else this.kind = 'button'
+
 			}
 			select(){
 				this.selected = true
@@ -169,9 +184,10 @@
 			}
 		})
 
+		//shared actions
 		function create_icon_element(src,from_wwi){
 			let img = document.createElement('div')
-			if(from_wwi) src = window.url.component('design/icons',src)
+			if(from_wwi) src = window.url.modules('design/icons',src)
 			img.style.backgroundImage = `url(${src})`
 			img.setAttribute('icon','')
 			img.setAttribute('gui','')

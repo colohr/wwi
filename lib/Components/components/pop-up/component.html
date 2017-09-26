@@ -1,0 +1,187 @@
+<template id="pop-up">
+	<style>
+		:host {
+			position: fixed;
+			display: block;
+			top: 0;
+			left: 0;
+			border-radius: 7px;
+
+			opacity: 0;
+			-webkit-transform-style: preserve-3d;
+			transform-style: preserve-3d;
+			transition: transform 150ms ease, opacity 150ms ease;
+			will-change: transform, opacity;
+			z-index: -11;
+			transform: scale(1, 1) translate(0, 0) rotateY(0deg) rotateX(0deg);
+
+			box-sizing:border-box;
+			max-height:calc(100% - 10px);
+			overflow: hidden;
+			height:auto;
+
+			-webkit-filter: drop-shadow(0 4px 8px rgba(16, 15, 20, 0.35));
+			filter: drop-shadow(0 4px 8px rgba(16, 15, 20, 0.35));
+		}
+
+
+		:host([aria-expanded="true"][active]){
+			transform: scale(1, 1) translate(0, 0) rotateY(0deg) rotateX(0deg);
+			opacity: 1;
+		}
+		:host([aria-expanded="false"]){
+			transform: scale(0.88, 0.88) translate(0, 0) rotateY(0deg) rotateX(0deg);
+		}
+		:host([aria-expanded="true"]){
+			z-index: 1000000000000;
+			transform: scale(0.88, 0.88) translate(0, 0) rotateY(0deg) rotateX(0deg);
+		}
+		:host([transitioning]) {
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+		}
+
+
+		wwe-title{
+			position: fixed;
+			top:0;
+			left:0;
+			z-index: 100;
+			-webkit-filter: drop-shadow(0 2px 4px rgba(16, 15, 20, 0.26));
+			filter: drop-shadow(0 2px 4px rgba(16, 15, 20, 0.26));
+		}
+		:host([no-title]) wwe-title{
+			display: none;
+		}
+
+		[inner-content]{
+
+			position: relative;
+			max-width: 100%;
+			display:block;
+			max-height:calc(100% - 20px);
+			overflow: hidden;
+			overflow-y:auto;
+			margin-top:20px;
+
+		}
+		:host([no-title]) [inner-content]{
+			margin-top:0;
+			max-height:100%;
+		}
+
+		#content::slotted(*){
+			display:block;
+			position:relative;
+			min-height:100%;
+			max-height: 100%;
+
+		}
+
+	</style>
+
+
+	<div inner-content>
+		<slot id="content"></slot>
+	</div>
+
+</template>
+
+<script>
+	(function (doc) {
+
+		const Popup = wwi.element(doc)
+		const Position = fxy.require('pop-up/Position')
+
+		Popup(class extends Position(Popup.Element) {
+			constructor() {
+				super('routes',{
+					active:true,
+					collapsed:true,
+					eventKey(value,old){
+						if (typeof old === 'string') window.removeEventListener(old, this.event_listener.bind(this),false)
+						if (value) window.addEventListener(value, this.event_listener.bind(this),false)
+					},
+					noTitle: true,
+					opened: true,
+					transitioning: true
+				})
+			}
+
+			collapse(collapsed) {
+				this.collapsed = collapsed
+				this.inner.classList.toggle('collapsed', collapsed)
+			}
+
+			connected() {
+				this.aria.disabled=true
+				this.aria.expanded=false
+				this.addEventListener('mousedown', e => e.stopPropagation())
+
+				this.addEventListener('transitionend', e => {
+					this.transitioning = false
+					if(!this.active){
+						this.aria.disabled = true
+						this.aria.expanded = false
+					}
+				})
+
+				this.on.close = e => {
+					e.stopPropagation()
+					this.dismiss()
+				}
+				window.app.on('resized',e=>{
+					if(this.active) this.present()
+				})
+				this.addEventListener('keydown', e => {if (e.key === 'Escape') this.dismiss()})
+			}
+
+			get content() {return this.slots.content.item }
+
+			dismiss() {
+				this.active=null
+				window.removeEventListener('mousedown', this.watch_for_down_event.bind(this),false)
+				this.setAttribute('aria-expanded', 'false')
+				this.setAttribute('aria-disabled', 'true')
+				this.style.pointerEvents = 'none'
+				this.blur()
+			}
+
+			event_listener(e) {
+				let detail = e && e.detail ? e.detail : {}
+				let action = detail.action
+				if (action !== 'open') return this.dismiss()
+				else this.opened = true
+			}
+
+			present(e) {
+				let target = this.target
+				if (e instanceof HTMLElement) target = e
+				else if (e instanceof Event) target = e.currentTarget
+				this.aria.disabled = false
+				this.aria.expanded = true
+				this.target = target
+				this.transitioning = true
+				this.active=true
+				this.style.pointerEvents = 'auto'
+				window.addEventListener('mousedown', this.watch_for_down_event.bind(this),false)
+				return this
+			}
+
+			get target() { return this.positions.target }
+			set target(element) {
+				if(fxy.is.element(element)) {
+					this.positions.target = element
+					this.position()
+				}
+				else this.positions.target = null
+			}
+
+			watch_for_down_event(e) {
+				this.dismiss()
+			}
+		})
+	})(document)
+</script>
+
+

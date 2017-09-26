@@ -119,8 +119,9 @@ function wwi_module( query, resource, source, window){
 			function load_rest(){
 				if(kit.has('firebase')){
 					window.fxy.port(kit_components.firebase,{async:'',defer:''}).then(()=>{
-						if(kit.has('firebase-account')) window.fxy.port(window.url.site(kit_components.firebase_account),{async:'',defer:''}).catch(console.error)
-					}).catch(console.error)
+						if(kit.has('firebase-account')) return window.fxy.port(window.url.site(kit_components.firebase_account),{async:'',defer:''}).catch(console.error)
+						return true
+					}).then(()=>window.fxy.port(window.url.modules.wwi.component('/logic/firebase.es6'))).catch(console.error)
 				}
 			}
 		}

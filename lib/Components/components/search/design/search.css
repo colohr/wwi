@@ -41,4 +41,7 @@ input {
 
 input:focus{
     width:50%;
+    background: transparent url('../graphics/search.svg') no-repeat 10px center;
+    background-color: rgba(255, 255, 255, 1);
+    background-size: 16px 16px;
 }

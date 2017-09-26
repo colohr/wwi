@@ -1,5 +1,5 @@
 library = {}
-library.id = 'components-search-library'
+library.id = 'search-library'
 library.logic = [
 	'logic/Result.es6'
 ]

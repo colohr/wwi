@@ -24,7 +24,7 @@
 </template>
 <script>
 	(function(doc){
-		const NavigatorSearch = wwi.element(doc).extension(...components.navigator.mix('Button'))
+		const NavigatorSearch = wwi.element(doc).extension(...window.components.navigator.mix('Button'))
 		NavigatorSearch(class extends NavigatorSearch.Element{
 			connectedCallback(){
 				super.connectedCallback()

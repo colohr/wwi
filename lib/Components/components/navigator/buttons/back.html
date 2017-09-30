@@ -10,7 +10,7 @@
 </template>
 <script>
     (function(doc){
-        const NavigatorBack = wwi.element(doc).extension(...components.navigator.mix('Button'))
+        const NavigatorBack = wwi.element(doc).extension(...window.components.navigator.mix('Button'))
         NavigatorBack(class extends NavigatorBack.Element{})
     })(document)
 </script>

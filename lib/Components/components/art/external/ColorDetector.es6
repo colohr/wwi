@@ -5,7 +5,9 @@
 	    const color_tracker = Symbol('color tracker')
 	    const color_names = new Set()
 	    const colors = fxy.require('design/colors')
-	    
+	    const invalid_colors = ['-bg','-50','-40','-30','-20','-10','-bright','-light','-dark','-black']
+	
+	
 	    class ColorTracker{
 	    	constructor(element){
 	    		this.element = element
@@ -52,7 +54,7 @@
 			    const color_limit = 'color_limit' in art.detector ? art.detector.color_limit:60
         		const tracking = art.detector.tracking
 			    
-        		for(let name of colors.keys()) if(name.includes('-50')!==true && name.includes('-bg') !== true) register_color(name)
+        		for(let name of colors.keys()) if(valid_color(name)) register_color(name)
 		        
 		        //return value
 		        return true
@@ -79,6 +81,13 @@
 			    function register_color(name){
 				    tracking.ColorTracker.registerColor(name,color_matches(colors.color(name)))
 				    return color_names.add(name)
+			    }
+			    
+			    function valid_color(color){
+			    	for(let invalid_color in invalid_colors){
+			    		if(color.includes(invalid_color)) return false
+				    }
+				    return true
 			    }
 		    }
 	    }

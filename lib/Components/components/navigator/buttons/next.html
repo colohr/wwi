@@ -10,7 +10,7 @@
 </template>
 <script>
     (function(doc){
-        const NavigatorNext = wwi.element(doc).extension(...components.navigator.mix('Button'))
+        const NavigatorNext = wwi.element(doc).extension(...window.components.navigator.mix('Button'))
         NavigatorNext(class extends NavigatorNext.Element{})
     })(document)
 </script>

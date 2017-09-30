@@ -1,35 +1,19 @@
 window.fxy.exports('struct',(struct,fxy)=>{
 	
 	class Actions{
-		
 		static get get(){ return get_action }
 		static get get_name(){ return get_actions_name }
 		static get set(){ return get_action }
-		
-		constructor({content,file,name,io}){
+		constructor({content,file,name}){
 			if(!fxy.is.text(content)) throw new Error('Actions content value must be a text value.')
-			
-			this.data = {}
 			this.file = file
-			this.io = io || 'query'
 			this.name = get_actions_name(this.file,name)
-			let queries = content.split(this.io).map(item=>item.trim())
-			
-			for(let item of queries){
-				let name = null
-				if(item.includes('(')) name = get_function_name(item)
-				else name = get_name(item)
-				if(name) this.data[name] = `${this.io} ${item}`
-			}
+			this.data = get_actions_data(content)
+			this.get=(name)=>this.data[name]
+			this.has=(name)=>name in this.data
+			this.set=(name,data)=>this.data[name]=data
 		}
-		get(name){ return this.has(name) ? this.data[name]:null }
-		has(name){ return name in this.data }
-		set(name,value){
-			if(fxy.is.text(name) && fxy.is.text(value) && name.length && value.length){
-				this.data[name] = value
-			}
-			return this
-		}
+		
 	}
 	
 	//exports
@@ -55,17 +39,60 @@ window.fxy.exports('struct',(struct,fxy)=>{
 		})
 	}
 	
+	function get_actions_data(content){
+		const map = items().map(value=>[item_name(value),{type:item_type(value),value}])
+		return new Proxy(new Map(map),{
+			deleteProperty(o,name){return o.delete(name)},
+			get(o,name){
+				let value = null
+				if(fxy.is.symbol(name) && name in o) value = o[name]
+				else value = o.has(name) ? o.get(name).value:null
+				if(fxy.is.function(value)) value = value.bind(o)
+				return value
+			},
+			has(o,name){return o.has(name)},
+			set(o,name,data){return set_action_data(o,name,data)}
+		})
+		// shared actions
+		function set_action_data(o,name,data){
+			if(fxy.is.text(name)){
+				if(fxy.is.text(data)) data = {value:data}
+				if(fxy.is.data(data)) o.set(name,data)
+			}
+			return true
+		}
+		function collapsed(){
+			return content.replace(/\r/g,' ')
+			              .replace(/\n/g,' ')
+			              .replace(/\t/g,' ')
+			              .replace(/       /g,' ')
+			              .replace(/      /g,' ')
+			              .replace(/     /g,' ')
+			              .replace(/    /g,' ')
+			              .replace(/   /g,' ')
+			              .replace(/  /g,' ')
+			              .replace(/ {/g,'{')
+			              .replace(/query /g,'\rquery ')
+			              .replace(/mutation /g,'\rmutation ')
+			              .replace(/subscription /g,'\rsubscription ')
+		}
+		function item_name(item){
+			let name = item.replace('query ','').replace('mutation ','').replace('subscription ','').trim()
+			if(name.includes('(')) name = name.split('(')[0].trim()
+			else name = name.split('{')[0].trim()
+			return name
+		}
+		function item_type(item){
+			if(item.indexOf('mutation') === 0) return 'mutation'
+			else if(item.indexOf('subscription') === 0) return 'subscription'
+			return 'query'
+		}
+		function items(){ return collapsed().split('\r').map(line=>line.trim()).filter(line=>line.length) }
+	}
+	
 	function get_actions_name(file,name){ return name || fxy.file.file(file).replace('.graphql','') }
 	
-	function get_function_name(value){
-		let items = value.split('(')
-		return items[0].trim()
-	}
-	
-	function get_name(value){
-		let items = value.split('{')
-		return fxy.id._(items[0].trim())
-	}
+	function has_action(name){ return 'data' in Actions && Actions.data.has(name) }
 	
 	function set_action(action){
 		if(!(action instanceof Actions)) action = new Actions(action)
@@ -75,7 +102,4 @@ window.fxy.exports('struct',(struct,fxy)=>{
 		}
 		return null
 	}
-	
-	function has_action(name){ return 'data' in Actions && Actions.data.has(name) }
-
 })

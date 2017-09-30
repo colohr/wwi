@@ -1,0 +1,143 @@
+<template id="leaf-item">
+	<style>
+		:host {
+			display: list-item;
+			position: relative;
+			padding: 0 0 0 30px;
+			text-align: -webkit-match-parent;
+			font-size:12px;
+		}
+		a{
+			text-decoration: none;
+			display: inline-block;
+			vertical-align: middle;
+			position: relative;
+			cursor: pointer;
+			padding:2px;
+		}
+		a > *{
+			display: inline-block;
+			position: relative;
+			vertical-align: middle;
+		}
+		[head-title]{
+			margin-right: 1ex;
+		}
+		[description]{
+			display: block;
+			font-size:80%;
+			color:var(--silver);
+		}
+
+		[collapse]{
+			transform: rotate(0deg);
+			transition: all 0.18s ease-in-out;
+			overflow: hidden;
+		}
+		label{
+			opacity: 1;
+			position: relative;
+			display: block;
+		}
+		label::before{
+			border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(187, 187, 204);
+			border-style: solid;
+			border-width: 6px 0 6px 7px;
+			content: ' ';
+			display: block;
+			height: 0;
+			width: 0;
+		}
+		:host([aria-expanded="true"]) [collapse] {
+			transform: rotate(90deg);
+		}
+
+
+		ol{
+			display: none;
+			list-style: decimal;
+		}
+		:host([aria-expanded="true"]) ol{
+			display: block;
+		}
+
+
+
+		[check]{
+			cursor: pointer;
+			display: inline-block;
+			position: relative;
+			border-radius: 100px;
+			height:14px;
+			width: 14px;
+			border:1px solid var(--check-color,var(--azul));
+			color:var(--check-color,var(--azul));
+			vertical-align: middle;
+		}
+		:host([aria-checked="true"]) [check]{
+			background-color:var(--check-color,var(--azul));
+		}
+		:host([aria-checked="true"]) [check] svg{
+			fill:white;
+		}
+		[check] svg{
+			position: relative;
+			display: block;
+			height:100%;
+			width: 100%;
+			fill:var(--check-color,var(--azul));
+		}
+	</style>
+
+	<div check>
+		<svg height="24px" width="24px" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
+			<g id="check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></g>
+		</svg>
+	</div>
+
+	<a>
+		<div collapse>
+			<input hidden id="input" type="checkbox">
+			<label for="input"></label>
+		</div>
+		<div identity>
+			<div head-title>${title}</div>
+			<div description>${description}</div>
+		</div>
+
+	</a>
+
+	<leaf-icon></leaf-icon>
+	<ol contenteditable="true"><slot>${items}</slot></ol>
+
+</template>
+<script>
+	(function (doc) {
+		const ListItem = wwi.custom(doc,'define').extension({name:'Bind',module:'behavior'})
+		ListItem(class extends ListItem.Element {
+			get check(){ return this.query('[check]') }
+			connected(){
+				this.define({
+					type:true,
+					url:true
+				})
+				this.query('a').onclick = e=>this.toggle(e)
+				this.query('ol').onclick = e=>{
+					e.stopPropagation()
+				}
+				this.check.onclick = e=>{
+					if(this.aria.checked ==='true') this.aria.checked='false'
+					else this.aria.checked='true'
+				}
+			}
+			toggle(e){
+				let input = this.query('#input')
+				input.checked = !input.checked
+				this.setAttribute('aria-expanded',input.checked)
+				return this
+			}
+			get list(){ return this.query('ol')}
+		})
+
+	})(document)
+</script>

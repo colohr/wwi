@@ -2,17 +2,12 @@
 (function(window){
 	return (function export_fxy(){
 		const alphabet = 'abcdefghijklmnopqrstuvwxyz'
-		const element_selector_data = Symbol('fxy element selector data')
 		const email_regular_expression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 		const externals = new Map()
 		const modules = Symbol('fxy modules')
 		const numbers = '0123456789'
 		
 		class Fxy extends Map{
-			static get element_selector_data(){
-				if(element_selector_data in this) return [element_selector_data]
-				return this[element_selector_data] = { skips:new Set(['style', 'class', 'id', 'tabindex' ]), }
-			}
 			constructor(){
 				super()
 				this[modules] = new Map()
@@ -118,7 +113,8 @@
 					get _(){ return this.underscore }
 				}
 			}
-			get in(){ return get_in }
+			get in(){ return this.inputs }
+			get inputs(){ return get_inputs }
 			get load(){ return load_files }
 			module(paths){
 				let folder
@@ -133,6 +129,7 @@
 			get not(){ return get_not() }
 			get numeral(){return get_numeral }
 			paths(pathname){ return this[modules].get(pathname) }
+			get random(){ return get_random() }
 			require(...paths){
 				let pathname = this.join(...paths)
 				return this.module( this.paths(pathname) )
@@ -141,21 +138,6 @@
 				let pathname = this.join(path,name)
 				this[modules].set(pathname,{ path, name })
 				return this.folder(path).set(name,value).get(name)
-			}
-			get selector(){
-				return new Proxy(get_element_selector,{
-					get(o,name){
-						switch(name){
-							case 'classes':
-								return get_element_selector_classes
-							case 'attributes':
-								return get_element_selector_attributes
-							case 'skips':
-								return Fxy.element_selector_data.skips
-						}
-						return null
-					}
-				})
 			}
 			get service_worker(){ return get_service_worker }
 			get tag(){ return tag_closure }
@@ -383,46 +365,6 @@
 			function filter_empty_text(text){ return is_text(text) }
 			function map_empty_text(text){ return is_text(text) ? text.trim():null}
 		}
-		function get_element_selector(element,skip){
-			if(!is_text(skip)) skip = ''
-			else if(skip === 'element') skip = 'classes attributes'
-			if(is_text(element)) return element
-			else if(is_element(element)){
-				let tag = element.localName
-				let id = element.hasAttribute('id') ? `#${element.getAttribute('id')}`:''
-				let classes = ''
-				if(skip && !skip.includes('classes')) classes = get_element_selector_classes(element)
-				let attributes = ''
-				if(skip && !skip.includes('attributes')) attributes = get_element_selector_attributes(element)
-				return `${tag}${id}${attributes}${classes}`
-			}
-			return null
-		}
-		function get_element_selector_attributes(element){
-			if(element.hasAttributes()){
-				let list = []
-				let a = element.attributes
-				let count = a.length
-				for(let i=0;i<count;i++){
-					let item = a.item(i)
-					if(item.value.length < 30 && get_element_selector_valid_attribute(item.name)){
-						if(item.value === '') list.push(`[${item.name}]`)
-						else list.push(`[${item.name}="${item.value}"]`)
-					}
-				}
-				return list.join('')
-			}
-			return ''
-		}
-		function get_element_selector_classes(element){
-			let list = element.hasAttribute('class') ? element.getAttribute('class').split(' '):null
-			if(list) return list.map(name=>name.trim()).filter(name=>!name.length).map(name=>`.${name}`).join('')
-			return ''
-		}
-		function get_element_selector_valid_attribute(name){
-			if(!Fxy.element_selector_data.skips.has(name)) return false
-			return name.indexOf('data-') !== 0
-		}
 		function get_external(){ return new Proxy({},{ get(o,name){ return get_external_module_loader(name) } }) }
 		function get_external_module_loader(folder){
 			return function module_loader( module_value, name_value, target_value){
@@ -493,7 +435,7 @@
 				})
 			}
 		}
-		function get_in(value){
+		function get_inputs(value){
 			let array = []
 			if(is_text(value)){
 				value = value.replace(/ /g,',').replace(/\+/g,',').replace(/\&/g,',').replace(/\|/g,',')
@@ -541,6 +483,30 @@
 				value,
 				toString(){ return this.valueOf() },
 				valueOf(){ return `${this.value}${this.unit || ''}` }
+			}
+		}
+		function get_random(){
+			//return value
+			return new Proxy(get_random_number,{
+				get(o, name){
+					let value = null
+					if(name === 'decimal') value = get_random_decimal
+					else if(name === 'item') value = get_random_item
+					if(name in o) value = o[name]
+					return value
+				}
+			})
+			//shared actions
+			function get_random_decimal(from,to){return Math.random() * (to - from) + from}
+			function get_random_number(from,to){return Math.floor(Math.random() * (to - from + 1)) + from}
+			function get_random_item(array,...items){
+				let list = []
+				if(is_array(array)) list = array
+				else{
+					list.push(array)
+					list = list.concat(items)
+				}
+				return list.length ? list[get_random_number(0,list.length-1)]:-1
 			}
 		}
 		function get_service_worker(){
@@ -623,7 +589,7 @@
 		}
 		function is_data(value){ return is_object(value) && !is_array(value) && !is_error(value) }
 		function is_defined(value){ return 'customElements' in window && !is_nothing(window.customElements.get(value)) }
-		function is_element(value,type){ return is_instance( value, type || HTMLElement) } //for the site side of code
+		function is_element(value,type){ return is_instance( value, type || HTMLElement) }
 		function is_element_data(value){ return is_object(value) || is_json(value) }
 		function is_email(value){ return is_text(value) && email_regular_expression.test(value) }
 		function is_empty(value){ return !is_count(value) }
@@ -775,5 +741,6 @@
 			let whens = names.map(name=>window.customElements.whenDefined(name))
 			return all_promises(...whens)
 		}
+		
 	})()
 },window)

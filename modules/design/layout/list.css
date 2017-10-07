@@ -1,0 +1,39 @@
+@import "html.css";
+/*<ul>	Defines an unordered list*/
+ul,ol,dl{
+    font-size:1.2em;
+}
+ul{
+
+}
+/*<ol>	Defines an ordered list*/
+ol{
+}
+/*<li>	Defines a list item*/
+li{
+
+}
+/*<dl>	Defines a description list*/
+dl{
+
+}
+/*<dt>	Defines a term/name in a description list*/
+dt{
+
+}
+/*<dd>	Defines a description of a term/name in a description list*/
+dd{
+
+}
+/*<menu>	Defines a list/menu of commands*/
+menu{
+
+}
+/*<menuitem>	Defines a command/menu item that the user can invoke from a popup menu*/
+menuitem{
+
+}
+/*<nav>	Defines navigation links*/
+nav{
+
+}

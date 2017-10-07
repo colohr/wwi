@@ -1,4 +1,4 @@
-<template id="art-graphic">
+<template id="color-detector-graphic">
     <style>
         @import "modules/wwi/component/design/host.css";
         :host{
@@ -81,8 +81,8 @@
 <script>
 
     (function(doc){
-        const ArtGraphic = wwi.element(doc).extension(...components.art.mix('ColorDetector'))
-	    ArtGraphic(class extends ArtGraphic.Element{
+        const Graphic = wwi.element(doc).extension(...components.graphic.mix('ColorDetector'))
+	    Graphic(class extends Graphic.Element{
 	    	constructor(){
 	    		super('routes',{
 	    			auto_track:true,

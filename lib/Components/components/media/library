@@ -1,5 +1,8 @@
 library = {}
-library.ports = [window.components.content.index_url,window.components.window.index_url]
+library.ports = [
+	window.components.content.index_url,
+	window.components['window-frame'].index_url
+]
 library.logic = [
 	'control/library.es6',
 	'control/time.es6',

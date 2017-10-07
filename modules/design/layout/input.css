@@ -1,0 +1,59 @@
+@import "html.css";
+/*<a>*/
+a{}
+/*<form>	Defines an HTML form for user input*/
+form{
+
+}
+/*<input>	Defines an input control*/
+input{
+
+}
+/*<textarea>	Defines a multiline input control (text area)*/
+textarea{
+
+}
+/*<button>	Defines a clickable button*/
+button{
+
+}
+/*<select>	Defines a drop-down list*/
+select{
+
+}
+/*<optgroup>	Defines a group of related options in a drop-down list*/
+optgroup{
+
+}
+/*<option>	Defines an option in a drop-down list*/
+option{
+
+}
+/*<label>	Defines a label for an <input> element*/
+label{
+
+}
+/*<fieldset>	Groups related elements in a form*/
+fieldset{
+
+}
+/*<legend>	Defines a caption for a <fieldset> element*/
+legend{
+
+}
+/*<datalist>	Specifies a list of pre-defined options for input controls*/
+datalist{
+
+}
+/*<keygen>	Defines a key-pair generator field (for forms)*/
+keygen{
+
+}
+/*<output>	Defines the result of a calculation*/
+output{
+
+}
+/*<progress>	Represents the progress of a task*/
+progress{}
+/*<meter>	Defines a scalar measurement within a known range (a gauge)*/
+meter{}

@@ -55,7 +55,7 @@
 </template>
 <script>
 	(function (doc) {
-		const Frame = wwi.element(doc).extension({module:'behavior',name:'Drag'},{module:'behavior',name:'Center'})
+		const Frame = wwi.element(doc).extension({module:'behavior',name:'Drag'})
 		Frame(class extends Frame.Element {
 			get body(){ return this.query('window-body') }
 			update_content(){
@@ -93,7 +93,7 @@
 				}
 				this.on('content size',(e)=>this.update_content())
 
-				var timer = null
+				let timer = null
 				this.view.addEventListener('scroll',remove_pointer.bind(this),false)
 				function remove_pointer(){
 					this.body.style.pointerEvents = 'none'

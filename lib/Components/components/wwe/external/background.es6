@@ -42,7 +42,7 @@
 		        if(fxy.is.nothing(graphic)) graphic = get_random(this)
 		        let graphic_url = this.url(graphic)
 		        this.style.backgroundImage = `url(${graphic_url})`
-		        if('style' in graphic) this.ui(graphic.style)
+		        if('style' in graphic) Object.assign(this.style,graphic.style)
 		        if(!this.hasAttribute('value') || this.getAttribute('value') !== graphic.name) this.setAttribute('value',graphic.name)
 		        if(this.timer) set_timer(this,this.timer)
 		        return this

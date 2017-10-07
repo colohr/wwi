@@ -1,6 +1,6 @@
 {
   "name": "wwi",
-  "version": "0.0.59",
+  "version": "0.0.6",
   "description": "World Wide Internet: A Web Component Tool",
   "main": "./lib/index.js",
   "repository": {
@@ -20,6 +20,6 @@
   "homepage": "https://github.com/colohr/wwi#readme",
   "dependencies": {
     "fxy": "^0.1.67",
-    "wxy": "^0.0.48"
+    "wxy": "^0.0.49"
   }
 }

@@ -3,47 +3,49 @@
         @import "modules/wwi/component/design/host.css";
 
         :host{
-            height:100%;
+	        display: block;
+            height:120px;
+	        width:100%;
+	        max-width: 100%;
             position:relative;
         }
         [view]{
-            max-height:100%;
-            width:100%;
+	        height:100%;
+            width:calc(100% - 100px);
+	        max-width: calc(100% - 100px);
             overflow: hidden;
-            overflow-y:auto;
+            overflow-x:auto;
+	        padding-left:50px;
+	        padding-right:50px;
+	        padding-bottom:10px;
         }
 	    [gradient]{
             position: relative;
-		    height:calc((40vw/3) - 20px);
-		    width:calc((40vw/3) - 20px);
+		    display: inline-block;
+		    height:100px;
+		    width:100px;
 		    resize: both;
 		    margin:10px;
-		    border-radius: 7px;
+		    border-radius: 100px;
             box-sizing:border-box;
 	    }
     </style>
-    <div view gui horizontal wrap>
-
+    <div view gui horizontal>
+        <div gradient style="background:var(--marine-bg)"></div>
+        <div gradient style="background:var(--sea-emerald-bg)"></div>
+        <div gradient style="background:var(--blue-cyan-bg)"></div>
+        <div gradient style="background:var(--tangerine-yellow-bg)"></div>
+        <div gradient style="background:var(--purple-fuchsia-bg)"></div>
+        <div gradient style="background:var(--apple-mandarine-bg)"></div>
+        <div gradient style="background:var(--cherry-mandarine-bg)"></div>
+        <div gradient style="background:var(--fuchsia-bg)"></div>
+        <div gradient style="background:var(--indigo-bg)"></div>
+        <div gradient style="background:var(--green-bg)"></div>
     </div>
 </template>
 <script>
     (function(doc){
         const ArtGradients = wwi.element(doc)
-        ArtGradients(class extends ArtGradients.Element{
-			connected(){
-				on((gradients)=>{
-					for(let gradient of gradients.values()){
-						this.add(gradient)
-					}
-				},'fxy.modules.art.css.gradients')
-			}
-			add(gradient){
-				let element = document.createElement('div')
-				element.setAttribute('gradient','')
-				element.style.background = `${gradient}`
-				this.view.appendChild(element)
-				return this
-			}
-        })
+        ArtGradients(class extends ArtGradients.Element{})
     })(document)
 </script>

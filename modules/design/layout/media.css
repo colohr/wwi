@@ -1,0 +1,24 @@
+@import "html.css";
+/*MEDIA*/
+
+/*<img>	Defines an image*/
+img{}
+/*<iframe>*/
+iframe{}
+/*<figcaption>	Defines a caption for a <figure> element*/
+figcaption{}
+/*<figure>	Specifies self-contained content*/
+figure{}
+/*<picture>	Defines a container for multiple image resources*/
+picture{ /*<picture><source media="(min-width: 650px)" srcset="img_pink_flowers.jpg"><source media="(min-width: 465px)" srcset="img_white_flower.jpg"><img src="img_orange_flowers.jpg" alt="Flowers" style="width:auto;"></picture>*/
+}
+/*<map>	Defines a client-side image-map*/
+map{}
+/*<canvas>	Used to draw graphics, on the fly, via scripting (usually JavaScript)*/
+canvas{}
+/*<area>	Defines an area inside an image-map*/
+area{}
+/*<audio>*/
+audio{}
+/*<video>*/
+video{}

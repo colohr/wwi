@@ -1,0 +1,8 @@
+library = {}
+library.id = 'graphic-library'
+library.logic = [
+	'logic/detector.es6'
+]
+library.elements = [
+	'components/color-detector.html'
+]

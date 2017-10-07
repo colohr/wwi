@@ -9,7 +9,6 @@ window.fxy.exports('sort',(sort,fxy)=>{
 			this.container = get_container(this)
 			this.current = null
 		}
-		
 		get active(){ return this.get('aria-activedescendant') }
 		set active(value){ return this.set('aria-activedescendant',value) }
 		get current(){ return this.active_element || null }
@@ -75,57 +74,19 @@ window.fxy.exports('sort',(sort,fxy)=>{
 		e.dataTransfer.effectAllowed = 'move'
 		e.dataTransfer.setData('text/html', this.innerHTML)
 	}
-	function drop(e) {
-		if (e.stopPropagation) e.stopPropagation()
-		let sort = this.sort
-		let controller = sort.controller
-		let current = controller.current || null
-		if (current && current !== this) {
-			let view = sort.view
-			if(view){
-				let target = sort.right || sort.left
-				let view_target = get_item_view(target,controller)
-			}
-			//current.innerHTML = this.innerHTML
-			//this.innerHTML = e.dataTransfer.getData('text/html')
-			
-			//if(current_controls) this.aria.controls = current_controls
-			//if(controls) current.aria.controls = controls
-			
-			//if(current.aria.selected === 'true') this.was_selected = true
-			//else delete this.was_selected
-			
-			//if(this.aria.selected) current.was_selected = true
-			//else delete current.was_selected
-		}
-	}
-	function old_drop(e) {
-		if (e.stopPropagation) e.stopPropagation() // Stops some browsers from redirecting.
-		let current = this.sorter.current || null
-		// Don't do anything if dropping the same column we're dragging.
-		if (current && current != this) {
-			// Set the source column's HTML to the HTML of the column we dropped on.
-			
-			let current_controls = current.aria.controls
-			let controls = this.aria.controls
-			
-			current.innerHTML = this.innerHTML
-			this.innerHTML = e.dataTransfer.getData('text/html')
-			
-			
-			if(current_controls) this.aria.controls = current_controls
-			if(controls) current.aria.controls = controls
-			
-			if(current.aria.selected === 'true') this.was_selected = true
-			else delete this.was_selected
-			
-			if(this.aria.selected) current.was_selected = true
-			else delete current.was_selected
-			
-			
-		}
-		return false
-	}
+	//function drop(e) {
+	//	if (e.stopPropagation) e.stopPropagation()
+		//let sort = this.sort
+		//let controller = sort.controller
+		//let current = controller.current || null
+		//if (current && current !== this) {
+		//	let view = sort.view
+		//	if(view){
+		//		let target = sort.right || sort.left
+		//		let view_target = get_item_view(target,controller)
+		//	}
+		//}
+	//}
 	
 	function get_container(sort){
 		let container = sort.element.querySelector('[sort-container]')
@@ -155,7 +116,7 @@ window.fxy.exports('sort',(sort,fxy)=>{
 		item.addEventListener('dragleave', drag_leave, false)
 		item.addEventListener('dragover', drag_over, false)
 		item.addEventListener('dragstart', drag_start, false)
-		item.addEventListener('drop', drop, false)
+		//item.addEventListener('drop', drop, false)
 		item.setAttribute('sorted-item','')
 		item.sort = new Proxy(item,{
 			get(o,name){

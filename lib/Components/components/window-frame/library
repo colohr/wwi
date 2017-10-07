@@ -1,0 +1,12 @@
+library = {}
+library.id = 'window-frame-library'
+library.elements = [
+	'components/body.html',
+	'components/footer.html',
+	'components/header.html',
+	{
+		path:'components/frame.html',
+		wait:['window-body','window-footer','window-header']
+	}
+]
+library.wait = ['window-frame']

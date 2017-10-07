@@ -1,7 +1,0 @@
-library = {}
-library.id = 'list-library'
-library.elements = [
-	'item.html',
-	'tree/list.html'
-]
-library.wait = ['tree-list','list-item']

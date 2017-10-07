@@ -28,14 +28,16 @@ function wwi_get_fxy(element, export_base, port_module, window){
 		let paths = path.split('/').filter(item=>item.length)
 		if(paths.length){
 			let last = paths[paths.length-1]
-			if(last.includes('.')) paths.filter(item=>item===last)
+			if(last.includes('.')) paths = paths.filter(item=>item===last)
 		}
 		paths.unshift(host)
 		return `${window.location.protocol}//${paths.join('/')}`
 	}
 	function get_modules_location(){
-		let value = 'modules'
+		if(element.hasAttribute('path') !== true) element.setAttribute('path','/')
+		let value = '/modules'
 		if(element.hasAttribute('modules')) value = element.getAttribute('modules')
+		else element.setAttribute('modules','/modules')
 		return value.split('/').filter(item=>item.length).join('/')
 	}
 	function get_base(){
@@ -74,7 +76,7 @@ function wwi_module( query, resource, source, window){
 	}
 	
 	const world_wide_internet = {
-		components(kit){ return kit.has('import') ? [kit.get('import')] : [] },
+		components(kit){ return kit.has('import') ? fxy.in(kit.get('import')):[] },
 		get(promise_all){
 			if(!window.fxy.browser.compatability.web_components) return get_eval(window.url.wwi('poly/poly.es6')).then(_=>promise_all(this.items))
 			return promise_all(this.items)
@@ -89,7 +91,7 @@ function wwi_module( query, resource, source, window){
 	
 	function window_load(){
 		//exports
-		return window_resources().then(window_ports).then(window_finish).catch(console.error)
+		return window_resources().then(window_ports).then(window_finish).then(()=>window.dispatchEvent(new CustomEvent('wwi',{ bubbles: true }))).catch(console.error)
 		//shared actions
 		function window_code(){
 			return new Promise((success,error)=>{
@@ -108,21 +110,25 @@ function wwi_module( query, resource, source, window){
 		}
 		
 		function window_finish(){
-			world_wide_internet.components(kit).map(kit_url=>resource(kit_url))[0].then(()=>load_rest())
+			let imports = world_wide_internet.components(kit).map(kit_url=>resource(kit_url))
+			let finals = []
+			if(imports.length) finals.push(Promise.all(imports).then(()=>load_rest()).catch(console.error))
 			window.fxy.service_worker()
 			window.document.body.removeAttribute('unresolved')
 			let app_element = window.app.element
-			if(app_element) window.fxy.when(app_element.localName).then(()=>window.document.body.setAttribute('components-ported',''))
+			if(app_element) finals.push(window.fxy.when(app_element.localName).then(()=>window.document.body.setAttribute('components-ported','')))
 			else window.document.body.setAttribute('components-ported','')
-			return window.dispatchEvent( new CustomEvent('app', { bubbles: true, detail: window.app } ))
+			window.dispatchEvent( new CustomEvent('app', { bubbles: true, detail: window.app } ))
+			return Promise.all(finals)
 			//shared actions
 			function load_rest(){
 				if(kit.has('firebase')){
-					window.fxy.port(kit_components.firebase,{async:'',defer:''}).then(()=>{
+					return window.fxy.port(kit_components.firebase,{async:'',defer:''}).then(()=>{
 						if(kit.has('firebase-account')) return window.fxy.port(window.url.site(kit_components.firebase_account),{async:'',defer:''}).catch(console.error)
 						return true
 					}).then(()=>window.fxy.port(window.url.modules.wwi.component('/logic/firebase.es6'))).catch(console.error)
 				}
+				return false
 			}
 		}
 		

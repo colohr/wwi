@@ -1,6 +1,6 @@
 (function(get_tracking){ return get_tracking() })
 (function(){
-    return function export_tracking(art,fxy){
+    return function export_tracking(graphic,fxy){
 	
 	    const color_tracker = Symbol('color tracker')
 	    const color_names = new Set()
@@ -42,8 +42,8 @@
 	    
 	    //shared actions
 	    function load(){
-        	art.detector.load().then(_=>{
-        		if(colors_registered()) art.ColorDetector = ColorDetector
+        	graphic.detector.load().then(_=>{
+        		if(colors_registered()) graphic.ColorDetector = ColorDetector
 	        })
 		    
 	        //return value
@@ -51,8 +51,8 @@
 		    
 		    //shared actions
 		    function colors_registered(){
-			    const color_limit = 'color_limit' in art.detector ? art.detector.color_limit:60
-        		const tracking = art.detector.tracking
+			    const color_limit = 'color_limit' in graphic.detector ? graphic.detector.color_limit:60
+        		const tracking = graphic.detector.tracking
 			    
         		for(let name of colors.keys()) if(valid_color(name)) register_color(name)
 		        
@@ -112,14 +112,14 @@
 			    boxShadow:`0px 0px 4px  ${color_shadow}`,
 			    boxSizing:'border-box',
 			    borderRadius:'7px',
-			    transitionDuration:app.help.numbers.random(100,800)+'ms',
-			    transitionDelay:app.help.numbers.random(0,700)+'ms'
+			    transitionDuration:fxy.random(100,800)+'ms',
+			    transitionDelay:fxy.random(0,700)+'ms'
 		    })
 		    return rectangle
 	    }
 	    
 	    function set_color_tracker(controller){
-		    const tracker = new art.detector.tracking.ColorTracker(Array.from(color_names))
+		    const tracker = new graphic.detector.tracking.ColorTracker(Array.from(color_names))
 		    let resizing = null
 		    tracker.on('track', on_track)
 		    window.app.on('resized',on_resize)
@@ -150,7 +150,7 @@
 		    return controller.timer = window.setTimeout(()=>{
 			    window.requestAnimationFrame(()=>{
 				    if(!controller.tracked){
-					    art.detector.tracking.track(controller.image,controller.tracker)
+					    graphic.detector.tracking.track(controller.image,controller.tracker)
 					    controller.tracked=true
 					    delete controller.timer
 				    }

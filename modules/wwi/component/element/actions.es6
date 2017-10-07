@@ -194,11 +194,13 @@ window.fxy.exports('element',(element,fxy) => {
 		if (!has_callbacks(listener)) memory.set(listener, new Map())
 		return memory.get(listener)
 	}
+	
 	function get_listener(element){
 		let memory = fxy.require('element/memory')[fxy.symbols.listener]
 		if (!memory.has(element)) memory.set(element, new Listener())
 		return memory.get(element)
 	}
+	
 	function get_on(element){
 		return new Proxy(listener_on(element),{
 			deleteProperty(o,name){

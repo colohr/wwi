@@ -77,11 +77,14 @@
 	--blue-black: rgb(27, 83, 187);
 	--blue-50: rgba(30, 144, 255, 0.51);
 
+	--marine-bright:rgba(42,51,66,1);
+	--marine:rgba(39,47,61,1);
+	--marine-dark:rgba(42,48,61,1);
+
 	--cyan-light: rgb(88, 225, 253);
 	--cyan-bright:rgba(26, 214, 253, 1);
 	--cyan: rgb(26, 198, 237);
 	--cyan-dark: rgb(26, 163, 199);
-
 
 	--teal-bright:#2abfce;
 	--teal: #22a6b5;
@@ -122,6 +125,10 @@
 
 	--grass: rgb(49, 221, 117);
 	--grass-50: rgba(49, 221, 117, 0.53);
+
+	--green-light:#36d186;
+	--green:#0eb765;
+	--green-dark:#3F8954;
 
 	--leaf: rgb(97, 209, 87);
 	--leaf-dark: rgb(79, 157, 79);
@@ -173,18 +180,24 @@
 	--bubblegum: rgb(255, 24, 190);
 	--bubblegum-dark: rgb(225, 0, 152);
 
-	--fuchsia-bright:rgb(198, 67, 252);
+	--fuchsia-light:rgb(198, 67, 252);
+	--fuchsia-bright:rgb(182, 24, 248);
 	--fuchsia: #a240fb;
 	--fuchsia-dark: #9b34e7;
+	--fuchsia-black:rgb(121, 20, 215);
 
 	--purple-bright: rgb(152, 63, 255);
 	--purple:rgb(131, 90, 252);
 
+	--indigo-light:#6F53ED;
+	--indigo-bright:#572ADD;
 	--indigo:rgb(85, 65, 236);
+	--indigo-dark: #452a9b;
 
 	--grape: rgba(110, 100, 250, 1);
 	--grape-dark: #464ba5;
 	--grape-50: rgba(110, 100, 250, 0.53);
+
 
 	--lavender-bright: #8884c5;
 	--lavender: #9181c8;
@@ -203,11 +216,20 @@
 
 	--cherry-mandarine-bg: radial-gradient(ellipse at left,  var(--cherry) 0%, var(--cherry) 60%, var(--mandarine) 100%);
 
-	--purple-fuchsia-bg: linear-gradient(135deg, var(--purple) 0%, var(--purple-bright) 49%, var(--fuchsia-bright) 100%);
+	--purple-fuchsia-bg: linear-gradient(135deg, var(--purple) 0%, var(--purple-bright) 49%, var(--fuchsia-light) 100%);
+
+	--fuchsia-bg: radial-gradient(ellipse at right, var(--fuchsia-bright) 0%, var(--fuchsia-black) 100%);
+
+	--indigo-bg: radial-gradient(ellipse at top, var(--indigo) 0%, var(--indigo-bright) 40%, var(--fuchsia-black) 70%, var(--fuchsia-dark) 100%);
 
 	--sea-emerald-bg:linear-gradient(135deg, var(--sea-bright) 0%, var(--turquoise) 49%, var(--emerald) 100%);
 
-	--marine-bg:radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
+	/*--marine-bg:radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);*/
+
+	--marine-bg:radial-gradient(ellipse at center, var(--marine-bright) 18%,var(--marine) 61%,var(--marine-dark) 100%);
+
+
+	--green-bg:radial-gradient(ellipse at center,  var(--green-light) 13%, var(--green) 47%,  var(--green-dark) 100%);
 
 	/*system*/
 	--app-color:var(--blue);

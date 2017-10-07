@@ -6,27 +6,31 @@
 	        max-height:100%;
 	        height:100%;
         }
+
         [view]{
 	        background:var(--dark);
 	        max-height:100%;
 	        overflow-y:auto;
-	        width: 70vw;
         }
+
         content-menu{
 	        display: inline-block;
-	        width:calc(100% - 43px);
+	        width:calc(100% - 46px);
 			height: 100%;
         }
 
-	    content-button{
-		    margin:5px;
+	    button{
+		    margin-top:5px;
+		    margin-right:5px;
 		    position:relative;
 	    }
+
 	    [value]{
 		    display:block;
 		    position:relative;
 		    background-color: white;
 	    }
+
 	    [gradient]{
 		    height:60px;
 		    width: 100%;
@@ -38,40 +42,55 @@
 		    box-sizing: border-box;
 		    background-color: transparent;
 		    border-radius: 7px;
+
 	    }
-        [gradient] [preview]:hover{
-	        background-color: white;
-        }
-        [gradient] [preview]:active{
-	        background-color: black;
+
+        [gradient] [preview]:hover{  background-color: white;   }
+
+        [gradient] [preview]:active{  background-color: black;  }
+
+        content-menu content-button{
+	        margin:3px;
+	        left:8px;
         }
 
-        content-menu content-button[aria-selected="true"]{
-		    border:2px solid white;
-	    }
+        content-menu content-button[aria-selected="true"]{  border:2px solid white;  }
+
 	    [tools]{
 		    top:0;
 		    position:-webkit-sticky;
 		    position: sticky;
 		    max-height: 100vh;
 	    }
-        [tools] content-button{
+
+        [tools] button{
 	        background-color: rgba(255,255,255,0.5);
+	        width:40px;
+	        padding-left:3px;
+	        padding-right:3px;
+	        font-size:12px;
+	        border-radius: 100px;
         }
-        [tools] content-button[aria-selected="true"]{
+
+        [tools] button[aria-selected="true"]{
 	        background-color: rgba(255,255,255,0.75);
         }
+
+	    art-gradients{
+		    width:100%;
+		    max-width: 100%;
+	    }
     </style>
-	<div view gui horizontal>
+	<div view gui horizontal wrap>
 		<content-menu grid multi no-header id="colors">
 			<div gradient slot="header">
 				<canvas preview></canvas>
 			</div>
 		</content-menu>
 		<div tools gui vertical>
-			<content-button icon="drop_up" onclick="act.big_preview(event)"></content-button>
-			<content-button icon="drop_down" aria-selected="true" onclick="act.small_preview(event)"></content-button>
+			<button preview-button aria-selected="true">BOX</button>
 		</div>
+		<art-gradients></art-gradients>
 	</div>
 </template>
 <script>
@@ -79,13 +98,21 @@
         const ArtPalette = wwi.element(doc).extension(...window.components.art.mix('Palette'))
         ArtPalette(class extends ArtPalette.Element{
 	        big_preview(event){
-		        event.currentTarget.setAttribute('aria-selected','true')
-		        event.currentTarget.nextElementSibling.setAttribute('aria-selected','false')
 		        let width = this.gradient.clientWidth
 		        this.gradient.style.height = width+'px'
 		        this.resize_preview(width)
 	        }
 	        connected(){
+	        	this.query('[preview-button]').onclick = e=>{
+	        		if(e.currentTarget.getAttribute('aria-selected') === 'true'){
+				        e.currentTarget.setAttribute('aria-selected','false')
+				        this.big_preview(e)
+			        }
+			        else{
+				        e.currentTarget.setAttribute('aria-selected','true')
+	        			this.small_preview(e)
+			        }
+		        }
 	        	this.list.item_selector_options = {item:'content-button',role:'option'}
 		        this.list.on('select',e=>{
 			        let item = e.detail.item
@@ -120,8 +147,7 @@
 		        if(this.current_colors) gradient(this.preview,size,this.current_colors)
 	        }
 	        small_preview(event){
-		        event.currentTarget.setAttribute('aria-selected','true')
-		        event.currentTarget.previousElementSibling.setAttribute('aria-selected','false')
+
 		        this.gradient.style.height = ''
 		        this.resize_preview(60)
 	        }

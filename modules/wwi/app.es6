@@ -5,7 +5,6 @@
 			constructor() {
 				super()
 				var Factory = Factories(window)
-				this.help = Factory.CreateHelper()
 				this.Route = Factory.CreateRoute(this.help)
 				if (!window.HashChangeEvent) {
 					this.set('last_url', document.URL);
@@ -33,10 +32,19 @@
 			get hash(){return this.Route.hashes()[0]}
 			set hash(hash){return this.Route.hash(hash)}
 			get hash_changed(){return this.Route.hash_changed}
+			get help(){
+				return {
+					get numbers(){
+						return {
+							get rand(){ return window.fxy.random.decimal },
+							get random(){ return window.fxy.random }
+						}
+					}
+				}
+			}
 			get kit(){return 'kit' in window ? window.kit:null}
 			get listeners(){return this.has('listeners') ? this.get('listeners'):this.set('listeners',new Map()).get('listeners')}
 			get opened(){return get_opened_page(this.element)}
-			params(x){return this.Route.Params.create(x)}
 			get title(){return this.doc.title}
 			set title(title){return this.doc.title=title}
 			//get port(){return window.fxy.port}
@@ -106,7 +114,8 @@
 				return element && name in element
 			},
 			set(o,name,value){
-				o.set(name,value)
+				if(name in o) o[name] = value
+				else o.set(name,value)
 				return true
 			}
 		})
@@ -126,60 +135,14 @@
 	},
 	function factories(window){
 		return {
-				CreateHelper(){
-					const numbers = {
-						rand(min, max){return Math.random() * (max - min) + min},
-						random(min, max){return Math.floor(Math.random() * (max - min + 1)) + min}
-					}
-					const filters = {str:{length(x){return x.length > 0}}}
-					const maps = {str:{trim(x){return x.trim()}}}
-					const str = {array(x, splitter){ return x.split(splitter).map(maps.str.trim).filter(filters.str.length)}}
-					//exports
-					return new Proxy({filters,maps,str,style,numbers,query},{
-						get(o, p){
-							if(p in o) return o[p]
-							return x=>x
-						}
-					})
-					//shared actions
-					function query(text){
-						let qs = {}
-						if(text.includes('?')) text = text.replace('?', '')
-						str.array(text,'&').map(x=>text.array(x, '=')).map(function(x){return this[x[0]]=x[1]},qs)
-						return qs
-					}
-					function style(text){
-						let css = {}
-						str.array(text,';').map(x=>str.array(x, ':')).map(function(x){return this[x[0]]=x[1]},css)
-						return css
-					}
-				},
-				CreateRoute(Helpers){
-					class Params{
-						constructor(value){
-							if (typeof value === 'undefined') value = window.location.search
-							Object.assign(this,get_text(value))
-						}
-						get data() { return get_query_data(this) }
-						get decoded(){return decodeURIComponent(this.encoded)}
-						get encoded(){return encodeURIComponent(this.text)}
-						get text(){
-							if (this.kind === 'string') return decodeURIComponent(this.origin)
-							return this.value
-						}
-						get uri(){return get_uri(this)}
-						//prototype actions
-						toString(){return this.encoded}
-					}
+				CreateRoute(){
 					class State {constructor(route){this.route = route;this.url = new URL(window.location.href);}}
 					class Route {
 						static get hash(){return get_route_hash}
 						static get hash_changed(){return hash_changed}
 						static get hashes(){return get_route_hashes}
-						static query(x){return new Params(x)}
 						static get goto(){return goto}
 						static state(){return new State( this.last_route || new Route(null) )}
-						static get Params(){ return Params }
 						static get State() { return State }
 						constructor(event) {
 							this.event = event || null
@@ -195,85 +158,9 @@
 					
 					//shared actions
 					function get_hash_parts(hash){return hash.replace('#', '').split('/').map(a=>a.trim()).filter(p=>p.length > 0)}
-					function get_query_data(params){
-						let data = null
-						if (params.kind === 'json') data = params.origin
-						else if (params.kind !== 'invalid') {
-							if (params.kind === 'string') {
-								try{ data = JSON.parse(params.origin) }catch(e){}
-								if(data === null) data = Helpers.query(params.origin)
-							}
-						}
-						if(data === null) data = {}
-						let query = {}
-						for(let key in data){
-							let value = data[key]
-							if (typeof value === 'string'){
-								try{value = JSON.parse(value)}catch(e){}
-								query[key] = value
-							}
-							else query[key] = value
-						}
-						return query
-					}
+					
 					function get_route_hash(hash){return Route.hashes()[0] !== hash ? window.location.hash=hash:Route.hashes()}
 					function get_route_hashes(hash){return get_hash_parts(typeof hash!=='string'?window.location.hash:hash)}
-					function get_text(value){
-						let origin = value
-						let type = typeof value
-						let kind
-						switch (type) {
-							case 'object':
-								let object = get_object_type(value)
-								kind = object.kind
-								value = object.text
-								break
-							case 'function':
-								value = value.name || ''
-								kind = 'invalid'
-								break
-							case 'undefined':
-								value = ''
-								kind = 'invalid'
-								break
-							default:
-								value = value + ''
-								kind = type
-								break
-						}
-						return {kind, type, value, origin}
-						//shared actions
-						function get_object_type(object){
-							let output = {}
-							if(object === null) output.kind = 'invalid'
-							else if(object instanceof HTMLElement) {
-								output.text = object.outerHTML
-								output.kind = 'html'
-							}
-							else{
-								try{
-									output.text = JSON.stringify(v)
-									output.kind = 'json'
-								}
-								catch(e){
-									output.text = ''
-									output.kind = 'invalid'
-								}
-							}
-							return output
-						}
-					}
-					function get_uri(query){
-						let uri = []
-						let data = query.data
-						for (let key in data) {
-							let value = data[key]
-							if (typeof data[key] === 'object') value = JSON.stringify(data[key])
-							else value = data[key]
-							uri.push(key + '=' + value)
-						}
-						return encodeURI('?' + uri.join('&'))
-					}
 					function goto(page,data){
 						let route = new Route()
 						route.data = data
@@ -289,40 +176,3 @@
 				}
 			}})
 }))
-
-//the document
-
-//action to go to a page of the site. pass in data. will trigger window.route event.
-
-//current window location hash
-
-//hash change event to get notified of the hash value
-
-//the head of the document
-//get head(){return this.doc.head}
-
-//listeners for the event triggers/actions
-
-//get port(){return window.fxy.port}
-//the current router / hash / url value of the site
-//get state(){return this.Route.state()}
-//get source(){return window.fxy.file}
-//title of the document
-
-//the window
-//get window(){return window}
-
-//create(type){return this.doc.createElement(type)}
-
-//select(selector){return this.doc.querySelector(selector)}
-
-//get auth(){return this.has('auth') ? this.get('auth') : ( 'firebase' in window ? window.firebase.auth() : null ) }
-//set auth(v){return this.set('auth', v)}
-//get current_user(){return this.has('current_user') ? this.get('current_user'):(this.firebase ? this.auth.currentUser:null)}
-//set current_user(v){return this.set('current_user', v)}
-//get el(){return this.element}
-//set el(v){return this.element=v}
-
-//set element(element){return this.set('ApplicationElement', element)}
-//get loaded() { return this.body.hasAttribute('apploaded') }
-//event triggers & setters

@@ -1,4 +1,10 @@
-window.fxy.exports('design',(design,fxy)=>{
+(function setup(setup_color,setup_gradient,setup_module,window){
+	let Color = setup_color(window.fxy)
+	Color = setup_gradient(Color,window.fxy)
+	//exports
+	return setup_module(Color,window.fxy)
+	
+})( function setup_color(fxy){
 	const alpha_opacity_transparency = Symbol('color alpha, opacity or transparency')
 	const color_names = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
 		"beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
@@ -28,9 +34,11 @@ window.fxy.exports('design',(design,fxy)=>{
 	const hex_to_rgb_reg = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
 	
 	class Color{
+		static get module(){ return get_color_module() }
+		static get set_color(){ return set_colors }
 		constructor(value,custom_colors){
 			this[alpha_opacity_transparency] = 1
-			let colors = fxy.is.map(custom_colors) ? custom_colors:design.colors
+			let colors = fxy.is.map(custom_colors) ? custom_colors:fxy.require('design/colors')
 			if(fxy.is.map(colors) && colors.has(value)) value = colors.get(value)
 			this.identity = value
 		}
@@ -46,24 +54,10 @@ window.fxy.exports('design',(design,fxy)=>{
 		toString(){ return this.value() }
 	}
 	
-	//load
-	load()
-	
 	//exports
-	design.Color = Color
-	design.color = (...x) =>  new Color(...x)
-	design.color.is = {
-		color:is_color,
-		dark:is_dark,
-		light:is_light,
-		mid:is_mid
-	}
-	design.color_names = ()=>color_names
-	design.color_theme = get_color_theme
-	
+	return Color
 	
 	//shared actions
-	
 	function get_color(value){
 		if(fxy.is.array(value)) return value
 		if(fxy.is.text(value)){
@@ -80,6 +74,24 @@ window.fxy.exports('design',(design,fxy)=>{
 			}
 		}
 		return [255,255,255]
+	}
+	
+	function get_color_module(){
+		return new Proxy((...x)=>new Color(...x),{
+			get(o,name){
+				switch(name){
+					case 'is':
+						return get_is()
+					case 'names':
+						return color_names
+					case 'theme':
+						return get_color_theme
+				}
+				if(name in o) return o[name]
+				return null
+			}
+		})
+		
 	}
 	
 	function get_color_theme(file_url){
@@ -101,28 +113,20 @@ window.fxy.exports('design',(design,fxy)=>{
 		} : null;
 	}
 	
-	function get_random_color(options){
-		let skip = fxy.is.data(options) && 'skip' in options ? options.skip:null
-		let keys = Array.from(this.keys())
-		if(Array.isArray(skip)) keys = keys.filter(key=>skip.filter(keyword=>key.includes(keyword)).length <= 0)
-		let index = window.app.help.numbers.random(0, keys.length - 1)
-		let values = keys.map(key=>this.get(key))
-		return values[index]
+	function get_is(){
+		return {
+			color:is_color,
+			dark:is_dark,
+			light:is_light,
+			mid:is_mid
+		}
 	}
+	
+	
 	
 	function get_rgb_to_hex(r, g, b) { return "#" + get_component_to_hex(r) + get_component_to_hex(g) + get_component_to_hex(b) }
 	
-	function set_colors(colors,custom_theme=false){
-		colors.color = function(color){ return new Color(color,colors) }
-		colors.custom_theme = custom_theme
-		colors.random = get_random_color.bind(colors)
-		colors.transparent = function(color,transparency){
-			if(color instanceof Color) return color.transparent(transparency)
-			return colors.color(color).transparent(transparency)
-		}
-		if(custom_theme !== true) design.colors = colors
-		return colors
-	}
+	function is_color(value){}
 	
 	function is_dark(value){
 		let color = get_color(value)
@@ -151,16 +155,113 @@ window.fxy.exports('design',(design,fxy)=>{
 		return false
 	}
 	
-	function is_color(value){
 	
-	}
 	
-	function load(){
-		let docs = [[url.component('design/css/colors.css'),'regulate'],[url.component('design/css/attr.css'),'design']]
-		fxy.doc(...docs[0]).then(set_colors).then(()=>fxy.doc(...docs[1])).then(gui=>{
-			gui.rekey('gui.')
-			design.gui=gui
-		}).catch(console.error)
-	}
+},
+	function setup_gradient(Color,fxy){
+		const tags = {
+			color:fxy.tag`rgba(${'red'},${'green'},${'blue'},${'transparency'}) ${'position'}`,
+			radial:fxy.tag`radial-gradient(${'axis'} ${'origin'},${'colors'})`,
+			linear:fxy.tag`linear-gradient(${'axis'} ${'origin'} ${'rotation'},${'colors'})`
+		}
+		
+		class GradientColor extends Color{
+			constructor(color,position){
+				super(color)
+				this.position = position
+			}
+		}
+		
+		class Gradient{
+			constructor(...items){
+				this.angle = null
+				this.axis = 'to'
+				this.items = items.map(item=>new GradientColor(item.color,item.position))
+				this.origin = 'right'
+				this.type = 'linear'
+				this.side = 'right'
+				
+			}
+			get colors(){ return this.items.map(color=>tags.color(color)) }
+			get rule(){ return tags[this.type](this) }
+			get rotation(){
+				if(fxy.is.number(this.angle)) return `${this.angle}deg`
+				return ''
+			}
+			toString(){
+				return this.rule
+			}
+		}
+		
+		class LinearGradient extends Gradient{
+			constructor(...colors){
+				super('linear',...colors)
+			}
+		}
+		
+		class RadialGradient extends Gradient{
+			constructor(...colors){
+				super(...colors)
+				this.type = 'radial'
+				this.origin = 'ellipsis at center'
+			}
+		}
+		
+		//exports
+		Color.Gradient = Gradient
+		Color.LinearGradient = LinearGradient
+		Color.RadialGradient = RadialGradient
+		return Color
+		//art.css.linear_gradient = (...x)=>new LinearGradient(...x)
+		//art.css.radial_gradient = (...x)=>new RadialGradient(...x)
 	
-})
+	
+},function setup_module(Color){
+	return window.fxy.exports('design',(design,fxy)=>{
+		
+		//load
+		load()
+		
+		//exports
+		design.Color = Color
+		design.color = Color.module
+		//design.color = (...x) =>  new Color(...x)
+		//design.color.is =
+		//design.color_names = ()=>color_names
+		//design.color_theme = get_color_theme
+		function get_random_color(options){
+			let skip = fxy.is.data(options) && 'skip' in options ? options.skip:null
+			let keys = Array.from(this.keys())
+			if(Array.isArray(skip)) keys = keys.filter(key=>skip.filter(keyword=>key.includes(keyword)).length <= 0)
+			let key = fxy.random.item(keys)
+			return this.get(key)
+		}
+		
+		function set_colors(colors,custom_theme=false){
+			colors.color = function(color){ return new Color(color,colors) }
+			colors.custom_theme = custom_theme
+			colors.random = get_random_color.bind(colors)
+			colors.transparent = function(color,transparency){
+				if(color instanceof Color) return color.transparent(transparency)
+				return colors.color(color).transparent(transparency)
+			}
+			if(custom_theme !== true) design.colors = colors
+			return colors
+		}
+		
+		function load(){
+			let docs = [[url.component('design/css/colors.css'),'regulate'],[url.component('design/css/attr.css'),'design']]
+			fxy.doc(...docs[0]).then(set_colors)
+			   .then(()=>fxy.doc(...docs[1]))
+			   .then(gui=>{
+					gui.rekey('gui.')
+					design.gui=gui
+				})
+			   .catch(console.error)
+		}
+		
+	})
+},this)
+
+
+

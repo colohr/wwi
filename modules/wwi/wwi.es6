@@ -74,7 +74,11 @@
 	
 	function on_broadcast_action(element){
 		if(!fxy.is.element(element)) throw new Error(`World Wide Internet on action needs a valid HTMLElement`)
-		let id = fxy.id.dash(fxy.selector(element))
+		let id = element.getAttribute('broadcast-id')
+		if(!id){
+			id = fxy.uid()
+			element.setAttribute('broadcast-id',id)
+		}
 		return new Proxy({
 			element, id,
 			get listeners(){ return this.element.has_listener ? this.element.listeners:null },

@@ -1,0 +1,86 @@
+@import "html.css";
+body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size:16px;
+}
+/*<main>	Specifies the main content of a document*/
+main{
+    padding: 1.5em 3em 4em 3.5em;
+}
+@media only screen and (max-width: 500px){
+    body{ font-size:70%;  }
+}
+
+/*<aside>	Defines content aside from the page content*/
+aside{
+
+}
+/*<header>	Defines a header for a document or section*/
+header{
+
+}
+/*<section>	Defines a section in a document*/
+section{
+
+}
+/*<article>	Defines an article*/
+article{
+
+}
+/*<footer>	Defines a footer for a document or section*/
+footer{
+
+}
+
+/*<details>	Defines additional details that the user can view or hide*/
+details{
+
+}
+/*<summary>	Defines a visible heading for a <details> element*/
+details > summary{
+
+}
+
+/*section*/
+section > header{
+    font-size:3em;
+    font-weight:bold;
+}
+section > header > *{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+
+}
+section > header > *:nth-child(1){
+    font-weight:900;
+    letter-spacing: 0.02em;
+    text-rendering: geometricPrecision;
+
+}
+section > header > *:nth-child(2){
+    font-size:50%;
+    letter-spacing: 0.03em;
+    text-rendering: geometricPrecision;
+}
+section > header{
+
+}
+section > footer{
+
+}
+
+/*article*/
+article > header{
+
+}
+article > footer{
+
+}
+
+
+/*<dialog>	Defines a dialog box or window (V8 Only)*/
+/*<data>	Links the given content with a machine-readable translation (Not V8)*/
+/*<data value=""></data> */

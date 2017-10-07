@@ -55,7 +55,6 @@
 		function set_drag(frame,value){
 			if(value && !(draggable_frame in frame)) {
 				frame[draggable_frame] = create_draggable(...get_drag_options(frame,value))
-				if('center' in frame) frame.center()
 			}
 			else if(draggable_frame in frame){
 				frame[draggable_frame].destroy()

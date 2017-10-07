@@ -1,6 +1,7 @@
 window.fxy.exports('media',(media,fxy)=>{
 	
 	const seek_control = Symbol('seek control')
+	const design_of = fxy.require('element/design_of')
 	const MediaSeek = {
 		right_click:null,
 		repeating:false,
@@ -121,7 +122,7 @@ window.fxy.exports('media',(media,fxy)=>{
 		let target = e.currentTarget
 		let control = target.control
 		if (control.seeking && control.right_click === false && target.audio.readyState !== 0) {
-			control.seek_value = move(e, control.element.design.of(target.bar), 'seek')
+			control.seek_value = move(e, design_of(target.bar), 'seek')
 			control.element.bar.value = control.seek_value + '%'
 			control.element.bar.style.width = control.element.bar.value
 		}
@@ -132,7 +133,7 @@ window.fxy.exports('media',(media,fxy)=>{
 		e.stopPropagation()
 		let control = this
 		if (control.seeking_volume && control.right_click === false) {
-			control.volume_value = move(e, this.element.design.of(this.element.bar), 'volume')
+			control.volume_value = move(e, design_of(this.element.bar), 'volume')
 			let value = control.volume_value / 100
 			if (value <= 0) {
 				control.audio.volume = 0

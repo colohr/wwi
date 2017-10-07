@@ -1,12 +1,9 @@
 library = {}
-library.logic = [
-	'control/css.es6',
-	'control/css/gradient.es6',
-	'control/detector.es6'
+library.ports = [
+	window.components.content.index_url
 ]
 library.elements = [
 	'gradients.html',
-	'graphic.html',
 	{
 		path:'palette.html',
 		wait:['content-menu']

@@ -1,0 +1,66 @@
+@import "html.css";
+/*TEXT CONTAINER*/
+/*<h1 - h6>*/
+h1,h2,h3,h4,h5,h6{
+    position: -webkit-sticky;
+    position: sticky;
+    top:0;
+    overflow: hidden;
+    white-space: normal;
+    text-overflow: ellipsis;
+    max-width: calc(100% - (calc(--heading-size-margin) * 2));
+    background: inherit;
+}
+h1{  }
+/*<p> Defines a paragraph*/
+p{}
+/*<abbr>	Defines an abbreviation or an acronym*/
+abbr{}
+/*<address>	Defines contact information for the author/owner of a document/article*/
+address{}
+/*<blockquote>	Defines a section that is quoted from another source*/
+blockquote{}
+/*<cite>	Defines the title of a work*/
+cite{}
+/*<code>	Defines a piece of computer code*/
+code{}
+/*<dfn>	Represents the defining instance of a term*/
+dfn{}
+/*<pre>	Defines preformatted text*/
+pre{}
+/*<time>Defines a date/time*/
+time{}
+/*<var>	Defines a variable*/
+var{}
+/*<kbd>	Defines keyboard input*/
+kdb{}
+/*<mark>	Defines marked/highlighted text*/
+mark{}
+/*<q>	Defines a short quotation*/
+q{}
+
+
+/*BREAKS*/
+
+/*<br>*/
+br{}
+/*<hr>*/
+hr{}
+/*<wbr>	Defines a possible line-break*/
+wbr{}
+
+
+/*TEXT*/
+
+/*<b>Defines bold text*/ /*<strong>	Defines important text*/
+b,strong{}
+/*<em>	Defines emphasized text*/ /*<i>	Defines a part of text in an alternate voice or mood*/
+i,em{}
+/*<small>	Defines smaller text*/
+small{}
+/*<sub>	Defines subscripted text*/
+sub{}
+/*<sup>	Defines superscripted text*/
+sup{}
+/*<u>	Defines underlined text or text that should be stylistically different from normal text*/
+u{}

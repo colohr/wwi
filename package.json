@@ -1,25 +1,25 @@
 {
-  "name": "wwi",
-  "version": "0.0.601",
-  "description": "World Wide Internet: A Web Component Tool",
-  "main": "./lib/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/colohr/wwi.git"
+  "author": "colohr",
+  "bugs": {
+    "url": "https://github.com/colohr/wwi/issues"
   },
+  "dependencies": {
+    "fxy": "^0.1.68",
+    "wxy": "^0.0.500"
+  },
+  "description": "World Wide Internet: A Web Component Tool",
+  "homepage": "https://github.com/colohr/wwi#readme",
   "keywords": [
     "Web Components",
     "Custom Elements",
     "Shadow Dom"
   ],
-  "author": "colohr",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/colohr/wwi/issues"
+  "main": "./lib/index.js",
+  "name": "wwi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/colohr/wwi.git"
   },
-  "homepage": "https://github.com/colohr/wwi#readme",
-  "dependencies": {
-    "fxy": "^0.1.67",
-    "wxy": "^0.0.49"
-  }
+  "version": "0.0.602"
 }

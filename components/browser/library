@@ -1,0 +1,11 @@
+library = {}
+library.logic = [
+	'logic/memory.es6',
+	'logic/types.es6'
+]
+library.elements = [
+	'components/item-expander.html',
+	{path:'components/item.html',wait:['item-expander']},
+	{path:'components/list.html',wait:['browser-item']}
+]
+library.wait = ['browser-list']

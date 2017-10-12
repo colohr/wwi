@@ -1,0 +1,17 @@
+<template id="snappy-grid">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            display:block;
+	        position: relative;
+	        padding:40px;
+        }
+    </style>
+	<div grid></div>
+</template>
+<script>
+    (function(doc){
+        const SnappyGrid = wwi.element(doc).extension(...(fxy.require('snappy/extension')))
+        SnappyGrid(class extends SnappyGrid.Element{})
+    })(document)
+</script>

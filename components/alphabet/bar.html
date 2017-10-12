@@ -1,0 +1,92 @@
+<template id="alphabet-bar">
+    <style>
+        @import "/modules/wwi/component/design/host.css";
+        :host{
+            --font-size:var(--size,12px);
+            --item-size:calc(var(--font-size) * 1.8);
+            --scale:0.8;
+            --top:calc(var(--font-size) * (-1 * var(--scale)));
+            --before-scale: 0.9;
+            --offset:calc(var(--before-scale) - 1.8);
+            --before-top:calc(var(--font-size) * var(--offset));
+            --after-scale: calc(1 - var(--scale));
+            --after-top:calc((var(--font-size) * 0.75) - var(--font-size));
+
+            display:inline-block;
+            position: relative;
+            color:var(--text,var(--watermelon));
+            font-size:var(--font-size);
+            font-weight: var(--weight,900);
+            vertical-align: top;
+            max-height: 100%;
+            text-transform: uppercase;
+        }
+        a{
+            position: relative;
+            display: block;
+            cursor: pointer;
+            height:var(--item-size);
+            width:var(--item-size);
+            max-height:var(--item-size);
+            max-width:var(--item-size);
+            padding:0.5px;
+            border-radius: var(--radius,100px);
+            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+            transform:scale(var(--scale),var(--scale));
+            transition:margin 200ms,transform 200ms;
+            transition-timing-function: linear;
+            z-index: 0;
+            outline: none;
+        }
+        a:before{
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background: var(--color,var(--day));
+            border-radius: inherit;
+            opacity: 0.4;
+            z-index: -1;
+        }
+        a+a{  margin-top:var(--before-top);  }
+        a:hover,a:focus{
+            transition:margin 200ms,transform 100ms;
+            transform:scale(1,1);
+            margin-top:var(--top);
+            z-index: 4;
+        }
+        a:focus{  z-index: 5;  }
+        a:hover{ z-index: 6; }
+        a:focus:before{
+            opacity: 1;
+            border:1px solid;
+        }
+        a:hover:before{  opacity: 1;  }
+        a:hover+a{
+            transition:margin 300ms,transform 300ms;
+            margin-top:var(--after-top);
+            transform:scale(var(--before-scale),var(--before-scale));
+            z-index: 3;
+        }
+        a[aria-selected="true"]{
+            background-color: var(--text,var(--watermelon));
+            color:var(--color,var(--day));
+        }
+        a[aria-selected="true"]:before{
+            background-color: var(--text,var(--watermelon));
+        }
+        [view]{
+            min-height: auto;
+            height: auto;
+            background: var(--background,transparent);
+            border-radius: var(--bar-radius,100px);
+        }
+    </style>
+    <div view items gui vertical center-center></div>
+</template>
+<script>
+    (function(doc){
+    	let extension = [{module:'behavior',name:'Selector'}].concat(components.alphabet.mix('Element'))
+        const AlphabetBar = wwi.element(doc).extension(...extension)
+	    AlphabetBar(class extends AlphabetBar.Element{})
+    })(document)
+</script>

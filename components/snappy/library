@@ -1,0 +1,12 @@
+library = {}
+library.id = 'snappy-component'
+library.logic = [
+	'logic/index.es6',
+	'logic/grid.es6',
+	'logic/style.es6'
+]
+library.elements = [
+	'grid.html'
+]
+library.wait = ['snappy-grid']
+

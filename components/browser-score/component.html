@@ -8,18 +8,14 @@
 			max-width: 100vw;
 			height:100%;
 			width:100%;
-			perspective: 1000px;
-			background: rgb(42,51,66);
-			background: -moz-radial-gradient(center, ellipse cover, rgba(42,51,66,1) 18%, rgba(39,47,61,1) 61%, rgba(42,48,61,1) 100%);
-			background: -webkit-radial-gradient(center, ellipse cover, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
-			background: radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);
+			background: var(--marine-bg);
 		}
 		[container]{  position: relative;  }
 		[box]{
 			display:block;
 			box-sizing: border-box;
 			overflow: hidden;
-			border: 10px solid #de4747;
+			border: 10px solid var(--tomato);
 			max-width: 100%;
 			transform-style: preserve-3d;
 			transition-timing-function: ease-out;

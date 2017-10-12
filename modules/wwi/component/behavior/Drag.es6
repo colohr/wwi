@@ -7,7 +7,6 @@
 			constructor(){
 				super('routes',{
 					contain(value){
-						if(!this.isConnected) return
 						let options = {}
 						if(value === null)  options = false
 						else if(fxy.is.element(value)) options = {view: value}
@@ -15,14 +14,12 @@
 						set_drag(this,options)
 					},
 					drag(value){
-						if(this.isConnected){
-							value = value === null ? false:value
-							if(fxy.is.text(value)){
-								if(value.length) value = document.querySelector(value)
-								if(value === null) value = document.querySelector('#app')
-							}
-							this.contain = {handle:this.drag_handle}
+						value = value === null ? false:value
+						if(fxy.is.text(value)){
+							if(value.length) value = document.querySelector(value)
+							if(value === null) value = document.querySelector('#app')
 						}
+						this.contain = {handle:this.drag_handle}
 					}
 				})
 			}

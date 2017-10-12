@@ -2,6 +2,9 @@ library = {}
 library.ports = [
 	window.components.content.index_url
 ]
+library.logic = [
+	'logic/canvas.es6'
+]
 library.elements = [
 	'gradients.html',
 	{

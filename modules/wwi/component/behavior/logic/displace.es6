@@ -142,6 +142,16 @@
 	    
 	
 	    // mouse events
+	    function is_dragging(element){
+		    element.is_dragging = true
+		    if(!element.hasAttribute('is-dragging')) element.setAttribute('is-dragging','')
+		    return element
+	    }
+	    function is_not_dragging(element){
+		    element.is_dragging = false
+		    if(element.hasAttribute('is-dragging')) element.removeAttribute('is-dragging')
+		    return element
+	    }
 	    function mousedown(e) {
 		    let opts = this.opts
 		    if (opts.highlightInputs && is_input(e)) return
@@ -153,9 +163,12 @@
 		    events.mousemove = mousemove.bind(this, wOff, hOff)
 		    Displace.active = this
 		    this.handle.setAttribute('aria-grabbed','true')
+		    is_dragging(this.el)
 		    document.addEventListener('mousemove', events.mousemove, false)
 		    document.addEventListener('mouseup', events.mouseup, false)
 	    }
+	    
+	    
 	
 	    function mousemove(offsetW, offsetH, e) {
 		    const el = this.el
@@ -181,7 +194,10 @@
 		    this.handle.setAttribute('aria-grabbed','false')
 		    document.removeEventListener('mouseup', events.mouseup, false)
 		    document.removeEventListener('mousemove', events.mousemove, false)
+		    is_not_dragging(this.el)
 	    }
+	
+	    
 	
 	    // touch events
 	    function touchstart(e) {

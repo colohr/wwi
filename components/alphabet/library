@@ -1,0 +1,5 @@
+library = {}
+library.id = 'alphabet-component'
+library.elements = [
+	{ path:'bar.html', name:'alphabet-bar'}
+]

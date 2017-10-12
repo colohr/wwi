@@ -8,7 +8,7 @@
         }
 
         [view]{
-	        background:var(--dark);
+	        background:white;
 	        max-height:100%;
 	        overflow-y:auto;
         }
@@ -32,16 +32,19 @@
 	    }
 
 	    [gradient]{
-		    height:60px;
+		    height:100px;
 		    width: 100%;
 		    overflow: hidden;
+		    position: sticky;
+		    top:0;
+		    z-index: 2;
 	    }
 
 	    [preview]{
 		    position: relative;
 		    box-sizing: border-box;
 		    background-color: transparent;
-		    border-radius: 7px;
+		    border-radius: 0;
 
 	    }
 
@@ -82,10 +85,11 @@
 	    }
     </style>
 	<div view gui horizontal wrap>
+		<div gradient>
+			<canvas preview></canvas>
+		</div>
 		<content-menu grid multi no-header id="colors">
-			<div gradient slot="header">
-				<canvas preview></canvas>
-			</div>
+
 		</content-menu>
 		<div tools gui vertical>
 			<button preview-button aria-selected="true">BOX</button>
@@ -134,17 +138,18 @@
 		        colors = colors.filter(color=>selected_colors.includes(color))
 		        for(let color of selected_colors) if(!colors.includes(color)) colors.push(color)
 		        this.current_colors = colors
-		        gradient(this.preview,this.gradient_size,colors)
+//		        gradient(this.preview,this.gradient_size,colors)
+		        gradient(this.preview,colors)
 	        }
 	        get palette_options(){ return {number_of_items:3} }
 	        get preview(){ return this.query('[preview]') }
 	        resize_preview(height){
-		        this.gradient_size={ height:height || this.gradient.clientHeight, width:this.gradient.clientWidth }
-		        let size = this.gradient_size
+
 		        let preview = this.preview
-		        preview.height = size.height
-		        preview.width = size.width
-		        if(this.current_colors) gradient(this.preview,size,this.current_colors)
+		        preview.height = this.gradient.clientHeight
+		        preview.width = this.gradient.clientWidth
+//		        if(this.current_colors) gradient(this.preview,size,this.current_colors)
+		        if(this.current_colors) gradient(this.preview,this.current_colors)
 	        }
 	        small_preview(event){
 
@@ -170,44 +175,12 @@
 		    }
 	    }
 
-	    function gradient(canvas,size,colors){
-		    let ctx = canvas.getContext('2d')
-		    let width = size.width
-		    let g1 = ctx.createLinearGradient(0, 0, width, 0);
-		    ctx.clearRect(0,0,width,size.height)
-
-		    let increment = 1/colors.length
-		    for(let i=0;i<colors.length;i++){
-		    	let color = colors[i]
-			    let position = i * increment
-			    g1.addColorStop(position,color);
-		    }
-//		    g1.addColorStop(0,"magenta");
-//		    g1.addColorStop(0.5,"yellow");
-//		    g1.addColorStop(1,"black");
-//		    ctx.fillStyle = g1;
-//		    ctx.strokeStyle = "red";
-//		    ctx.lineWidth = 10;
-//		    ctx.fillRect(0, 0, 50, 50);
-//		    ctx.strokeRect(0, 0, 50, 50);
-
-//		    var g2 = ctx.createRadialGradient(350, 100, 0, 350, 100, 200);
-//		    g2.addColorStop(0,"magenta");
-//		    g2.addColorStop(0.5,"yellow");
-//		    g2.addColorStop(1,"black");
-//		    ctx.fillStyle = g2;
-//		    ctx.fillRect(250,0,200,200);
-//		    ctx.strokeRect(250,0,200,200);
-
-		    let pattern = ctx.createPattern(canvas, "repeat");
-		    ctx.fillStyle = pattern;
-		    ctx.fillRect(0,0,width,size.height);
-		    ctx.lineWidth = 20;
-		    ctx.strokeStyle = g1;
-		    ctx.strokeRect(0,0,width,size.height);
-		    ctx.fill();
-		    return pattern
+	    function gradient(element,colors){
+	    	let canvas = fxy.require('art/canvas')
+		    canvas.gradient_border(canvas.element(element),colors)
 	    }
+
+
 
     })(document)
 </script>

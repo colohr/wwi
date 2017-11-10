@@ -5,9 +5,8 @@
 			--close-button-background:var(--button-background,var(--silver-dark));
 			--close-button-color:var(--button-color,white);
 			box-sizing: border-box;
-			display: none;
+			display: block;
 			cursor: default;
-			opacity: 0;
 			outline:none;
 			height: var(--drawer-height,auto);
 			max-height:100vh;
@@ -15,28 +14,30 @@
 			pointer-events: none;
 			top:var(--drawer-top,0);
 			transform: translate3d(0,0,0);
-			transition-property: transform;
-			transition-duration: 200ms;
-			transition-timing-function: ease-in-out;
 			transform-style: preserve-3d;
 			-webkit-user-select: none;  -moz-user-select: none;  -ms-user-select: none;  user-select: none;
 			width: var(--drawer-width,300px);
+			animation-name: drawer-closed;
+			animation-duration: var(--drawer-duration, 240ms);
+			animation-timing-function: var(--drawer-timing, ease-in-out);
+			animation-fill-mode: forwards;
 			will-change: transform;
 		}
 
 
 		:host([transitioning]){
 			-webkit-backface-visibility: visible;  backface-visibility: visible;
-		}
-		:host([aria-expanded="true"]){
-			display: block;
-			opacity: 1;
-			pointer-events: auto;
 			z-index: var(--drawer-z,10);
 		}
+
+		:host([opened]){
+			pointer-events: auto;
+			z-index: var(--drawer-z,10);
+			animation-name:drawer-open;
+		}
+
 		:host([floating]){
 			border-radius: var(--drawer-radius,8px);
-
 			--drawer-top:6px;
 			--drawer-bottom:6px;
 			--drawer-right:6px;
@@ -57,6 +58,8 @@
 			bottom:initial;
 			top:var(--drawer-top,0);
 		}
+
+
 
 
 		[container]{
@@ -105,23 +108,62 @@
 			border-width: 0 0 0 3px;
 		}
 
+		:host::before{
+			content:'';
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			box-shadow: 0 1px 8px var(--shadow-color);
+			border-radius: inherit;
+		}
+
+		:host([left]:not([floating]))::before{
+			box-shadow: 1px 3px 5px -1px var(--shadow-color);
+		}
+
+		:host([right]:not([floating]))::before{
+			box-shadow: -1px 3px 5px -1px var(--shadow-color);
+		}
+
+		@keyframes drawer-open {
+			0%{
+				transform: translate3d(var(--drawer-x,0),var(--drawer-y,0),0);
+			}
+			100%{
+				transform: translate3d(0,0,0);
+			}
+		}
+		@keyframes drawer-closed {
+			0%{
+				transform: translate3d(0,0,0);
+			}
+			100%{
+				transform: translate3d(var(--drawer-x,0),var(--drawer-y,0),0);
+			}
+		}
+
+
+	</style>
+	<style>
 
 
 		[close]{
 			-webkit-appearance:none; appearance:none;
 			-webkit-backface-visibility: hidden;  backface-visibility: hidden;
-			background: var(--close-button-background);
+			color:var(--close-button-background);
+			background: var(--close-button-color);
 			border:0 solid transparent;
 			border-radius: 100px;
-			box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+			box-shadow: 0 0 6px rgba(0,0,0,0.2);
 			box-sizing: border-box;
 			cursor: pointer;
-			color:var(--close-button-color);
+			text-shadow:0 0 0 rgba(40,40,60,0.35);
 			height: 25px;
 			opacity:0;
 			outline:none;
 			position: absolute;
-			text-shadow:0 0 8px rgba(40,40,60,0.35);
 			top:-9px;
 			left:-9px;
 			transition:opacity 180ms ease, transform 200ms ease;
@@ -158,8 +200,13 @@
 		[close]:focus{
 			color:var(--close-button-background);
 			background: var(--close-button-color);
-			box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+			box-shadow: 0 0 8px rgba(0,0,0,0.45);
 			text-shadow:0 0 0 rgba(40,40,60,0.35);
+
+
+		}
+		[close]:focus{
+			box-shadow: 0 0 8px rgba(0,0,0,0.45), 0 0 0 1px var(--close-button-background);
 		}
 
 		[close]:active{
@@ -175,21 +222,21 @@
 			background-color: rgba(13, 15, 17, 0.5);
 		}
 
-		:host([aria-expanded="true"]:not([transitioning])) [close]{
+		:host([opened]:not([transitioning])) [close]{
 			opacity:1;
 		}
 
-		:host([aria-expanded="true"][left]:not([transitioning])) [close]{
+		:host([opened][left]:not([transitioning])) [close]{
 			transform:translate(0,0) scale(1,1);
 		}
 
-		:host([aria-expanded="true"][right]:not([transitioning])) [close]{
+		:host([opened][right]:not([transitioning])) [close]{
 			transform:rotate(180deg) translate(0,0) scale(1,1);
 		}
-		:host([aria-expanded="true"][top]:not([transitioning])) [close]{
+		:host([opened][top]:not([transitioning])) [close]{
 			transform:rotate(90deg) translate(0,0) scale(1,1);
 		}
-		:host([aria-expanded="true"][bottom]:not([transitioning])) [close]{
+		:host([opened][bottom]:not([transitioning])) [close]{
 			transform:rotate(-90deg) translate(0,0) scale(1,1);
 		}
 
@@ -203,28 +250,6 @@
 		:host([hide-close-button]) [close]:focus{
 			opacity:1;
 		}
-
-
-		:host::before{
-			content:'';
-			position: absolute;
-			top:0;
-			left:0;
-			right:0;
-			bottom:0;
-			box-shadow: 0 1px 8px var(--shadow-color);
-			border-radius: inherit;
-		}
-
-		:host([left]:not([floating]))::before{
-			box-shadow: 1px 3px 5px -1px var(--shadow-color);
-		}
-
-		:host([right]:not([floating]))::before{
-			box-shadow: -1px 3px 5px -1px var(--shadow-color);
-		}
-
-
 	</style>
 
 
@@ -232,13 +257,10 @@
 	<button aria-label="Collapse menu" close tabindex="0" role="button" title="Collapse menu">
 		<div arrow>&leftarrow;</div>
 	</button>
-
-
 </template>
 <script id="content-drawer">
 	((doc)=>{
 		const Drawer = wwi.element(doc)
-
 		Drawer(class extends Drawer.Element{
 			constructor(){
 				super({
@@ -253,18 +275,24 @@
 			changed(name,old,value){
 				switch(name){
 					case 'opened':
+						this.transitioning = true
 						if(value === null) set_closed(this)
 						else set_opened(this)
+						break
+					case 'bottom':
+					case 'right':
+					case 'top':
+					case 'left':
+						set_element_position(this)
 						break
 				}
 			}
 			get close_button(){ return this.query('button[close]') }
 			connected(){
-				this.addEventListener('transitionend', this.transition_ended.bind(this), false)
+				set_element_position(this)
+				this.addEventListener('animationend', this.transition_ended.bind(this), false)
 				this.close_button.onclick = e => this.opened=false
 				this.addEventListener('mousedown',prevent_mouse_down,false)
-				this.closed_style = get_closed_transform(this)
-				this.style.transform = this.closed_style
 				this.opened=false
 			}
 			get container() {return this.shadowRoot.querySelector('#container')}
@@ -278,16 +306,15 @@
 				}
 				return this
 			}
-
 			toggle(){
 				if(this.opened) this.opened=false
 				else this.opened = true
 				return this
 			}
-
 			transition_ended() {
-				if (!this.opened) this.setAttribute('aria-expanded','false')
 				this.transitioning = false
+				this.aria.hidden = !this.opened
+				this.tabIndex = this.opened ? '':'-1'
 				this.dispatch('transition',{opened:this.opened, get closed(){ return !this.opened }})
 			}
 		})
@@ -304,18 +331,23 @@
 			let code = event.keyCode || event.which
 			if(code === 27) close_app_drawer()
 		}
-		function get_closed_transform(element){
-			let x = 0
-			let y = 0
+
+		function set_element_position(element){
 			let vertical = null
-			if(element.top) vertical = 'top'
-			else if(element.bottom) vertical = 'bottom'
 			let horizontal = null
+			let x = 0
 			if(element.left) horizontal = 'left'
 			else if(element.right) horizontal = 'right'
+			if(element.top) vertical = 'top'
+			else if(element.bottom) vertical = 'bottom'
+
 			if(horizontal) x = horizontal === 'left' ? -110:110
 			if(vertical) y = vertical === 'top' ? -110:110
-			return `translate3d(${x}%,${y}%,0)`
+
+			element.design.value.drawer_x = `${x}%`
+			element.design.value.drawer_y = `${y}%`
+
+			return element
 		}
 		function prevent_mouse_down(e){
 			if(e.stopPropagation) e.stopPropagation()
@@ -323,8 +355,6 @@
 			return false
 		}
 		function set_closed(element){
-			element.transitioning = true
-			element.style.transform = element.closed_style
 			element.set_tabindex(false)
 			if(element.hasAttribute('app-drawer')){
 				window.removeEventListener('mousedown',close_app_drawer,false)
@@ -337,17 +367,11 @@
 				window.clearTimeout(element.timer)
 				delete element.timer
 			}
-			element.transitioning = true
-			element.setAttribute('aria-expanded','true')
 			element.set_tabindex(true)
 			if(element.hasAttribute('app-drawer')){
 				window.addEventListener('mousedown',close_app_drawer,false)
 				window.addEventListener('keyup',close_app_drawer_by_key,false)
 			}
-			element.timer = window.setTimeout(() => {
-				element.style.transform = 'translate3d(0,0,0)'
-				delete element.timer
-			},100)
 			return element
 		}
 

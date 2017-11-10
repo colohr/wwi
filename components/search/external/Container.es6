@@ -51,6 +51,7 @@
 			    let buttons = get_buttons()
 			    for(let button of buttons) search_element.appendChild(button)
 			    element.view.appendChild(search_element)
+			    //<a class="algolia-docsearch-footer--logo">WWI</a>
 			    return search_element
 		    }
 		    function get_buttons(){

@@ -23,6 +23,7 @@
 		        editor.foldCode(position)
 		        return this
 	        }
+	        refresh(){ return this.code.mirror.refresh() }
 	        resize(name){ return resize(this,name) }
 	        get value(){return this.code.getValue()}
 	        set value(text){ return this.code.setValue(text)}
@@ -64,6 +65,7 @@
 			    if(initial_value.length) element.value = initial_value
 		    },200)
 	    }
+	    
 	    function resize(element,name){
 		    let size = element.size
 		    if (element.hasAttribute('lines')) element.code.size = [size.width, size.height]

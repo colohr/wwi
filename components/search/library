@@ -1,17 +1,21 @@
 library = {}
 library.id = 'search-library'
 library.logic = [
-	'logic/Result.es6'
+	'logic/Data.es6'
+	
+	//'logic/Result.es6'
 ]
 library.elements = [
-	'result.html',
+	'components/suggestion.html',
+	'components/results.html',
 	{
-		path:'results.html',
-		wait:['search-result']
-	},
-	{
-		path:'component.html',
+		path:'components/component.html',
 		wait:['search-results']
 	}
 ]
 library.wait = ['search-component']
+
+//{
+//	path:'results.html',
+//		wait:['search-result']
+//},

@@ -1,6 +1,6 @@
 @import "../../../modules/wwi/component/design/host.css";
 :host{
-    --color:var(--watermelon);
+    --color:var(--navigator-color,var(--watermelon));
     --background:rgba(255,255,255,0.1);
     --focus-shadow:inset 0 -1px 3px rgba(0,0,0,0.35),inset 0 0 0 1.5px var(--color);
     --button-width:var(--width,30px);

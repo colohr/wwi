@@ -57,6 +57,9 @@
 			return Transitions.example(this)
 		}
 		index(page){ return this.pages.indexOf(page) }
+		notify(detail){
+			this.element.dispatchEvent(new CustomEvent('page',{bubbles:true,composed:true,detail}))
+		}
 		get options(){ return {flip: this.element.hasAttribute('transition-flip'), direction:this.element.getAttribute('transition-direction'), type:this.element.getAttribute('transition-type')} }
 		get pages() { return Array.from(this.view.querySelectorAll('[transition-page]')) }
 		get pagination(){
@@ -170,6 +173,7 @@
 		animation.present(next,'next')
 		return add_page_events(transitions,current,next)
 	}
+	
 	function go_to(transitions,index,page){
 		if(fxy.is.text(index)) index = parseInt(index)
 		if(!fxy.is.number(index) || index <= -1) return
@@ -194,6 +198,7 @@
 		reset(out_page, in_page)
 		out_page.removeAttribute('current-page')
 		transitions.animating = false
+		transitions.notify({out_page,in_page})
 		return transitions
 	}
 	

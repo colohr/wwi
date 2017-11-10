@@ -1,0 +1,156 @@
+<template id="search-suggestion">
+    <style>
+        @import "modules/wwi/component/design/host.css";
+
+        :host {
+	        position: relative;
+	        display: block;
+	        border-top: solid 1px #F3F3F3;
+	        color: #5d6d88;
+	        border-right: 1px solid #EDEDED;
+			z-index: 0;
+        }
+
+        :host(:first-of-type) {
+	        border-top: none;
+        }
+
+        [view] {
+	        cursor: pointer;
+	        overflow: hidden;
+	        display: table;
+	        width: 100%;
+	        transition:all 0.3s ease;
+        }
+
+        [view]:hover {
+	        background: #f8f4f8;
+        }
+        [view]:active {
+	        background: #f8f4f8;
+	        filter:brightness(95%);
+        }
+
+        [content]:hover {
+	        color: var(--result-color);
+        }
+        [view]:active [content]{
+	        filter:brightness(90%);
+        }
+
+        [column] {
+	        background: #ecebf0;
+	        display: table-cell;
+	        overflow: hidden;
+	        padding: 7px 7px 5px 5px;
+	        text-align: right;
+	        text-overflow: ellipsis;
+	        vertical-align: top;
+	        width: 135px;
+	        max-width: 135px;
+	        min-width: 135px;
+	        cursor: default;
+	        font-weight: 300;
+	        color: #999ba6;
+	        font-size: 13px;
+	        line-height: 18.2px;
+	        border: none;
+        }
+
+        [column-text] {
+	        display: block
+        }
+
+        [content] {
+	        display: table-cell;
+	        padding: 5px 10px 8px 10px;
+	        border: none;
+        }
+
+
+
+        [content-inline] {
+	        display: none;
+	        font-weight: 700
+        }
+
+        [content-inline]:after {
+	        content: " › ";
+        }
+
+        [content-title] {
+	        display: inline;
+	        font-weight: 600;
+	        font-size: 14px;
+        }
+
+        [content-text] {
+	        display: block;
+	        font-weight: 400;
+	        font-size: 12px;
+        }
+
+        [category-header] .algolia-docsearch-suggestion--highlight {
+	        color: inherit;
+	        background: #5b6a85;
+        }
+
+        [highlight] {
+	        background-color: var(--result-color);
+	        color: white;
+	        padding: 0.5px 1.25px 0 1.25px;
+	        border-radius: 2px;
+	        margin-left:0.5px;
+	        margin-right:0.5px;
+        }
+
+    </style>
+	<div view secondary style="white-space: normal;">
+
+		<div wrapper>
+			<div column>
+				<span column-text>
+					${category}
+				</span>
+			</div>
+			<div content>
+				<div content-inline>
+					<!--Serving over HTTP-->
+					${category}
+				</div>
+				<div content-title>
+					${name}
+					<!--HTTP Methods, Headers, and Body<span class="aa-suggestion-title-separator" aria-hidden="true"> › </span>POST request-->
+				</div>
+				<div content-text>
+					${description}
+					<!--In <span highlight>add</span>ition to the above, we recommend supporting two <span highlight>add</span>itional…-->
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+    (function(doc){
+        const SearchSuggestion = wwi.element(doc).extension({module:'behavior',name:'Bind'})
+        SearchSuggestion(class extends SearchSuggestion.Element{
+            connected(){
+            	this.setAttribute('role','option')
+	            this.setAttribute('aria-selected','false')
+	            if(this.data) this.bind(this.data)
+	            this.onclick = e=>{
+            		this.dispatch('select',this)
+	            }
+            }
+	        deselect(){
+		        this.setAttribute('aria-selected','false')
+		        return this
+	        }
+	        select(){
+		        this.setAttribute('aria-selected','true')
+		        return this
+	        }
+            get selected(){ return this.getAttribute('aria-selected') === 'true' }
+        })
+    })(document)
+</script>

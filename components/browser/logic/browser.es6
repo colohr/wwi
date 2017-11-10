@@ -1,4 +1,4 @@
-wwi.exports('browser',(browser,fxy)=>{
+window.fxy.exports('browser',(browser,fxy)=>{
 
 	browser.Mix = Base => class extends fxy.uid.Mix(Base){
 		get sections(){ return  browser.types.sections(this) }

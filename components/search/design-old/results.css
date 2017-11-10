@@ -1,0 +1,59 @@
+@import "../../../modules/wwi/component/design/host.css";
+
+
+
+.algolia-docsearch-suggestion {
+    color: #333;
+    cursor: pointer;
+    overflow: hidden
+}
+
+.algolia-docsearch-suggestion__secondary {
+    border-top: 1px solid #3a3a3a
+}
+
+.algolia-docsearch-suggestion--category-header {
+    display: none;
+    background: #3c4658;
+    color: #fff;
+    font-weight: 600;
+    padding: 5px 10px;
+    text-align: left
+}
+
+.algolia-docsearch-suggestion__main .algolia-docsearch-suggestion--category-header {
+    display: block
+}
+
+.algolia-docsearch-suggestion--highlight {
+    padding: 0;
+    color: #0064e1;
+    background: none;
+    font-weight: 600
+}
+
+.algolia-docsearch-suggestion--category-header .algolia-docsearch-suggestion--highlight {
+    color: inherit;
+    background: #5b6a85
+}
+
+.aa-cursor .algolia-docsearch-suggestion--content {
+    color: #0064e1
+}
+
+.aa-cursor .algolia-docsearch-suggestion {
+    background: #e7edf3
+}
+
+.algolia-docsearch-suggestion__main .algolia-docsearch-suggestion--content,
+.algolia-docsearch-suggestion__secondary .algolia-docsearch-suggestion--content {
+    border-top: 0
+}
+
+
+
+
+
+
+
+

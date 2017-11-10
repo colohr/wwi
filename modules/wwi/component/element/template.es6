@@ -45,12 +45,4 @@ window.fxy.exports('element',( element, fxy ) => {
 		return element.shadow
 	}
 	
-	//element.dom_template = Base => class extends Base{
-	//	get dom_template_element(){ return this.query('dom-template') }
-	//	get tag(){ return fxy.tag }
-	//	render(data){
-	//		return this.dom_template_element.render(data,this.dom_template,this.dom_style)
-	//	}
-	//}
-	
 })

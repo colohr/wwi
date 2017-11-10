@@ -1,9 +1,0 @@
-library = {}
-library.id = 'mighty-list-library'
-library.elements = [
-	'components/icon.html',
-	'components/leaf.html',
-	'components/list.html'
-]
-
-library.when = ['mighty-list']

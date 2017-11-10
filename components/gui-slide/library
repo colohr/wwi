@@ -1,0 +1,8 @@
+library.id='gui-slide'
+library.logic = [
+	'logic/slide.es6'
+]
+library.elements = [
+	'components/slider.html',
+	'components/lock.html'
+]

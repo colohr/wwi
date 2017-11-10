@@ -1,7 +1,7 @@
-@import "../component/design/host.css";
 @import "../component/design/app.css";
 @import "action-item.css";
 :host {
+    contain: content;
     --bar-height: 20px;
     --menu-sides-offset:14px;
     display: block;
@@ -14,8 +14,10 @@
 }
 
 [app-drawer] {
-    background: var(--drawer-background,var(--bar-color,whitesmoke));
+    visibility: hidden;
+    background: var(--drawer-background,var(--bar-color,var(--grape)));
 }
+:host([role="application"]) [app-drawer] { visibility: visible;  }
 
 [app-drawer-button]{
     color:var(--text);
@@ -61,9 +63,11 @@
 [app-drawer] [grid]{
     padding-bottom:5px;
 }
+
 [app-drawer] [grid] [action-item]{
     margin:0 0 5px 5px;
 }
+
 [app-drawer] [action-item][slot="footer"]{
     font-size: 12px;
     margin-top:3px;
@@ -71,4 +75,7 @@
     transition:opacity 200ms, box-shadow 200ms;
     will-change: opacity, box-shadow;
 }
+
+[app-pages] [bg] {  background: var(--day-50);  }
+
 

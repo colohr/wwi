@@ -1,4 +1,4 @@
-wwi.exports('media',(media,fxy)=>{
+window.fxy.exports('media',(media,fxy)=>{
 	const is = fxy.is
 	const metakeys = {
 		"APIC": {},

@@ -14,9 +14,9 @@ function wwi_get_fxy(element, export_base, port_module, window){
 		location:get_location(),
 		remote:window.location.host.includes('localhost') === false
 	}
-	data.base_element = get_base()
+	
 	//return value
-	return get_modules().then(_=>export_base(port_module,window)).catch(console.error)
+	return load()
 	//shared action
 	function get_fxy(){ return window.fetch(`${data.location}/${data.modules}/fxy/fxy.es6`).then(response=>response.text()).then(fxy_script=>window.eval(fxy_script)(`${data.location}/${data.modules}`)) }
 	function get_modules(){return new Promise((success,error)=>get_fxy().then(_=>get_url()).then(success).catch(error))}
@@ -49,6 +49,15 @@ function wwi_get_fxy(element, export_base, port_module, window){
 		}
 		return base_element
 	}
+	function load(){
+		data.base_element = get_base()
+		let semantic_url = data.element.getAttribute('src').replace('code.es6','semantic.js')
+		let wwi_semantic = document.createElement('script')
+		wwi_semantic.setAttribute('wwi-static','')
+		wwi_semantic.src = semantic_url
+		window.document.head.appendChild(wwi_semantic)
+		return get_modules().then(_=>export_base(port_module,window)).catch(console.error)
+	}
 },
 function wwi_get_kit(port_module,window){
 	//return value
@@ -56,8 +65,9 @@ function wwi_get_kit(port_module,window){
 	//shared actions
 	function setup(){
 		let kit = window.kit
-		kit.base.element.setAttribute('wwi-port-load','')
+		kit.base.element.setAttribute('wwi-code-load','')
 		kit.javascript = kit.base.element.src.includes('es6') ? 'es6':'js'
+		window.dispatchEvent(new CustomEvent('fxy'))
 		return port_module(...[ window.fxy.dom.query, window.fxy.port, window.fxy.file, window ])
 	}
 },

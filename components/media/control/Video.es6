@@ -1,4 +1,4 @@
-window.fxy.exports('media',(Media,fxy)=>{
+window.fxy.exports('media',(Media)=>{
 	//exports
 	Media.Video = Base => class extends Base{
 		changed(name,old,value){

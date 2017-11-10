@@ -5,33 +5,22 @@ window.fxy.exports('dom',(dom,fxy)=>{
 			this.name = name
 			this.type = type || 'page'
 			this.extension = extension || 'html'
-			this.element = element
-			let loads = this.element.hasAttribute('load') ? this.element.getAttribute('load'):null
-			this.loads = loads ? get_list(loads).map(source=>source.includes('http')?source:window.url(source)):[]
-			let wait = this.element.hasAttribute('wait') ? this.element.getAttribute('wait'):null
-			this.waits = wait ? get_list(wait):[]
+			if(fxy.is.element(element)){
+				this.element = element
+				let loads = this.element.hasAttribute('load') ? this.element.getAttribute('load'):null
+				this.loads = loads ? get_list(loads).map(source=>source.includes('http')?source:window.url(source)):[]
+				let wait = this.element.hasAttribute('wait') ? this.element.getAttribute('wait'):null
+				this.waits = wait ? get_list(wait):[]
+			}
+			else this.not_found = true
 		}
 		get active() { return this.element.hasAttribute('active') }
 		set active(active) { return active !== true ? this.element.removeAttribute('active'):this.element.setAttribute('active','') }
-		close(container,next,preloaded) {
-			if(preloaded === true) {
-				set_active(this,false,preloaded)
-				return this
-			}
-			if('will_close_page' in container) container.will_close_page(this,next).then(_=>set_active(this,false)).catch(console.error)
-			else set_active(this,false)
-			return this
-		}
+		close(container,...x) { return will_page(this,'close',container,...x) }
 		get data() { return get_data(this) }
-		open(container,last) {
-			if('will_open_page' in container) container.will_open_page(this,last).then(_=>set_active(this,true)).catch(console.error)
-			else set_active(this,true)
-			return this
-		}
+		open(container,...x) { return will_page(this,'open',container,...x) }
 		get title(){ return this.element.hasAttribute('page-title') ? this.element.getAttribute('page-title'):fxy.id.proper(module.name) }
-		preload(router){
-			return load_module(router,this.name,true)
-		}
+		preload(router){ return load_module(router,this.name,true) }
 	}
 	
 	class Router extends Map {
@@ -71,11 +60,10 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		}
 		get loading(){ return this.element.loading }
 		set loading(value){ this.element.loading = value }
-		on_error(e){
-			console.groupCollapsed('ModuleRouter Error')
-			console.error(`route type: "${this.type}" is not in route event detail`)
+		on_error(e,reason){
+			console.groupCollapsed('Router Error')
+			console.log('Reason -> ',reason || 'Loading module.')
 			console.error(e)
-			console.dir(this)
 			console.groupEnd()
 		}
 		on_route(e) { return on_route(this,e) }
@@ -121,6 +109,7 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		let module = element.get_module(name)
 		//return value
 		return new Promise((success, error) => {
+			if(module.not_found) return error(module,'Page not found')
 			if ('loaded' in module) return module.loaded === true ? success(module) : error(module)
 			return get_element().then(_=>success(module)).catch(_=>error(module))
 		})
@@ -164,5 +153,20 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		})
 		return element
 	}
+	
+	function will_page(page,type,container,last,preloaded){
+		let promised = false
+		let action = `will_${type}_page`
+		let activate = type === 'open'
+		if(action in container) {
+			let notifier = container[action](page,last)
+			promised=fxy.is.instance(notifier,Promise)
+			if(promised) notifier.then(_=>set_active(page,activate,preloaded)).catch(console.error)
+		}
+		if(!promised) set_active(page,activate,preloaded)
+		return page
+	}
+	
+	
 })
 

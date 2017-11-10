@@ -34,7 +34,9 @@
 				default:
 					if(value === null && name in field){
 						value = field[name]
-						if(typeof value === 'function') value = value.bind(field)
+						if(typeof value === 'function' && typeof value.bind === 'function') {
+							value = value.bind(field)
+						}
 					}
 					break
 			}

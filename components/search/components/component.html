@@ -24,15 +24,28 @@
 			animation:slide-up 250ms forwards;
 		}
 
+		:host::before{
+			content:'';
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			background:var(--navigator-background,rgba(255,255,255,0.4));
+			z-index: -1;
+		}
+
 		[view]{
 			max-height:none;
 			padding-left:10px;
 			padding-right:10px;
 			max-width: calc(100% - 20px);
+			z-index: 1;
 		}
 
 		input:focus{
-			box-shadow:0 0 1px 2px var(--color,var(--tangerine));
+			box-shadow:0 0 0.5px var(--color,var(--azul-bright));
+			border-color:var(--color,var(--azul-bright));
 		}
 		[buttons]{
 			display: inline-block;
@@ -101,69 +114,88 @@
 			get button(){ return get_button(this) }
 			set button(value){ return set_button(this,value)}
 			get close_button(){ return this.slots['close-button'].item }
-			connect(controller){}
 			connected(){
-
-
-				this.input.onkeyup = e => !this.empty ? this.timeout(()=>this.dispatch('search',this.keywords)):false
-				this.input.onsearch = e => this.timeout(()=>this.dispatch('search',this.keywords))
+				this.input.onkeyup = e => !this.empty ? this.timeout(()=>this.dispatch('search',this.detail())):false
+				this.input.onsearch = e => this.timeout(()=>this.dispatch('search',this.detail()))
 				this.query('slot[name="close-button"]').addEventListener('slotchange',e=>{
 					this.close_button.addEventListener('clear',e=>this.expanded=false)
 					this.close_button.addEventListener('close',e=>this.expanded=false)
 				},false)
 			}
-			get empty(){ return this.value.length <= 0}
-			expand(value){
-				if(value === null){
-					this.parentElement.style.overflow='hidden'
-					this.setAttribute('aria-expanded','false')
-					this.input.setAttribute('tabindex','-1')
-					this.button.style.opacity=1
-					this.timeout(()=>{
-						this.style.display='none'
-						this.parentElement.style.overflow=''
-						this.input.onfocus=null
-					},300)
-					this.dispatch('done')
-					this.results.hide()
+			detail(){
+				return {
+					get create(){ return get_create(this) },
+					keywords:this.keywords
 				}
-				else{
-					this.button.style.opacity=0
-					this.parentElement.style.overflow='hidden'
-					this.style.display=''
-					this.setAttribute('aria-expanded','true')
-					this.input.setAttribute('tabindex','0')
-					this.input.focus()
-					this.dispatch('searching')
-
-					this.timeout(()=>{
-
-						this.results.present(this)
-						this.parentElement.style.overflow=''
-						this.input.onfocus = e => this.expanded && this.results.getAttribute('aria-expanded')!=='true'?this.results.setAttribute('aria-expanded',true):null
-					},350)
-				}
-				return this
 			}
+			get empty(){ return this.value.length <= 0}
+			expand(value){ return value === null ? collapse(this):expand(this) }
 			get input(){ return this.query('input') }
-			get keywords(){ return !this.empty ? this.value.split(' ').map(word=>word.trim().toLowerCase()).filter(word=>word.length):[] }
+			get keywords(){ return !this.empty ? this.value.split(' ').map(word=>word.trim()).filter(word=>word.length):[] }
 			toggle(){
-				if(this.expanded) this.expanded = false
-				else this.expanded = true
+				this.expanded = !this.expanded
 				return this
 			}
 			get value(){ return this.input.value.trim() }
 		})
 		//shared actions
+		function collapse(element){
+			element.parentElement.style.overflow='hidden'
+			element.setAttribute('aria-expanded','false')
+			element.input.setAttribute('tabindex','-1')
+			element.button.style.opacity=1
+			element.timeout(()=>{
+				element.style.display='none'
+				element.parentElement.style.overflow=''
+				element.input.onfocus=null
+			},300)
+			element.dispatch('done')
+			element.results.hide()
+			return element
+		}
+
+		function expand(element){
+			element.button.style.opacity=0
+			element.parentElement.style.overflow='hidden'
+			element.style.display=''
+			element.setAttribute('aria-expanded','true')
+			element.input.setAttribute('tabindex','0')
+			element.input.focus()
+			element.dispatch('searching')
+			element.results.target=element
+			element.timeout(()=>{
+
+				element.parentElement.style.overflow=''
+				element.input.onfocus = on_focus
+			},350)
+
+			//shared actions
+			function on_focus(){
+				if(element.empty) element.results.hide()
+				else{
+					let not_expanded = element.expanded && element.results.getAttribute('aria-expanded') !== 'true'
+					if(not_expanded) element.results.show()
+				}
+
+			}
+		}
+
 		function get_button(element){
 			let symbol = Symbol.for('search button')
 			if(symbol in element) return element[symbol]
 			return null
 		}
+
+		function get_create(element){
+			return new(fxy.require('search/Data'))(element)
+		}
+
 		function set_button(element,button){
 			let symbol = Symbol.for('search button')
 			button.addEventListener('search',e=>element.toggle())
 			return element[symbol] = button
 		}
+
+
 	})(document)
 </script>

@@ -25,7 +25,7 @@
 	    }
 	    function on_scroll_finished(){
 		    delete this.list[scrolling]
-		    this.list.style.pointerEvents = ""
+		    //this.list.style.pointerEvents = ""
 		    this.list.scrolling = false
 		    if('on_scroll' in this.list) this.list.on_scroll()
 		    else this.list.dispatchEvent(new CustomEvent('scroll',{bubbles:false,composed:true,detail:this}))
@@ -33,16 +33,17 @@
 	    
 	    function on_scroll(e) {
 	    	let target = this
-		    target.list.style.pointerEvents = "none !important"
+		    //target.list.style.pointerEvents = "none"
 		    target.list.scrolling = true
 		    if (clear_timer(target.list)) {
 			    window.requestAnimationFrame(function () {
-				    target.list[scrolling] = window.setTimeout(on_scroll_finished.bind(target), 200)
+				    target.list[scrolling] = window.setTimeout(on_scroll_finished.bind(target), 300)
 			    })
 		    }
 	    }
 	    function bind_scroll(list,element){
 	    	if(!element) element = list
+		    
 		    element.addEventListener('scroll', on_scroll.bind({list,element}), false)
 		    return true;
 	    }

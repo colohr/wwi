@@ -1,0 +1,15 @@
+<template id="gui-slider">
+	<style>
+		@import "components/gui-slide/design/slide.css";
+	</style>
+
+	<div gui-slide bar>
+		<div gui-slide handle></div>
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const Slider = wwi.element(doc).extension({module:'gui-slide',name:'Slider'})
+		Slider(class extends Slider.Element {})
+	})(document)
+</script>

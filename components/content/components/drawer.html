@@ -1,0 +1,384 @@
+<template id="content-drawer">
+	<style>
+		:host{
+			--shadow-color:rgba(0,0,0,0.18);
+			--close-button-background:var(--button-background,var(--silver-dark));
+			--close-button-color:var(--button-color,white);
+			box-sizing: border-box;
+			display: block;
+			cursor: default;
+			outline:none;
+			height: var(--drawer-height,auto);
+			max-height:100vh;
+			position: absolute;
+			pointer-events: none;
+			top:var(--drawer-top,0);
+			transform: translate3d(0,0,0);
+			transform-style: preserve-3d;
+			-webkit-user-select: none;  -moz-user-select: none;  -ms-user-select: none;  user-select: none;
+			width: var(--drawer-width,300px);
+			animation-name: drawer-closed;
+			animation-duration: var(--drawer-duration, 240ms);
+			animation-timing-function: var(--drawer-timing, ease-in-out);
+			animation-fill-mode: forwards;
+			will-change: transform;
+		}
+
+
+		:host([transitioning]){
+			-webkit-backface-visibility: visible;  backface-visibility: visible;
+			z-index: var(--drawer-z,10);
+		}
+
+		:host([opened]){
+			pointer-events: auto;
+			z-index: var(--drawer-z,10);
+			animation-name:drawer-open;
+		}
+
+		:host([floating]){
+			border-radius: var(--drawer-radius,14px);
+			--drawer-top:6px;
+			--drawer-bottom:6px;
+			--drawer-right:6px;
+			--drawer-left:6px;
+			max-height:calc(100vh - 12px);
+		}
+		:host([left]){
+			left:var(--drawer-left,0);
+		}
+		:host([right]){
+			right:var(--drawer-right,0);
+		}
+		:host([bottom]){
+			top:initial;
+			bottom:var(--drawer-bottom,0);
+		}
+		:host([top]){
+			bottom:initial;
+			top:var(--drawer-top,0);
+		}
+
+
+
+
+		[container]{
+			box-sizing: border-box;
+			display: block;
+			height: 100%;
+			max-height:100vh;
+			max-width: 100%;
+			overflow: hidden;
+			overflow-y: auto;
+			position: relative;
+			width: 100%;
+		}
+		:host([floating]) [container]{
+			margin-top:2px;
+			margin-bottom:2px;
+			max-height:calc(100vh - 18px);
+		}
+
+		[container]::-webkit-scrollbar {
+			height: 13px;
+			overflow: visible;
+			width: 13px;
+		}
+		[container]::-webkit-scrollbar-button { height: 0;  width: 0; }
+		[container]::-webkit-scrollbar-corner {  background: rgba(0, 0, 0, 0); }
+		[container]::-webkit-scrollbar-thumb {
+			background-color: rgba(255,255,255,.72);
+			background-clip: padding-box;
+			border: solid rgba(0, 0, 0, 0);
+			border-radius: 100px;
+			box-shadow: inset 0 0 0 1px rgba(255,255,255,.1), inset 1px 1px 0 rgba(0,0,0,.1), inset -1px -1px 0 rgba(0,0,0,.1);
+			min-height: 28px;
+			padding: 100px 0 0;
+
+		}
+		[container]::-webkit-scrollbar-track {
+			background-clip: padding-box;
+			border: solid rgba(0, 0, 0, 0);
+			border-width: 0 0 0 4px;
+		}
+		[container]::-webkit-scrollbar-track-piece {
+			background-clip: padding-box;
+			background-color: rgba(245, 245, 245, 0);
+			border: solid rgba(245, 245, 245, 0);
+			border-width: 0 0 0 3px;
+		}
+
+
+
+
+		:host::before{
+			content:'';
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			box-shadow: 0 1px 8px var(--shadow-color);
+			border-radius: inherit;
+		}
+
+		:host([left]:not([floating]))::before{
+			box-shadow: 1px 3px 5px -1px var(--shadow-color);
+		}
+
+		:host([right]:not([floating]))::before{
+			box-shadow: -1px 3px 5px -1px var(--shadow-color);
+		}
+
+		@keyframes drawer-open {
+			0%{
+				transform: translate3d(var(--drawer-x,0),var(--drawer-y,0),0);
+			}
+			100%{
+				transform: translate3d(0,0,0);
+			}
+		}
+		@keyframes drawer-closed {
+			0%{
+				transform: translate3d(0,0,0);
+			}
+			100%{
+				transform: translate3d(var(--drawer-x,0),var(--drawer-y,0),0);
+			}
+		}
+
+
+	</style>
+	<style>
+
+
+		[close]{
+			-webkit-appearance:none; appearance:none;
+			-webkit-backface-visibility: hidden;  backface-visibility: hidden;
+			color:var(--close-button-background);
+			background: var(--close-button-color);
+			border:0 solid transparent;
+			border-radius: 100px;
+			box-shadow: 0 0 6px rgba(0,0,0,0.2);
+			box-sizing: border-box;
+			cursor: pointer;
+			text-shadow:0 0 0 rgba(40,40,60,0.35);
+			height: 25px;
+			opacity:0;
+			outline:none;
+			position: absolute;
+			top:-9px;
+			left:-9px;
+			transition:opacity 180ms ease, transform 200ms ease;
+			width: 25px;
+			will-change:opacity, transform;
+			z-index: 100;
+		}
+
+		[close] [arrow]{
+			font-size:18px;
+			text-align:center;
+			position:absolute;
+			top:2px;left:0;right:0;bottom:0;
+			z-index: 1;
+		}
+
+		:host([right]) [close],
+		:host([button-left]) [close]{
+			top:2px;
+			left:initial;
+			transform:translate(-50px,0) scale(0.5,0.5);
+			right:var(--button-right,calc(100% + 3px));
+		}
+
+		:host([left]) [close],
+		:host([button-right]) [close]{
+			top:2px;
+			left: initial;
+			transform:translate(50px,0) scale(0.5,0.5);
+			right:var(--button-right,-28px);
+		}
+
+		[close]:hover,
+		[close]:focus{
+			color:var(--close-button-background);
+			background: var(--close-button-color);
+			box-shadow: 0 0 8px rgba(0,0,0,0.45);
+			text-shadow:0 0 0 rgba(40,40,60,0.35);
+
+
+		}
+		[close]:focus{
+			box-shadow: 0 0 8px rgba(0,0,0,0.45), 0 0 0 1px var(--close-button-background);
+		}
+
+		[close]:active{
+			box-shadow: 0 0 1px rgba(0,0,0,0.2);
+		}
+
+		[close]:active::before{
+			content: '';
+			position: absolute;
+			top:0;left:0;right:0;bottom:0;
+			border-radius: inherit;
+			z-index: 0;
+			background-color: rgba(13, 15, 17, 0.5);
+		}
+
+		:host([opened]:not([transitioning])) [close]{
+			opacity:1;
+		}
+
+		:host([opened][left]:not([transitioning])) [close]{
+			transform:translate(0,0) scale(1,1);
+		}
+
+		:host([opened][right]:not([transitioning])) [close]{
+			transform:rotate(180deg) translate(0,0) scale(1,1);
+		}
+		:host([opened][top]:not([transitioning])) [close]{
+			transform:rotate(90deg) translate(0,0) scale(1,1);
+		}
+		:host([opened][bottom]:not([transitioning])) [close]{
+			transform:rotate(-90deg) translate(0,0) scale(1,1);
+		}
+
+
+		:host([hide-close-button]) [close]{
+			opacity: 0;
+		}
+		:host([hide-close-button]) [container]:hover [close]{
+			opacity:0.5;
+		}
+		:host([hide-close-button]) [close]:focus{
+			opacity:1;
+		}
+	</style>
+
+
+	<div container><slot id="content-container"></slot></div>
+	<button aria-label="Collapse menu" close tabindex="0" role="button" title="Collapse menu">
+		<div arrow>&leftarrow;</div>
+	</button>
+</template>
+<script id="content-drawer">
+	((doc)=>{
+		const Drawer = wwi.element(doc)
+		Drawer(class extends Drawer.Element{
+			constructor(){
+				super({
+					bottom:true,
+					left:true,
+					opened:true,
+					right:true,
+					top:true,
+					transitioning:true
+				})
+			}
+			changed(name,old,value){
+				switch(name){
+					case 'opened':
+						this.transitioning = true
+						if(value === null) set_closed(this)
+						else set_opened(this)
+						break
+					case 'bottom':
+					case 'right':
+					case 'top':
+					case 'left':
+						set_element_position(this)
+						break
+				}
+			}
+			get close_button(){ return this.query('button[close]') }
+			connected(){
+				set_element_position(this)
+				this.addEventListener('animationend', this.transition_ended.bind(this), false)
+				this.close_button.onclick = e => this.opened=false
+				this.addEventListener('mousedown',prevent_mouse_down,false)
+				this.opened=false
+			}
+			get container() {return this.shadowRoot.querySelector('#container')}
+			get content(){ return this.slots['content-container'].item }
+			set_tabindex(active){
+				let content = this.content
+				if(content){
+					if('set_tabindex' in content) content.set_tabindex(active)
+					content.style.pointerEvents = active ? 'auto':'none'
+					content.setAttribute('aria-disabled',active ? 'false':'true')
+				}
+				return this
+			}
+			toggle(){
+				if(this.opened) this.opened=false
+				else this.opened = true
+				return this
+			}
+			transition_ended() {
+				this.transitioning = false
+				this.aria.hidden = !this.opened
+				this.tabIndex = this.opened ? '':'-1'
+				this.dispatch('transition',{opened:this.opened, get closed(){ return !this.opened }})
+			}
+		})
+
+		//shared actions
+		function close_app_drawer(){
+			if('app' in window && window.app.element){
+				let drawer = window.app.drawer
+				if(drawer) drawer.opened=false
+			}
+		}
+		function close_app_drawer_by_key(event){
+			event.stopPropagation()
+			let code = event.keyCode || event.which
+			if(code === 27) close_app_drawer()
+		}
+
+		function set_element_position(element){
+			let vertical = null
+			let horizontal = null
+			let x = 0
+			let y = 0
+			if(element.left) horizontal = 'left'
+			else if(element.right) horizontal = 'right'
+			if(element.top) vertical = 'top'
+			else if(element.bottom) vertical = 'bottom'
+
+			if(horizontal) x = horizontal === 'left' ? -110:110
+			if(vertical) y = vertical === 'top' ? -110:110
+
+			element.design.value.drawer_x = `${x}%`
+			element.design.value.drawer_y = `${y}%`
+
+			return element
+		}
+		function prevent_mouse_down(e){
+			if(e.stopPropagation) e.stopPropagation()
+			if(e.preventDefault) e.preventDefault()
+			return false
+		}
+		function set_closed(element){
+			element.set_tabindex(false)
+			if(element.hasAttribute('app-drawer')){
+				window.removeEventListener('mousedown',close_app_drawer,false)
+				window.removeEventListener('keyup',close_app_drawer_by_key,false)
+			}
+			return element
+		}
+		function set_opened(element){
+			if('timer' in element) {
+				window.clearTimeout(element.timer)
+				delete element.timer
+			}
+			element.set_tabindex(true)
+			if(element.hasAttribute('app-drawer')){
+				window.addEventListener('mousedown',close_app_drawer,false)
+				window.addEventListener('keyup',close_app_drawer_by_key,false)
+			}
+			return element
+		}
+
+
+		})(document)
+</script>

@@ -5,24 +5,26 @@
     --focus-color:var(--chocolate);
     --menu-item-color: var(--cream-dark);
     --menu-item-focus-color: var(--cream-dark);
+    --anchor-color: var(--cream-bold);
 }
 [app-drawer] [action-item]{
     border-radius: 100px;
     font-weight:900;
-
     background-color: var(--cream-bright);
-
-
 }
+
 [app-drawer]:hover [action-item]{
     background-color: var(--cream-light);
 }
+
 [app-drawer] [grid] [action-item]{
     border-radius: 7px;
     font-weight:200;
+    letter-spacing: 0.04em;
     --menu-item-color:var(--cream-black);
     background-color: rgba(255,255,255,0.3);
 }
+
 [app-drawer]:hover [grid] [action-item]{
     background-color: var(--cream-light);
 }

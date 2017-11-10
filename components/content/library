@@ -1,12 +1,9 @@
 library = {}
 library.elements = [
-	'button/index.html',
-	'menu/index.html',
-	'drawer/index.html',
-	{
-		path:"pages/index.html",
-		wait:['content-menu','content-drawer']
-	}
+	'components/button.html',
+	'components/menu.html',
+	'components/drawer.html',
+	'components/pages.html'
 ]
 
 library.wait = ['content-menu','content-drawer','content-pages']

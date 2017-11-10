@@ -4,14 +4,20 @@
     --drawer-background:var(--water);
     --text:var(--water-black);
     --focus-color:var(--water-dark);
-    --menu-item-background-color: var(--marine-bg);
+    /*--menu-item-background-color: var(--marine-bg);*/
+    --menu-item-background-color:var(--water-bright);
     --menu-item-color: var(--water-light);
-    --menu-item-focus-color: var(--water-dark);
+    --menu-item-focus-color: var(--marine-bg);
 }
 [app-drawer] [action-item]{
-    font-weight:100;
+    border-radius: 5px;
+    font-weight:400;
+    letter-spacing: 0.03em;
+    text-rendering: geometricPrecision;
+    background: transparent;
 }
 [app-drawer] [grid] [action-item]{
     background-color: var(--water-dark);
 }
+
 

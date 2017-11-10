@@ -1,51 +1,61 @@
 <template id="art-gradients">
-    <style>
-        @import "modules/wwi/component/design/host.css";
+	<style>
+		@import "modules/wwi/component/design/host.css";
 
-        :host{
-	        display: block;
-            height:120px;
-	        width:100%;
-	        max-width: 100%;
-            position:relative;
-        }
-        [view]{
-	        height:100%;
-            width:calc(100% - 100px);
-	        max-width: calc(100% - 100px);
-            overflow: hidden;
-            overflow-x:auto;
-	        padding-left:50px;
-	        padding-right:50px;
-	        padding-bottom:10px;
-        }
-	    [gradient]{
-            position: relative;
-		    display: inline-block;
-		    height:100px;
-		    width:100px;
-		    resize: both;
-		    margin:10px;
-		    border-radius: 100px;
-            box-sizing:border-box;
-	    }
-    </style>
-    <div view gui horizontal>
-        <div gradient style="background:var(--marine-bg)"></div>
-        <div gradient style="background:var(--sea-emerald-bg)"></div>
-        <div gradient style="background:var(--blue-cyan-bg)"></div>
-        <div gradient style="background:var(--tangerine-yellow-bg)"></div>
-        <div gradient style="background:var(--purple-fuchsia-bg)"></div>
-        <div gradient style="background:var(--apple-mandarine-bg)"></div>
-        <div gradient style="background:var(--cherry-mandarine-bg)"></div>
-        <div gradient style="background:var(--fuchsia-bg)"></div>
-        <div gradient style="background:var(--indigo-bg)"></div>
-        <div gradient style="background:var(--green-bg)"></div>
-    </div>
+		:host {
+			display: block;
+			height: 120px;
+			width: 100%;
+			max-width: 100%;
+			position: relative;
+		}
+
+		[view] {
+			height: 100%;
+			width: calc(100% - 100px);
+			max-width: calc(100% - 100px);
+			overflow: hidden;
+			overflow-x: auto;
+			padding-left: 50px;
+			padding-right: 50px;
+			padding-bottom: 10px;
+		}
+
+		[gradient] {
+			position: relative;
+			display: inline-block;
+			height: 100px;
+			width: 100px;
+			resize: both;
+			margin: 10px;
+			border-radius: 100px;
+			box-sizing: border-box;
+		}
+	</style>
+	<div view gui horizontal></div>
 </template>
 <script>
-    (function(doc){
-        const ArtGradients = wwi.element(doc)
-        ArtGradients(class extends ArtGradients.Element{})
-    })(document)
+	(function (doc) {
+		const ArtGradients = wwi.element(doc)
+		ArtGradients(class extends ArtGradients.Element {
+			connected() {
+				fxy.doc(window.url('modules/wwi/component/design/css/colors.css'))
+				   .then(colors => {
+					   let names = Array.from(colors.keys()).filter(name => name.includes('-bg'))
+					   for (let name of names) {
+						   let gradient = get_gradient(name)
+						   this.view.appendChild(gradient)
+					   }
+					   //shared actions
+					   function get_gradient(name) {
+						   let element = document.createElement('div')
+						   element.setAttribute('gradient', '')
+						   element.style.background = colors.get(name)
+						   element.title = name
+						   return element
+					   }
+				   })
+			}
+		})
+	})(document)
 </script>

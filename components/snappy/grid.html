@@ -6,6 +6,33 @@
 	        position: relative;
 	        padding:40px;
         }
+
+        :host([show-title]) [grid-item-container]::after{
+
+	        content: attr(title);
+	        background-color: var(--label-background,rgba(0,0,0,0.8));
+	        font-size:10px;
+	        text-align: center;
+	        color:var(--label-color,white);
+	        font-weight: bold;
+	        padding:3px 8px 3px 8px;
+	        margin-top:2px;
+	        margin-left:2px;
+	        border-radius: 100px;
+	        float:left;
+	        display: block;
+			white-space: nowrap;
+	        z-index: -1;
+	        position: relative;
+	        opacity: var(--label-opacity,0.1);
+	        transition:opacity 100ms ease-in-out;
+	        will-change: opacity;
+        }
+
+        :host([show-title]) [grid-item-container]:hover::after{
+	        z-index: 1000;
+	        opacity: 1;
+        }
     </style>
 	<div grid></div>
 </template>

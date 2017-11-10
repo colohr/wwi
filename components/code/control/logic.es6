@@ -48,6 +48,8 @@
 			'css',
 			'javascript',
 			'htmlmixed',
+			'sql',
+			'swift',
 			'xml'
 		]
 	}

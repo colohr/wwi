@@ -225,10 +225,6 @@
 		//exports
 		design.Color = Color
 		design.color = Color.module
-		//design.color = (...x) =>  new Color(...x)
-		//design.color.is =
-		//design.color_names = ()=>color_names
-		//design.color_theme = get_color_theme
 		function get_random_color(options){
 			let skip = fxy.is.data(options) && 'skip' in options ? options.skip:null
 			let keys = Array.from(this.keys())
@@ -250,6 +246,12 @@
 		}
 		
 		function load(){
+			fxy.doc(window.url.component('design/css/colors.css'),'regulate')
+			   .then(set_colors)
+			   .catch(console.error)
+		}
+		
+		function old_load(){
 			let docs = [[url.component('design/css/colors.css'),'regulate'],[url.component('design/css/attr.css'),'design']]
 			fxy.doc(...docs[0]).then(set_colors)
 			   .then(()=>fxy.doc(...docs[1]))

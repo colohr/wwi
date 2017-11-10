@@ -2,11 +2,9 @@
     <style>
 		@import "modules/wwi/component/design/host.css";
 		:host{
-			--navigator-color:var(--squash);
-			--navigator-background:rgba(255,255,255,0.5);
 			--navigator-bottom-border:1px solid var(--gray);
-			--color:var(--navigator-color);
-			background:var(--navigator-background);
+			--color:var(--navigator-color,var(--azul));
+			background:var(--navigator-background,ghostwhite);
 			display: none;
 			height:40px;
 			box-sizing: border-box;
@@ -27,10 +25,14 @@
 		}
 
 		search-component{
-			background:var(--navigator-background);
+			background:var(--navigator-background,ghostwhite);
 			left:90px;
 			--input-left:-45px;
 		}
+		search-component::before{
+			left:-90px;
+		}
+
 		[buttons]{
 			position: relative;
 			width: 90px;
@@ -49,7 +51,7 @@
 		    <navigator-next keep-focus></navigator-next>
 	    </div>
 	    <div center><slot></slot></div>
-	    <div buttons>
+	    <div buttons gui horizontal end-justified>
 		    <slot name="right"></slot>
 	    </div>
     </div>

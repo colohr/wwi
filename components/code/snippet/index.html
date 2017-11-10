@@ -40,7 +40,7 @@
 					['no-wrap'](value){ value !== null ? this.editor.setAttribute('no-wrap',value):this.editor.removeAttribute('no-wrap') }
 				})
 			}
-			get code(){ return this.codes.map(code=>code.innerHTML).join('\n') }
+			get code(){ return this.codes.map(code=>code.innerText).join('\n') }
 			get codes(){ return this.slots.code.items }
 			connected(){
 				this.query('#code').addEventListener('slotchange',(e)=>this.update())

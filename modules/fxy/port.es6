@@ -163,7 +163,7 @@
 				if( exists.promise( success, error ) ){
 					options = element_options( options, identity )
 					let el = element( identity.tag, options )
-					el.setAttribute('from-wwi-port','')
+					el.setAttribute('from-fxy-port','')
 					el.onload = () => {
 						el.setAttribute('did-load','')
 						element_loaded(selector)

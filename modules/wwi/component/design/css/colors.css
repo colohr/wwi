@@ -42,7 +42,9 @@
 	--cream-bright:rgb(250, 235, 215);
 	--cream: #f0dcc7;
 	--cream-dark: #cebaa6;
+	--cream-bold:#cab49e;
 	--cream-black: #b7a391;
+
 
 	--rose-light: rgb(250, 240, 230);
 	--rose-bright:mistyrose;
@@ -89,6 +91,7 @@
 	--teal-bright:#2abfce;
 	--teal: #22a6b5;
 	--teal-dark:#2d9097;
+	--teal-black: #205364;
 
 	--aqua-light: rgb(123, 249, 226);
 	--aqua-bright:rgb(25, 249, 216);
@@ -224,10 +227,11 @@
 
 	--sea-emerald-bg:linear-gradient(135deg, var(--sea-bright) 0%, var(--turquoise) 49%, var(--emerald) 100%);
 
-	/*--marine-bg:radial-gradient(ellipse at center, rgba(42,51,66,1) 18%,rgba(39,47,61,1) 61%,rgba(42,48,61,1) 100%);*/
+	--deep-sea-bg:radial-gradient(ellipse at top,  var(--teal-dark) 0%,  var(--teal-black) 44%,  var(--sea-black) 100%);
 
 	--marine-bg:radial-gradient(ellipse at center, var(--marine-bright) 18%,var(--marine) 61%,var(--marine-dark) 100%);
 
+	--cantaloupe-mandarine-bg:radial-gradient(ellipse at bottom,  var(--cantaloupe) 0%, var(--tangerine-bright) 60%, var(--mandarine) 100%);
 
 	--green-bg:radial-gradient(ellipse at center,  var(--green-light) 13%, var(--green) 47%,  var(--green-dark) 100%);
 

@@ -1,0 +1,248 @@
+<template id="search-results">
+	<style>
+		@import "components/search/design/results.css";
+        @import "modules/wwi/design/scroll.css";
+
+		:host {
+            --result-color:var(--azul);
+			position: fixed;
+			top: 0;
+			z-index: 100;
+			left: 0;
+			display: none;
+            font-weight: 300;
+            color: #42454f;
+            font-size: 14px;
+            line-height: 20px;
+            text-align: left;
+		}
+
+		:host([aria-expanded="true"]) {
+			display: block;
+		}
+
+        [view]{
+            background-color: #fff;
+            max-height: 40vh;
+            min-height: 0;
+            left: var(--input-left, -45px);
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            min-width: 400px;
+            border: none;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+
+        [result-list] {
+            /*position: relative;*/
+            overflow: hidden;
+            overflow-y:scroll;
+        }
+
+        [section-header]{
+            color:var(--result-color);
+            position: sticky;
+            font-weight: 900;
+            padding:0 0 0 8px;
+            top:-1px;
+            z-index: 10;
+            background: white;
+            border-top: 1px solid #EDEDED;
+            border-bottom: 1px solid #EDEDED;
+            border-right: 1px solid #EDEDED;
+            font-size:12px;
+            display: block;
+            z-index: 1;
+        }
+
+        [section-header]:nth-of-type(1){
+            border-top:none;
+            top:0;
+        }
+
+        [section-header] + search-suggestion{
+            border-top:0;
+        }
+
+        header{
+            position: sticky;
+            bottom:0;
+            border-bottom: 1px solid #EDEDED;
+            text-align: right;
+            font-size: 12px;
+            color: #333;
+            padding: 4px 0 4px 0;
+            background: inherit;
+        }
+
+        footer {
+            position: sticky;
+            bottom:0;
+            border-top: 1px solid #EDEDED;
+            text-align: right;
+            font-size: 12px;
+            color: #333;
+            padding: 4px 0 4px 0;
+            background: inherit;
+        }
+
+        footer [logo] {
+            display: inline-block !important;
+            width: 111px;
+            height: 15px;
+            text-indent: 101%;
+            overflow: hidden;
+            white-space: nowrap;
+            background-repeat: no-repeat;
+            background-size: contain;
+            vertical-align: middle;
+            padding: 0 !important
+        }
+
+
+        [close-button]{
+            padding:0;
+            height:18px;
+            min-height: 18px;
+            z-index: 15;
+            margin-right:5px;
+        }
+
+        [close-button] gui-icon{
+            height:18px;
+            width:18px;
+        }
+        [search-title]{
+            padding-left:7px;
+            position: relative;
+            text-align: left;
+        }
+        [search-title] > [search-value]{
+            max-width: calc(100% - (110px));
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            min-width: 200px;
+        }
+
+        header{
+            position: relative;
+            width: 100%;
+        }
+    </style>
+
+	<div view>
+
+        <header gui horizontal center-center>
+            <div gui search-title horizontal start-justified flex-2>
+
+                <div style="width: 67px;opacity:0.5;font-weight: 600">Searching: </div>
+                <div search-value></div>
+            </div>
+            <div gui horizontal center-center flex-5>
+                <slot name="header-center"></slot>
+            </div>
+            <div gui horizontal end-justified flex-2>
+                <slot name="header-right"></slot>
+                <button close-button><gui-icon name="close"></gui-icon></button>
+            </div>
+        </header>
+
+        <div result-list scroll id="options">
+
+        </div>
+
+        <footer gui horizontal center-center>
+            <div gui horizontal start-justified flex-2>
+                <slot name="footer-left"></slot>
+            </div>
+            <div gui horizontal center-center flex-5>
+                <slot name="footer-center"></slot>
+            </div>
+            <div gui horizontal end-justified flex-2>
+                <slot name="footer-right"></slot>
+            </div>
+        </footer>
+
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const SearchResults = wwi.element(doc)
+		SearchResults(class extends SearchResults.Element {
+			get close_button(){ return this.query('[close-button]')}
+			connected() {
+				this.define('routes',{
+					title(value){
+						this.query('[search-value]').innerHTML = value
+                    }
+                })
+				this.setAttribute('bind-target','[result-list]')
+				this.setAttribute('role', 'listbox')
+				this.setAttribute('aria-disabled', 'false')
+                this.hide().close_button.onclick = e=>this.hide()
+			}
+
+			get footer(){ return this.query('footer') }
+			get header(){ return this.query('header') }
+			hide() { return hide_results(this) }
+			get list(){ return this.query('[result-list]') }
+			present(target) { return present_results(this,target) }
+			show(){ return show_results(this) }
+			get value(){
+                return this.result_value
+            }
+			set value(items){
+                let list = this.list
+                list.innerHTML = ''
+                for(let item of items){
+					let section = item.category.section.name
+					set_header(list,section)
+                    let element = document.createElement('search-suggestion')
+                    element.data = item.result
+	                list.appendChild(element)
+                }
+                this.result_value = items
+                this.present(this.target)
+            }
+		})
+        //shared actions
+        function set_header(element,name){
+			let header = element.querySelector(`[section-header][title="${name}"]`)
+			if(header === null){
+				header = document.createElement('div')
+                header.setAttribute('section-header','')
+                header.setAttribute('title',name)
+                header.innerHTML = name
+                element.appendChild(header)
+            }
+            return header
+        }
+
+        function hide_results(element){
+	        element.setAttribute('aria-hidden', 'true')
+	        element.setAttribute('aria-expanded', 'false')
+            return element
+        }
+
+        function present_results(element,target){
+	        element.list.style.maxHeight = ''
+	        let size = target.size
+            element.show().target = target
+            let height = element.view.clientHeight - (element.footer.clientHeight + element.header.clientHeight)
+            let width = element.width
+            element.list.style.maxHeight = `${height}px`
+	        element.style.top = ( size.top + size.height + 6 ) + 'px'
+	        element.style.left = ((size.left + (size.width / 2)) - width / 2) + 'px'
+            return element
+        }
+
+        function show_results(element){
+	        element.setAttribute('aria-expanded', 'true')
+	        element.setAttribute('aria-hidden', 'false')
+	        return element
+        }
+	})(document)
+</script>

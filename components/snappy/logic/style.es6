@@ -38,6 +38,7 @@ window.fxy.exports('snappy',(snappy,fxy)=>{
 			height:auto;
 			max-width:${'max_width'};
 			transition:transform 230ms cubic-bezier(0.333, 0.5, 0, 1);
+			transition:transform 0.2s cubic-bezier(0.333, 0, 0, 1);
 			will-change:transform;
 		}
 		
@@ -74,21 +75,35 @@ window.fxy.exports('snappy',(snappy,fxy)=>{
 		let radius = grid.radius
 		let rows = Math.round(count / grid.columns)
 		item.color = grid.color
+		
 		for(let i=0;i<count;i++){
 			let container = items[i]
 			container.setAttribute('grid-item-container','')
 			let target = container.querySelector('*:first-child')
-			target.style.width = item.width+'px'
-			target.setAttribute('grid-item','')
-			if(height === null){
-				if(target.localName === 'img'){
-					height = target.height
-					item.height = height
-					
+			if(target){
+				target.style.width = item.width+'px'
+				target.setAttribute('grid-item','')
+				let local_name = target.localName
+				if(height === null){
+					if(local_name === 'img'){
+						height = target.height
+						item.height = height
+					}
+					else{
+						height = container.clientHeight
+						item.height = height
+					}
+					let target_width = fxy.is.number(target.width) ? target.width:target.clientWidth
+					item.max_width = (target_width - grid.padding)+'px'
+					item.offset = grid.padding / 2
 				}
-				item.max_width = (target.width - grid.padding)+'px'
-				item.offset = grid.padding / 2
+				if(local_name !== 'img') {
+					container.draggable=true
+					target.style.height = (height-grid.padding)+'px'
+					target.style.maxHeight = (height-grid.padding)+'px'
+				}
 			}
+			
 			rules.push(get_rule(item,get_item(row,column,i)))
 			if(column === grid.columns-1) {
 				column = 0

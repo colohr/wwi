@@ -1,23 +1,22 @@
 (function(get_module){ return get_module() })
 (function(){
-    return function external_module(behavior){
-        
-        const Classes = Base => class extends Base {
-	        addClass(value) {
-		        return this.classList.toggle(value, true)
-	        }
-	        hasClass(value) {
-		        return this.classList.contains(value)
-	        }
-	        removeClass(value) {
-		        return this.classList.toggle(value, false)
-	        }
-	        toggleClass(value) {
-		        return this.hasClass(value) ? this.removeClass(value) : this.addClass(value)
-	        }
+    return function external_module(){
+        return Base => class extends Base {
+	        add_class(...x) { return set_class(this,true,...x) }
+	        has_class(...x) { return has_class(this,...x) }
+	        remove_class(...x) { return set_class(this,false,...x) }
+	        toggle_class(name) { return this.has_class(name) ? this.remove_class(name):this.add_class(name) }
         }
-        
-        //exports
-        return behavior.Classes = Classes
     }
+    
+	//shared actions
+	function has_class(element,...names){
+		let has = false
+		for(let name of names) has = element.classList.contains(name)
+		return has
+	}
+	function set_class(element,value,...x){
+    	for(let name of x) element.classList.toggle(name,value)
+	    return element
+	}
 })

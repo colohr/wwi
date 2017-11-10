@@ -1,6 +1,16 @@
-window.fxy.exports('element',(element)=>{
+window.fxy.exports('element',(element,fxy)=>{
 	
-	const DesignMix = Base => class extends Base {
+	class ValueIdentity{
+		constructor(x){
+			x = fxy.id.dash(x)
+			this.key = x.includes('--') ? x:`--${x}`
+			this.name = x.includes('--') ? x.replace('--',''):x
+		}
+	}
+	
+	const Design = Base => class extends Base {
+		get design(){ return get_design(this) }
+		
 		get height() { return get_height(this) }
 		set height(x) { return set_height(this,x) }
 		
@@ -15,15 +25,92 @@ window.fxy.exports('element',(element)=>{
 	}
 	
 	//exports
-	element.design = DesignMix
+	element.design = Design
 	element.design_of = get_design_of
 	
 	//shared actions
+	function get_design(element){
+		return new Proxy(element.style,{
+			deleteProperty(o,name){
+				name = fxy.id.dash(name)
+				o.removeProperty(name)
+				return true
+			},
+			get(o,name){
+				if(name === 'value') return get_design_value(o)
+				else if(name === 'of') return get_design_of
+				name = fxy.id.dash(name)
+				let value = o.getPropertyValue(name)
+				if(value) return value
+				return null
+			},
+			has(o,name){
+				if(o[name] || o[fxy.id.dash(name)]) return true
+				let design_value =  get_design_value(o.style)
+				if(name in design_value) return true
+				return false
+			},
+			set(o,name,value){
+				
+				name = fxy.id.dash(name)
+				o.setProperty(name,value)
+				return value
+			}
+		})
+	}
+	
+	function get_design_value(style){
+		return new Proxy(style,{
+			deleteProperty:delete_value,
+			get:get_value,
+			has:has_value,
+			set:set_value
+		})
+		//shared actions
+		function delete_value(o,name){
+			let id = value_identity(name)
+			if(id) o.removeProperty(id.key)
+			return true
+		}
+		
+		function get_value(o,name){
+			if(o.length){
+				let id = value_identity(name)
+				if(has_value(o,id)) return o.getPropertyValue(id.key)
+			}
+			return null
+		}
+		
+		function has_value(o,name){
+			if(o.length){
+				let id = value_identity(name)
+				if(id) return o.getPropertyValue(id.key).length
+			}
+			return false
+		}
+		
+		function set_value(o,name,value){
+			let id = value_identity(name)
+			if(id) o.setProperty(id.key,value)
+			return value
+		}
+		
+		function value_identity(x){
+			if(fxy.is.text(x)){
+				x = x.trim()
+				if(x) return new ValueIdentity(x)
+			}
+			else if(fxy.is.data(x) && x instanceof ValueIdentity) return x
+			return null
+		}
+	}
 	
 	function get_design_of(e){
 		return new Proxy(e,{
 			get(o,name){
 				switch(name){
+					case 'design':
+						return get_design(o)
 					case 'of':
 						return get_design_of
 					case 'height':

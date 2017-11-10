@@ -25,9 +25,8 @@
     border: none;
 }
 
-[action-item][aria-selected="true"]{
-    /*color:var(--action-background,var(--day));*/
-    /*background-color:var(--action-color,var(--grape));*/
+[action-item][aria-selected="true"],
+[action-item][aria-pressed="true"]{
     box-shadow:var(--action-hover-shadow,var(--action-item-hover-shadow));
 }
 

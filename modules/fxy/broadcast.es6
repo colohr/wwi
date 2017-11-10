@@ -114,8 +114,8 @@
 		    let watcher = { key, count: 0 }
 		    watcher.clear = function () {
 			    if (typeof this.timer === 'number') {
-				    window.clearInterval(this.timer);
-				    delete this.timer;
+				    window.clearInterval(this.timer)
+				    delete this.timer
 			    }
 			    return Watchers.delete( this.key )
 		    }
@@ -124,17 +124,16 @@
 			    if ( this.count >= 5000 ) {
 				    console.group('WATCHER TIMEOUT: '+this.key)
 				    console.error(new Error('watcher timeout for : ' + this.key));
-				    console.warn(this);
+				    console.warn(this)
 				    console.warn( caster.get_watcher(this.key) )
 				    console.groupEnd()
-				    return this.clear();
+				    return this.clear()
 			    }
 			    let block = caster.get_watcher( this.key )
 			    if (!block) return this.clear()
 			    let status = caster.check( block )
 			    if ( status.waiting ) return this.count++;
 			    this.clear()
-			    
 			    let definites = caster.get('definites')
 			    definites.delete(block)
 			    if(definites.size === 0) caster.delete('definites')

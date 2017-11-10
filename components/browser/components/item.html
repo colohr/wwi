@@ -5,6 +5,8 @@
 			--item-content-padding:4px 10px 4px 10px;
 			--item-content-border-top:solid 1px #dededf;
 			--item-font-size:var(--font-size,14px);
+			--default-item-hover-filter-value:contrast(160%) brightness(1.1);
+
 			display: block;
 			position: relative;
 			width: 100%;
@@ -12,6 +14,7 @@
 			color:var(--item-color,var(--grape));
 			background:var(--item-background,var(--gray-50));
 			height:var(--item-height,40px);
+			min-height:var(--item-min-height,var(--item-height));
 			cursor: default;
 			outline: none;
 			z-index:0;
@@ -22,7 +25,7 @@
 
 		:host(:hover){
 			text-decoration: underline;
-			filter: contrast(160%) brightness(1.1);
+			filter: var(--item-hover-filter,var(--default-item-hover-filter-value));
 		}
 		:host(:active){  filter: brightness(0.8);  }
 		:host(:focus) [title]{  text-decoration: underline;  }
@@ -143,6 +146,7 @@
 					expanded(value){
 						if(value === null) this.expand.expanded = false
 						else this.expand.expanded = true
+						if(!this.item) this.dispatch('section',{item:this,expanded:this.expand.expanded})
 					},
 					item(value){
 						if(value === null) this.expand.removeAttribute('open')
@@ -168,7 +172,15 @@
 			diconnected(){ this.style.opacity="0" }
 			get expand(){ return this.query('item-expander') }
 			html(attribute,value){
-				this.query(`[${attribute}]`).innerHTML = value
+				let element = this.query(`[${attribute}]`)
+				if(element){
+					element.innerHTML = value
+					let text = element.textContent.trim()
+					if(text.length < 170){
+						element.setAttribute('title',text)
+					}
+
+				}
 				return this
 			}
 			select(){

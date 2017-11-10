@@ -1,0 +1,67 @@
+<template id="gui-lock">
+	<style>
+		@import "components/gui-slide/design/lock.css";
+		:host(:not([movable])) [gui-slide][handle]{
+			transition:width 200ms ease-out;
+		}
+	</style>
+
+	<div gui-slide bar>
+		<div gui-slide handle>
+			<div scrub></div>
+		</div>
+	</div>
+
+</template>
+<script>
+	(function (doc) {
+		const Lock = wwi.element(doc).extension({module:'gui-slide',name:'Slider'},{module:'behavior',name:'Timeout'})
+		Lock(class extends Lock.Element {
+			constructor(){
+				super({locked:true,movable:true})
+				this.is_lock=true
+			}
+			connected(){
+				this.scrub.onclick = e=>e.stopPropagation()
+
+				this.scrub.addEventListener('mousedown',e=>this.movable=true, false)
+
+				this.scrub.addEventListener('mouseup',e=>{
+					let value = this.get_value()
+					let limit = this.locked ? 75:25
+					if(value >= limit) this.lock()
+					else this.unlock()
+				}, false)
+
+				this.on.toggle = e=>{
+					let value = this.get_value()
+					if(value >= 50) this.lock()
+					else this.unlock()
+				}
+
+				this.onclick = e=>{
+					if(this.locked) this.unlock()
+					else this.lock()
+				}
+			}
+			get_value(){
+				let value = parseInt(this.value)
+				if(!fxy.is.number(value)) value = 0
+				return value
+			}
+			lock(){
+				this.locked=true
+				this.value = 100
+				this.handle.style.width='100%'
+				return this
+			}
+			get scrub(){ return this.query('[scrub]') }
+			unlock(){
+				this.locked=false
+				this.value = 0
+				this.handle.style.width='0%'
+				return this
+			}
+		})
+	})(document)
+</script>

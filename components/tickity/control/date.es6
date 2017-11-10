@@ -1,4 +1,4 @@
-wwi.exports('tickity',(tickity,fxy)=>{
+window.fxy.exports('tickity',(tickity,fxy)=>{
 	
 	const tickity_date = Symbol('tickity date')
 	

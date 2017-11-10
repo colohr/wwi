@@ -46,27 +46,15 @@
 			get doc(){ return load_doc() }
 			get dot(){ return get_dot_notation }
 			exports(folder,action){
-				if(!is_string(folder)) return module_exports_proxy()
+				if(!is_text(folder)) return module_exports_proxy()
 				if(!is_function(action)) return module_exports(folder)
 				return action(module_exports(folder),this)
 			}
 			get external(){ return get_external() }
-			folder(path){
-				if(!this.has(path)) this.set(path,new Map())
-				return this.get(path)
-			}
-			join(...paths){
-				return paths.map(path=>{
-					if(typeof path !== 'string') return null
-					path = path.trim()
-					if(path.length <= 0) return null
-					return path
-				}).filter(path=>path !== null).join('/')
-			}
 			get is(){
 				return {
 					array:is_array,
-					bool:is_bool,
+					get bool(){ return this.TF },
 					count:is_count,
 					data:is_data,
 					defined:is_defined,
@@ -85,7 +73,7 @@
 					numeric:is_numeric,
 					object:is_object,
 					set:is_set,
-					string:is_string,
+					get string(){ return this.text },
 					symbol:is_symbol,
 					text:is_text,
 					TF:is_TF
@@ -116,31 +104,14 @@
 			get in(){ return this.inputs }
 			get inputs(){ return get_inputs }
 			get load(){ return load_files }
-			module(paths){
-				let folder
-				if(!is_data(paths)) return null
-				else if('path' in paths && 'name' in paths){
-					folder = this.has(paths.path) ? this.folder(paths.path) : null
-					return is_map(folder) && folder.has(paths.name) ? folder.get(paths.name) : null
-				}
-				return null
-			}
 			get modules(){ return get_modules() }
 			get not(){ return get_not() }
 			get numeral(){return get_numeral }
-			paths(pathname){ return this[modules].get(pathname) }
 			get random(){ return get_random() }
-			require(...paths){
-				let pathname = this.join(...paths)
-				return this.module( this.paths(pathname) )
-			}
-			save(path,name,value){
-				let pathname = this.join(path,name)
-				this[modules].set(pathname,{ path, name })
-				return this.folder(path).set(name,value).get(name)
-			}
+			get require(){ return fxy_require }
 			get service_worker(){ return get_service_worker }
 			get tag(){ return tag_closure }
+			get timeline(){ return timeline }
 			get uid(){ return get_uid }
 			get when(){ return when_element_is_defined }
 			get wrap(){ return get_wrap() }
@@ -285,6 +256,39 @@
 			})
 		}
 		
+		function fxy_folder(path){
+			return fxy.has(path) ? fxy.get(path):fxy.set(path,new Map()).get(path)
+		}
+		function fxy_module(paths){
+			let folder
+			if(!is_data(paths)) return null
+			else if('path' in paths && 'name' in paths){
+				folder = fxy.has(paths.path) ? fxy_folder(paths.path) : null
+				return is_map(folder) && folder.has(paths.name) ? folder.get(paths.name) : null
+			}
+			return null
+		}
+		function fxy_paths(pathname){
+			return fxy[modules].get(pathname)
+		}
+		function fxy_join(...paths){
+			return paths.map(path=>{
+				if(typeof path !== 'string') return null
+				path = path.trim()
+				if(path.length <= 0) return null
+				return path
+			}).filter(path=>path !== null).join('/')
+		}
+		function fxy_require(...paths){
+			let pathname = fxy_join(...paths)
+			return fxy_module(fxy_paths(pathname))
+		}
+		function fxy_save(path,name,value){
+			let pathname = fxy_join(path,name)
+			fxy[modules].set(pathname,{path,name})
+			return fxy_folder(path).set(name,value).get(name)
+		}
+		
 		function get_authority(){
 			const prefix = 'authority-'
 			return new Proxy(function authority_mixin(Base){
@@ -339,7 +343,7 @@
 			catch(e){return null}
 		}
 		function get_difference(original,value){
-			if(is_string(original)){
+			if(is_text(original)){
 				let difference = original.replace(`${value}`,'').trim()
 				if(difference.length) return difference
 			}
@@ -472,7 +476,7 @@
 		function get_numeral(x){
 			let value
 			let type = typeof x
-			if(is_string(x)) value = parseFloat(x)
+			if(is_text(x)) value = parseFloat(x)
 			else if(is_number(x)) value = x
 			else value = NaN
 			let unit = get_difference(x,value)
@@ -498,7 +502,10 @@
 			})
 			//shared actions
 			function get_random_decimal(from,to){return Math.random() * (to - from) + from}
-			function get_random_number(from,to){return Math.floor(Math.random() * (to - from + 1)) + from}
+			function get_random_number(from,to){
+				if(is_nothing(from) && is_nothing(to)) return Math.random()
+				return  Math.floor(Math.random() * (to - from + 1)) + from
+			}
 			function get_random_item(array,...items){
 				let list = []
 				if(is_array(array)) list = array
@@ -578,7 +585,6 @@
 		}
 		
 		function is_array(value){ return is_object(value) && Array.isArray(value) }
-		function is_bool(value){return is_TF(value)}
 		function is_count(value,count = 1){
 			if(is_nothing(value)) return false
 			if(is_text(value)) value = value.trim()
@@ -604,7 +610,6 @@
 		function is_numeric(value){ return get_numeral(value).valuable }
 		function is_object(value){ return typeof value === 'object' && value !== null }
 		function is_set(value){ return is_object(value) && value instanceof Set }
-		function is_string(value){ return is_text(value)}
 		function is_symbol(value){ return typeof value === 'symbol'}
 		function is_text(value){ return typeof value === 'string' || (is_object(value) && value instanceof String)}
 		function is_TF(value){return typeof value === 'boolean'}
@@ -692,7 +697,7 @@
 				},
 				set(o,path,value){
 					if(typeof path === 'symbol') return false
-					return fxy.save(folder_path,path,value)
+					return fxy_save(folder_path,path,value)
 				},
 				has(o,name){
 					return fxy.has(folder_path) && fxy.get(folder_path).has(name)
@@ -735,6 +740,19 @@
 				});
 				return result.join('')
 			});
+		}
+		function timeline(...x){
+			let action = x.filter(input=>is_function(input))[0]
+			let time = x.filter(input=>is_number(input))[0]
+			if(!is_number(time)) time = 1
+			let promise = new Promise(function(success){
+				window.requestAnimationFrame(on_animation_frame)
+				//shared actions
+				function on_animation_frame(){ return window.setTimeout(on_timeout,time) }
+				function on_timeout(){ return success(is_function(action) ? action():null) }
+			})
+			//return value
+			return promise.then(x=>x)
 		}
 		
 		function when_element_is_defined(...names){

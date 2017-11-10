@@ -76,9 +76,6 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		}
 	}
 	
-	
-	
-	
 	//exports
 	dom.app = App
 	
@@ -136,5 +133,7 @@ window.fxy.exports('dom',(dom,fxy)=>{
 			})
 		})
 	}
+	
+	
 	
 })

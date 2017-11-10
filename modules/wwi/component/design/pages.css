@@ -1,4 +1,3 @@
-
 :host{
     display: block;
     position: relative;
@@ -8,13 +7,9 @@
     opacity: var(--pages-opacity,1);
     z-index: var(--pages-z,1);
 }
-
-
 :host([loading]){
     pointer-events: none;
 }
-
-
 slot#pages::slotted(*){
     display: none;
     position: absolute;
@@ -27,8 +22,6 @@ slot#pages::slotted(*){
     overflow: hidden;
     z-index: -1;
 }
-
-
 slot#pages::slotted([active]){
     pointer-events: auto;
     display:block;

@@ -11,7 +11,7 @@
     border-radius: 100px;
     font-weight:900;
     background: var(--tangerine-yellow-bg);
-
+    text-rendering: geometricPrecision;
 }
 [app-drawer] [grid] [action-item]{
     border-radius: 7px;

@@ -1,0 +1,64 @@
+@import "slide.css";
+:host{
+    --slide-height:var(--height,20px);
+    --slide-handle-height:16px;
+    --padding:calc((var(--slide-height) / 2));
+    width:30px;
+    max-width: 30px;
+    margin-left:var(--padding);
+}
+
+:host([active]) [gui-slide][bar]{
+    box-shadow: none;
+}
+
+[gui-slide][bar] > [handle]{
+    background: transparent;
+}
+
+[gui-slide][bar]::before{
+    content: '';
+    position: absolute;
+    left:calc(-1 * var(--padding));
+    right:calc(-1 * var(--padding));
+    background: inherit;
+    border-radius: inherit;
+    height: 100%;
+    z-index: 0;
+}
+[gui-slide][handle]{
+    background: transparent;
+    z-index: 1;
+}
+[gui-slide][handle]::after{
+    display: none;
+}
+[gui-slide][handle] > [scrub]{
+    z-index: 1;
+}
+[scrub]{
+    position: absolute;
+    top: calc((var(--slide-height) * 0.5) - (var(--slide-handle-height) * 0.5));
+    right: calc(var(--slide-handle-height) * -0.5);
+    width: var(--slide-handle-height);
+    height: var(--slide-handle-height);
+    border-radius: 100px;
+    background: rgba(255,255,255,0);
+    border:2px solid rgba(255, 255, 255, 1);
+    box-shadow:0 0.025em 2px 0.01em rgba(0, 0, 0, 0.18);
+    opacity: 1;
+    transition:background 100ms ease;
+    box-sizing: border-box;
+}
+
+
+:host([locked]) [scrub]{
+    background: rgba(255, 255, 255, 1);
+}
+
+:host([locked]:active) [scrub],
+:host(:active) [scrub],
+[scrub]:active,
+:host([locked]) [scrub]:active{
+    background: rgba(0,0,0,0.2);
+}

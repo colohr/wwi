@@ -2,18 +2,25 @@
     <style>
         @import "modules/wwi/component/design/host.css";
         :host{
+			contain: content;
+	        --frame-sides:var(--sides,1%);
+	        --frame-size:calc(100% - (2 * var(--frame-sides) ));
+	        --frame-toolbar-height:var(--toolbar-height,40px);
+	        --frame-height:calc(var(--frame-size) - var(--frame-toolbar-height));
+	        --frame-top:calc(var(--frame-toolbar-height) + var(--frame-sides));
+			--frame-radius:7px;
 	        display: none;
 	        position: absolute;
 	        box-shadow: 0 1px 19px rgba(0,0,0,0.3);
 	        box-sizing: border-box;
 	        padding:1px;
 	        margin:0 auto;
-	        top:calc(40px + 1%);
-	        width:98%;
-	        left:1%;
-	        height:calc(98% - 40px);
+	        top:var(--top,var(--frame-top));
+	        width:var(--width,var(--frame-size));
+	        left:var(--left,var(--frame-sides));
+	        height: var(--height,var(--frame-height));
 	        z-index:1;
-	        border-radius: 7px;
+	        border-radius: var(--radius,var(--frame-radius));
 	        overflow: hidden;
         }
         :host([full]){
@@ -23,6 +30,7 @@
 	        width: 100%;
 	        position: relative;
 	        box-shadow: none;
+	        border-radius: 0;
         }
         :host([aria-expanded="false"]){
 	        display: none;
@@ -32,7 +40,19 @@
 	    }
 	    iframe{
 		    border:none;
+		    border-radius: var(--radius,var(--frame-radius));
+		    overflow: hidden;
 	    }
+	    :host([selectable]){
+		    cursor: pointer;
+		    pointer-events: auto;
+	    }
+        :host([selectable]) iframe{
+	        pointer-events: none;
+        }
+        :host([selectable][aria-selected="true"]) iframe{
+	        pointer-events: auto;
+        }
     </style>
 	<iframe view></iframe>
 
@@ -43,10 +63,12 @@
 	    FrameComponent(class extends FrameComponent.Element{
         	constructor(){
         		super('routes',{
+        			loaded:true,
         			opened(value){
         				if(value === null) this.hide()
 				        else this.show()
 			        },
+			        selectable:true,
 			        url(value){
         				if(value) this.view.src = value
 			        }

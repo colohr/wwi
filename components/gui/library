@@ -5,6 +5,7 @@ library.ports = [
 	window.components['gui-icon'].index_url,
 	window.components['gui-title'].index_url,
 	window.components['gui-check'].index_url,
-	window.components['gui-action'].index_url
+	window.components['gui-action'].index_url,
+	window.components['gui-slide'].index_url
 ]
-library.wait = ['gui-card','gui-title','gui-icon','gui-check','gui-action']
+library.wait = ['gui-card','gui-title','gui-icon','gui-check','gui-action','gui-slide']

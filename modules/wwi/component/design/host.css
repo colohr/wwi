@@ -1,4 +1,5 @@
-@import "gui.css";
+@import "css/gui.css";
+@import "css/aria.css";
 :host{
     display: block;
     position: relative;
@@ -7,23 +8,15 @@
     -webkit-perspective: 1000px;
     perspective:1000px;
 }
-
-
 [view]{
     position: relative;
     min-height: 100%;
     width: 100%;
 }
-:host([app-view]) [view]{
-    height: 100%;
-}
-
+:host([app-view]) [view]{ height: 100%; }
 [view]::-webkit-scrollbar { height: 13px; overflow: visible; width: 13px; }
-
 [view]::-webkit-scrollbar-button { height: 0; width: 0; }
-
 [view]::-webkit-scrollbar-corner { background: rgba(0, 0, 0, 0); }
-
 [view]::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, .2);
     background-clip: padding-box;
@@ -33,13 +26,11 @@
     border-radius: 100px;
     box-shadow: inset 0px 0px 0 1px rgba(255, 255, 255, .1), inset 1px 1px 0 rgba(0, 0, 0, .1), inset 0 -1px 0 rgba(0, 0, 0, .07);
 }
-
 [view]::-webkit-scrollbar-track {
     background-clip: padding-box;
     border: solid rgba(0, 0, 0, 0);
     border-width: 0 0 0 4px;
 }
-
 [view]::-webkit-scrollbar-track-piece {
     background-clip: padding-box;
     background-color: rgba(245, 245, 245, 0.47);

@@ -9,36 +9,64 @@ html{
     font-weight: 500;
 }
 body {
+    --scrollbar-size: 13px;
+    --scrollbar-corner-color: rgba(0, 0, 0, 0);
+    --scrollbar-thumb-color:rgba(0, 0, 0, .2);
+    --scrollbar-thumb-border:solid rgba(0, 0, 0, 0);
+    --scrollbar-thumb-height:28px;
+    --scrollbar-thumb-padding:100px 0 0;
+    --scrollbar-thumb-radius:100px;
+    --scrollbar-thumb-shadow:inset 0 0 0 1px rgba(255, 255, 255, .1), inset 1px 1px 0 rgba(0, 0, 0, .1), inset 0 -1px 0 rgba(0, 0, 0, .07);
+
+    --scrollbar-track-color:rgba(0, 0, 0, 0);
+    --scrollbar-track-width:4px;
+
+    --scrollbar-piece-color:rgba(245, 245, 245, 0.47);
+    --scrollbar-piece-width:3px;
+
+
     min-height: 100vh;
     margin: 0;
     position: relative;
     width: 100%;
+
 }
 body{ -moz-perspective: 1000px; -ms-perspective: 1000px; -webkit-perspective: 1000px; perspective:1000px; }
-body *{ -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
+body *:not(code):not(p):not(pre):not(input):not(textarea):not(span){
+    -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none;
+}
 
-body::-webkit-scrollbar { height: 13px; overflow: visible; width: 13px; }
+body::-webkit-scrollbar {
+    height: var(--scrollbar-size,13px);
+    overflow: visible;
+    width:var(--scrollbar-size,13px);
+}
 body::-webkit-scrollbar-button { height: 0; width: 0; }
-body::-webkit-scrollbar-corner { background: rgba(0, 0, 0, 0); }
+body::-webkit-scrollbar-corner { background: var(--scrollbar-corner-color,rgba(0, 0, 0, 0)); }
 body::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, .2);
+    --scrollbar-thumb-box-shadow:inset 0 0 0 1px rgba(255, 255, 255, .1), inset 1px 1px 0 rgba(0, 0, 0, .1), inset 0 -1px 0 rgba(0, 0, 0, .07);
+    --scrollbar-thumb-padding-value:100px 0 0;
+    --scrollbar-thumb-border-value:solid rgba(0,0,0,0);
     background-clip: padding-box;
-    border: solid rgba(0, 0, 0, 0);
-    min-height: 28px;
-    padding: 100px 0 0;
-    border-radius: 100px;
-    box-shadow: inset 0px 0px 0 1px rgba(255, 255, 255, .1), inset 1px 1px 0 rgba(0, 0, 0, .1), inset 0 -1px 0 rgba(0, 0, 0, .07);
-
+    background-color:var(--scrollbar-thumb-color, rgba(0, 0, 0, .2));
+    border: var(--scrollbar-thumb-border, var(--scrollbar-thumb-border-value));
+    min-height: var(--scrollbar-thumb-height,28px);
+    padding: var(--scrollbar-thumb-padding,var(--scrollbar-thumb-padding-value));
+    border-radius: var(--scrollbar-thumb-radius,100px);
+    box-shadow: var(--scrollbar-thumb-shadow, var(--scrollbar-thumb-box-shadow));
 }
 body::-webkit-scrollbar-track {
+    --track-border-edges:0 0 0 var(--scrollbar-track-width);
+    --track-border-color-value:rgba(0,0,0,0);
     background-clip: padding-box;
-    border: solid rgba(0, 0, 0, 0);
-    border-width: 0 0 0 4px;
+    border: solid var(--scrollbar-track-color, var(--track-border-color-value));
+    border-width: var(--scrollbar-track-border-width, var(--track-border-edges));
 }
 body::-webkit-scrollbar-track-piece {
+    --piece-border-edges:0 0 0 var(--scrollbar-piece-width);
     background-clip: padding-box;
-    background-color: rgba(245, 245, 245, 0.47);
-    border: solid rgba(245, 245, 245, 0.47);
-    border-width: 0 0 0 3px;
+    background-color: var(--scrollbar-piece-color,rgba(245, 245, 245, 0.47));
+    border: solid var(--scrollbar-piece-border-color, var(--scrollbar-piece-color));
+    border-width:var(--scrollbar-piece-border-width, var(--piece-border-edges));
 }
 

@@ -77,9 +77,11 @@ window.fxy.exports('element', (element_exports, fxy) => {
 	
 	function get_aria_set(element){
 		return {
+			
 			elements(selectors){
-				if(!fxy.is.text(selectors)) selectors = 'button'
-				let items = element.all(selectors)
+				let items = fxy.is.array(selectors) ? selectors:null
+				if(!items && !fxy.is.text(selectors)) selectors = 'button'
+				if(!items) items = element.all(selectors)
 				for(let item of items){
 					if(item.localName === 'button') button(item)
 				}

@@ -1,9 +1,9 @@
 library = {}
 library.logic = [
-	'control/selector.es6',
-	'control/theme.es6',
-	'control/template.es6',
-	'control/sticky.es6'
+	'logic/selector.es6',
+	'logic/theme.es6',
+	'logic/template.es6',
+	'logic/sticky.es6'
 ]
 library.elements = [
 	'item.html',

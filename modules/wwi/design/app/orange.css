@@ -1,5 +1,5 @@
 :host{
-    --drawer-background:var(--tangerine-yellow-bg);
+    --drawer-background:var(--tangerine-sun-bg);
     --text:var(--tangerine);
     --focus-color:var(--tangerine);
     --menu-item-color: white;
@@ -10,7 +10,7 @@
 [app-drawer] [action-item]{
     border-radius: 100px;
     font-weight:900;
-    background: var(--tangerine-yellow-bg);
+    background: var(--tangerine-sun-bg);
     text-rendering: geometricPrecision;
 }
 [app-drawer] [grid] [action-item]{

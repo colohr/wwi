@@ -1,12 +1,12 @@
-<template id="wwe-background">
+<template id="gui-backdrop">
 	<style>
-		@import "components/wwe/background/design.css";
+		@import "components/gui-backdrop/design.css";
 	</style>
 	<slot></slot>
 </template>
 <script>
 	(function (doc) {
-		let extensions = window.components.wwe.mix('background')
+		let extensions = window.components['gui-backdrop'].mix('background')
 		extensions[0].target = 'Element'
 		const BG = wwi.element(doc).extension(...extensions)
 

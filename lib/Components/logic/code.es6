@@ -5,6 +5,20 @@
 	if(!('items' in struct_index)) struct_index.items = {}
 	const item_names = get_item_names()
  
+	const extension = {
+		types:{
+			mix:'external',
+			extension:'external',
+			extend:'external',
+			'extends':'external',
+			mixin:'external'
+		},
+		value:{
+			mixin:true,
+			extend:true
+		}
+	}
+	
 	//exports
     window.components = new Proxy(get_component_library,{
 	    get:get_value,
@@ -14,7 +28,7 @@
 		    return false
 	    }
     })
-	window.fxy.define('components-code',class extends HTMLElement{constructor(){super()}})
+	if(!window.customElements.get('components-code')) window.customElements.define('components-code', class extends HTMLElement{constructor(){super()}})
 	
 	//shared actions
 	function get_index(){
@@ -24,8 +38,12 @@
 		}
 	}
 	
-	function get_component_extension_proxy(component,type){
-		return function get_extension(...names){ return names.map(name=>get_data(name)) }
+	function get_component_extension_proxy(component,type,selector){
+		return function get_extension(...names){
+			let value = names.map(name=>get_data(name))
+			if(selector in extension.value) return value[0]
+			return value
+		}
 		//shared action
 		function get_data(name){
 			return {
@@ -54,6 +72,24 @@
 		})
 	}
 	
+	function get_component_url(component){ return (...x)=>window.fxy.file.url(component.url,...x) }
+	
+	function get_component_port(component){ return (...x)=>window.fxy.port(get_component_url(component)(...x)) }
+	
+	
+	function get_component_work(component){
+		return (name,options)=>{
+			if(name.includes('.') !== true) name += '.js'
+			return fxy.point.Worker(get_component_url(component)('worker',name),options)
+		}
+	}
+	function get_component_worker(component){
+		return (name)=>{
+			if(name.includes('.') !== true) name += '.js'
+			return new Worker(get_component_url(component)('worker',name))
+		}
+	}
+	
 	function get_item(item_name){
 		return new Proxy({
 			name:item_name,
@@ -66,15 +102,28 @@
 					case 'api':
 					case 'client': return get_item_client(o)
 					case 'extension':
+					case 'extend':
+					case 'extends':
 					case 'external':
 					case 'mix':
+					case 'mixin':
 					case 'control':
 						if(o.component){
-							let type = null
-							if(name === 'control') type = 'control'
-							else type = 'external'
-							return get_component_extension_proxy(o.component,type)
+							let type = name in extension.types ? extension.types[name]:name
+							return get_component_extension_proxy(o.component,type,name)
 						}
+						break
+					case 'file':
+						return get_component_url(o.component)
+						break
+					case 'port':
+						return get_component_port(o.component)
+						break
+					case 'work':
+						return get_component_work(o.component)
+						break
+					case 'worker':
+						return get_component_worker(o.component)
 						break
 					case 'library':
 						return get_component_library

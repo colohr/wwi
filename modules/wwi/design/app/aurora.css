@@ -1,6 +1,6 @@
 :host{
-    --drawer-background:var(--purple-fuchsia-bg);
-    --text:var(--purple);
+    --drawer-background:var(--violet-fuchsia-bg);
+    --text:var(--violet);
     --focus-color:var(--bubblegum-bright);
     --menu-item-background-color: var(--grape-50);
     --menu-item-color: var(--day);

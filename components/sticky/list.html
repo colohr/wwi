@@ -1,4 +1,4 @@
-<template id="sticky-list-template">
+<template id="sticky-list">
 	<style>
 		:host {  display: block;  }
 	</style>
@@ -7,10 +7,10 @@
 <script>
 	(function (doc) {
 
-		const Sticky = wwi.element(doc).extension('behavior','Selector')
-		const Mix = fxy.require('sticky/Mix')
+		const Sticky = wwi.element(doc).extension({name:'Selector',module:'behavior'},{name:'Mix',module:'sticky'})
+
 		const resize_data = Symbol('sticky list resize data')
-		Sticky(class extends Mix(Sticky.Element) {
+		Sticky(class extends Sticky.Element{
 			constructor(){
 				super('routes',{
 					offsetTop:true,
@@ -23,7 +23,7 @@
 			list_connected(){
 				this.item_selector_options = {item:'sticky-item',query:true}
 				this.on('selected',e => on_item_selected(this,e))
-				app.on('resized',()=>resize_scroll(this))
+				window.app.on('resized',()=>resize_scroll(this))
 			}
 			count(key) {
 				if (key in this) {

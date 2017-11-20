@@ -1,4 +1,7 @@
 library = {}
+library.ports = [
+	window.components['gui-icon'].index_url
+]
 library.elements = [
 	'remote-control.html',
 	'component.html'

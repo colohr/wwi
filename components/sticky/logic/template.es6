@@ -1,33 +1,28 @@
-wwi.exports('sticky',(sticky,fxy)=>{
+window.fxy.exports('sticky',(sticky)=>{
 	
-	
+	//exports
 	sticky.template = get_list_template
 	
+	//shared actions
 	function get_list_template(list,theme){
-		theme = fxy.require('sticky/theme')(theme)
+		theme = sticky.theme(theme)
 		const selectors = list.selectors
 		return `
-		            @import "/modules/wwi/component/design/css/attr.css";
+		            @import "/modules/wwi/component/design/css/gui.css";
 
 		              :host{
-		                  //--item-background:rgba(244,244,244,1);
+		                 
 		                  --item-border:0 0 1px 0;
 		                  --item-border-style:solid;
 		                  --item-border-color:rgba(0,0,0,0.2);
 		                  --list-item-height:${theme.item_height};
 		                  --item-selected-background:${theme.selected_background};
 		                  --item-selected-color:${theme.selected_color};
-		                  //--item-padding:${theme.item_padding};
 		                  --item-color:black;
 		                  --header-background: ${theme.header_background};
 		                  --header-background-mid: ${theme.header_background_mid};
 		                  --header-color: ${theme.header_color};
-		                  //--header-padding:${theme.header_padding};
 		                  --sticky-shadow:drop-shadow(-3px 3px 5px rgba(70,70,80,0.48));
-						 
-		              }
-
-		              :host{
 		                  top:0;
 		                  display: block;
 		                  overflow: hidden;
@@ -37,13 +32,15 @@ wwi.exports('sticky',(sticky,fxy)=>{
 		                  background:var(--list-background,white);
 		                  box-sizing: border-box;
 		                  outline:none;
+		                  padding-bottom:8px;
 		              }
-
+		              
 		              /*group*/
 		              ${selectors.group}{
 		                position:relative;
 		                overflow:visible;
 		                box-sizing: border-box;
+		                margin-bottom:8px;
 		              }
 		            
 		              /*header-wrap*/
@@ -52,7 +49,7 @@ wwi.exports('sticky',(sticky,fxy)=>{
 		                  overflow: visible;
 		                  position: relative;
 		                  z-index: 2;
-		                  font-size:14px;
+		                  font-size: var(--sticky-header-font-size,18px);
 		                  font-weight:900;
 		                  padding: var(--header-padding);
 		                  color: var(--header-color);
@@ -61,13 +58,12 @@ wwi.exports('sticky',(sticky,fxy)=>{
 		                  box-sizing: border-box;
 		                  width:100%;
 		                  transform:translateY(0px);
-		                  will-change: transform;
 		                  transition-property: transform;
 		                  transition-duration: 200ms;
 		                  transition-timing-function: ease-in-out;
 		                  transform-style: flat;
 		                  background:var(--header-back,transparent);
-		                  
+		                  will-change: transform;
 		              }
 
 		              ${selectors.header} [title]{
@@ -86,20 +82,25 @@ wwi.exports('sticky',(sticky,fxy)=>{
 		                will-change:width;
 		              }
 
-		              ${selectors.header}.fixed {
+					  ${selectors.header}.fixed {
 		                  top:${list.offsetTop}px;
 		                  position: fixed;
 		                  transform:var(--header-fixed-y,translateY(-1px));
+		              }
+
+		              :host([slide-title]) ${selectors.header}.fixed,
+		              :host([header-shadow]) ${selectors.header}.fixed {
 		                  -webkit-filter:var(--header-fixed-shadow,clear);
 		                  filter:var(--header-fixed-shadow,clear);
 		              }
 		              
 		              
-		              ${selectors.header}.fixed [title]{
+		              :host([slide-title]) ${selectors.header}.fixed [title]{
 		                width:var(--header-fixed-width,calc(100% - 10px));
 		                -webkit-filter:var(--header-shadow,var(--sticky-shadow));
 		                filter:var(--header-shadow,var(--sticky-shadow));
 		              }
+		              
 		            
 		              ${selectors.header}.fixed.absolute {
 		                  position: absolute;

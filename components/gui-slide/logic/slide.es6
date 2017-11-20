@@ -9,7 +9,6 @@ window.fxy.exports('gui-slide',(gui_slide,fxy)=>{
 	const Slider = Base => class extends Base{
 		get bar(){ return this.query('[gui-slide][bar]') }
 		connected(){
-		
 			this.define('routes',{
 				active:true,
 				value(value){
@@ -17,13 +16,8 @@ window.fxy.exports('gui-slide',(gui_slide,fxy)=>{
 					this.dispatch('change',{value:percent})
 				}
 			})
-			
 			this.addEventListener('mousedown', mouse_down, false)
-			this.addEventListener('mousemove', mouse_move, false)
-			this.addEventListener('mouseenter', mouse_enter, false)
-			this.addEventListener('mouseleave', mouse_leave, false)
 			if(typeof super.connected === 'function') super.connected()
-			//this.addEventListener('click', e => e.stopPropagation(), false)
 		}
 		get handle(){ return this.query('[gui-slide][bar] > [handle]') }
 	}
@@ -36,14 +30,6 @@ window.fxy.exports('gui-slide',(gui_slide,fxy)=>{
 	gui_slide.Slider = Slider
 	
 	//shared actions
-	function clear_leave_timeout(target){
-		if('leave_timeout' in target){
-			window.clearTimeout(target.leave_timeout)
-			delete target.leave_timeout
-		}
-		return true
-	}
-	
 	function get_x(e, target) {
 		let slider = design_of(target.handle)
 		let x = e.clientX - slider.offset().left
@@ -56,6 +42,7 @@ window.fxy.exports('gui-slide',(gui_slide,fxy)=>{
 	function is_right_click(e){ return e.which === 3 }
 	
 	function mouse_down(e) {
+		document.documentElement.addEventListener('mousemove', mouse_move, false)
 		Slide.target = e.currentTarget
 		let activate = Slide.target.is_lock ? Slide.target.movable:true
 		if(activate){
@@ -64,23 +51,12 @@ window.fxy.exports('gui-slide',(gui_slide,fxy)=>{
 		}
 		if(!Slide.target.is_lock) mouse_move(e)
 	}
-	
-	function mouse_enter(e){
-		let target = e.currentTarget
-		clear_leave_timeout(target)
-	}
-	
-	function mouse_leave(e){
-		let target = e.currentTarget
-		if(clear_leave_timeout(target)){
-			target.leave_timeout = window.setTimeout(()=>remove_slide(e),1000)
-		}
-	}
-	
+
 	function mouse_move(e) {
 		e.preventDefault()
 	
-		let target = e.currentTarget
+		let target = Slide.target
+		if(!target) return
 		let activate = target.is_lock ? target.movable:true
 		if (activate && Slide.moving && !Slide.right_click) {
 			let x = get_x(e, target)
@@ -96,6 +72,7 @@ window.fxy.exports('gui-slide',(gui_slide,fxy)=>{
 		if(Slide.target.is_lock) Slide.target.dispatch('toggle')
 		Slide.moving = false
 		delete Slide.target
+		document.documentElement.removeEventListener('mousemove', mouse_move, false)
 	}
 	
 })

@@ -78,7 +78,7 @@ window.fxy.exports('element',(element,fxy)=>{
 	}
 	
 	function get_wait(element){
-		return window.wwi.when(...get_waits())
+		return window.fxy.when(...get_waits())
 		//shared actions
 		function get_list(value){ return value.replace(/ /g,',').split(',').map(part=>part.trim()).filter(part=>part.length > 0) }
 		function get_waits(){

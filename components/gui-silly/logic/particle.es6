@@ -1,5 +1,4 @@
-window.fxy.exports('wwe', (wwe,fxy) => {
-
+window.fxy.exports('gui', (gui,fxy) => {
 	let current_canvas
 	
 	const tools = {
@@ -34,52 +33,6 @@ window.fxy.exports('wwe', (wwe,fxy) => {
 			}
 			this.keys = Object.keys(this.options)
 		}
-		get count(){ return this.options.count }
-		get color() {
-			return `rgb(${r(...this.options.color)},${r(...this.options.color)},${r(...this.options.color)})`
-		}
-		
-		get gravity() {
-			return this.options.gravity
-		}
-		
-		get friction() {
-			return this.options.friction
-		}
-		
-		get opacity() {
-			return r(...this.options.opacity)
-		}
-		
-		
-		
-		get radius() {
-			return r(...this.options.radius)
-		}
-		
-		get ratio(){ return window.devicePixelRatio }
-		
-		get rotation() {
-			return r(...this.options.rotation)
-		}
-		
-		get speed() {
-			return r(...this.options.speed)
-		}
-		
-		get velocity() {
-			return this.options.velocity
-		}
-		
-		particle(canvas) {
-			let particle = {
-				x: canvas.width / 2,
-				y: canvas.height / 2,
-			}
-			for (let key of this.keys) particle[key] = this[key]
-			return particle
-		}
-		
 		canvas(element,{x,y}) {
 			let canvas = document.createElement('canvas')
 			canvas.style.position = 'absolute'
@@ -95,15 +48,51 @@ window.fxy.exports('wwe', (wwe,fxy) => {
 			canvas.height = this.size * this.ratio
 			return this.current_canvas = canvas
 		}
+		get color() { return `rgb(${r(...this.options.color)},${r(...this.options.color)},${r(...this.options.color)})` }
+		get count(){ return this.options.count }
 		get current_canvas(){ return current_canvas }
 		set current_canvas(canvas){ return current_canvas = canvas}
-		
+		event(e) {
+			let center = get_center(e)
+			let element = e.currentTarget || e.target
+			let pointer_name = element.getAttribute('pointer')
+			let pointer = ParticleEmitter[pointer_name]
+			
+			if('before_render' in pointer) pointer.before_render(element)
+			let canvas = pointer.canvas(element,center)
+			let ctx = canvas.getContext('2d')
+			let particles = pointer.particles()
+			let render = pointer.render(ctx,particles,canvas.width,canvas.height);
+			
+			
+			(function renderLoop() {
+				requestAnimationFrame(renderLoop)
+				render()
+			})();
+			
+			setTimeout(function () {
+				document.body.removeChild(canvas)
+				pointer.current_canvas = null;
+			}, 3000);
+		}
+		get friction() { return this.options.friction }
+		get gravity() { return this.options.gravity }
+		get opacity() { return r(...this.options.opacity) }
+		particle(canvas) {
+			let particle = {
+				x: canvas.width / 2,
+				y: canvas.height / 2,
+			}
+			for (let key of this.keys) particle[key] = this[key]
+			return particle
+		}
 		particles() {
 			let particles = []
-			for (var i = 0; ++i < this.count;) particles.push(this.particle(this.current_canvas))
+			for (let i = 0; ++i < this.count;) particles.push(this.particle(this.current_canvas))
 			return particles
 		}
-		get size(){ return this.options.size }
+		get radius() { return r(...this.options.radius) }
+		get ratio(){ return window.devicePixelRatio }
 		render(ctx,particles,width,height){
 			let current_color = this.current_color
 			return function render() {
@@ -130,41 +119,18 @@ window.fxy.exports('wwe', (wwe,fxy) => {
 			}
 			
 		}
-		event(e) {
-			let center = get_center(e)
-			let element = e.currentTarget || e.target
-			let pointer_name = element.getAttribute('pointer')
-			let pointer = ParticleEmitter[pointer_name]
-			
-			if('before_render' in pointer) pointer.before_render(element)
-			let canvas = pointer.canvas(element,center)
-			let ctx = canvas.getContext('2d')
-			let particles = pointer.particles()
-			let render = pointer.render(ctx,particles,canvas.width,canvas.height);
-	
-				
-             (function renderLoop() {
-                 requestAnimationFrame(renderLoop)
-                 render()
-             })();
-             
-			setTimeout(function () {
-				document.body.removeChild(canvas)
-				pointer.current_canvas = null;
-			}, 3000);
-			
-			
-		}
+		get rotation() { return r(...this.options.rotation) }
+		get size(){ return this.options.size }
+		get speed() { return r(...this.options.speed) }
+		get velocity() { return this.options.velocity }
 	}
 	
-	
+	//exports
 	ParticleEmitter.explode = new ParticleEmitter()
 	fxy.require('element/pointer').set('explode', ParticleEmitter.explode.event.bind(ParticleEmitter.explode))
+	gui.ParticleEmitter = ParticleEmitter
 	
-	wwe.ParticleEmitter = ParticleEmitter
-	
-	
-	
+	//shared actions
 	function get_center(e) {
 		let element = e.currentTarget || e.target
 		let x = 'clientX' in e ? e.clientX : (element.offsetLeft + (element.clientWidth / 2))
@@ -172,7 +138,6 @@ window.fxy.exports('wwe', (wwe,fxy) => {
 		return {x, y}
 	}
 	
-
 	function get_color(element) {
 		let color = 'rgba(100,100,100,0.5)'
 		if (element) {
@@ -189,7 +154,5 @@ window.fxy.exports('wwe', (wwe,fxy) => {
 	function r(a, b, c) {
 		return parseFloat((Math.random() * ((a ? a : 1) - (b ? b : 0)) + (b ? b : 0)).toFixed(c ? c : 0))
 	}
-	
-	
 	
 })

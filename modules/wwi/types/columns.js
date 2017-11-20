@@ -60,6 +60,9 @@
 	
 	//shared actions
 	function get_controller(container){
+		container.setAttribute('gui','')
+		container.setAttribute('scrollbars','x')
+		
 		container.Type = {
 			collapse(){
 				if('before_collapse' in this) this.before_collapse()

@@ -1,0 +1,116 @@
+<template id="color-gradients">
+	<style>
+		@import "modules/wwi/component/design/host.css";
+
+		:host {
+			display: block;
+			position: relative;
+			--top-padding:20px;
+			--bottom-padding:50px;
+			--side-padding:50px;
+			height: calc(100% - (var(--top-padding) + var(--bottom-padding)));
+			width: calc(100% - (2 * var(--side-padding)));
+			max-width: calc(100% - (2 * var(--side-padding)));
+			user-select: text;
+			max-height:calc(100% - (var(--top-padding) + var(--bottom-padding)));
+		}
+
+		[view] {
+			max-height: 100%;
+			overflow: hidden;
+			overflow-y:auto;
+			padding:var(--top-padding) var(--side-padding) var(--bottom-padding) var(--side-padding);
+		}
+
+		[gradient] {
+			position: relative;
+			display: inline-flex;
+			height: 20vmin;
+			width: 20vmin;
+			resize: both;
+			margin: 30px;
+			border-radius: 100px;
+			box-sizing: border-box;
+			flex-direction: row;
+			text-align: center;
+			justify-content: center;
+			margin-bottom:30px;
+			user-select: all;
+			cursor: pointer;
+			z-index: 1;
+		}
+		[gradient]::after{
+			content:attr(title);
+			white-space: nowrap;
+			font-size:12px;
+			position: absolute;
+			bottom:-20px;
+			left:0;
+			right:0;
+			user-select: all;
+			z-index: 10000;
+
+		}
+		[css-value-bar]{
+			position: sticky;
+			top:5px;
+			min-width: 100%;
+			width: 100%;
+			max-width: 100%;
+			display: flex;
+			align-self: start;
+			justify-content: center;
+			flex-direction: row;
+			z-index: 100;
+		}
+		[css-value]{
+			padding:4px 18px 4px 18px;
+			border-radius: 100px;
+			background-color: var(--silver-light);
+			text-align: center;
+			font-size:20px;
+			font-family: monospace;
+			border:1px solid var(--silver);
+			min-width: 40vw;
+			user-select: text;
+			white-space: nowrap;
+		}
+	</style>
+	<div view gui horizontal wrap around>
+		<div css-value-bar>
+			<div css-value></div>
+		</div>
+	</div>
+</template>
+<script>
+	(function (doc) {
+		const Gradients = wwi.element(doc)
+		Gradients(class extends Gradients.Element {
+			connected() {
+				fxy.doc(window.url('modules/wwi/component/design/css/colors.css'))
+				   .then(colors => {
+					   let names = Array.from(colors.keys()).filter(name => name.includes('-bg')).sort()
+					   for (let name of names) {
+						   let gradient = get_gradient(name)
+						   gradient.onclick = e=>this.set_value(e)
+						   this.view.appendChild(gradient)
+					   }
+					   //shared actions
+					   function get_gradient(name) {
+						   let element = document.createElement('div')
+						   element.setAttribute('gradient', '')
+						   element.setAttribute('title', 'name')
+						   element.style.background = colors.get(name)
+						   element.title = name
+						   return element
+					   }
+				   })
+			}
+			set_value(e){
+				let button = e.currentTarget
+				let value = this.query('[css-value]')
+				value.innerHTML = `var(<span style="user-select: all">${button.title}</span>)`
+			}
+		})
+	})(document)
+</script>

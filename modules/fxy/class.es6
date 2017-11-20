@@ -48,7 +48,7 @@
 			exports(folder,action){
 				if(!is_text(folder)) return module_exports_proxy()
 				if(!is_function(action)) return module_exports(folder)
-				return action(module_exports(folder),this)
+				return action(module_exports(folder),this,module_component(folder))
 			}
 			get external(){ return get_external() }
 			get is(){
@@ -107,6 +107,7 @@
 			get modules(){ return get_modules() }
 			get not(){ return get_not() }
 			get numeral(){return get_numeral }
+			get point(){return point_loader()}
 			get random(){ return get_random() }
 			get require(){ return fxy_require }
 			get service_worker(){ return get_service_worker }
@@ -259,14 +260,14 @@
 		function fxy_folder(path){
 			return fxy.has(path) ? fxy.get(path):fxy.set(path,new Map()).get(path)
 		}
-		function fxy_module(paths){
-			let folder
-			if(!is_data(paths)) return null
-			else if('path' in paths && 'name' in paths){
-				folder = fxy.has(paths.path) ? fxy_folder(paths.path) : null
-				return is_map(folder) && folder.has(paths.name) ? folder.get(paths.name) : null
+		function fxy_module(paths,pathname){
+			let value = null
+			if(is_data(paths) && 'path' in paths && 'name' in paths){
+				let folder = fxy.has(paths.path) ? fxy_folder(paths.path) : null
+				value = is_map(folder) && folder.has(paths.name) ? folder.get(paths.name) : null
 			}
-			return null
+			if(!value && is_text(pathname) && fxy.has(pathname)) value = get_modules()[pathname]
+			return value
 		}
 		function fxy_paths(pathname){
 			return fxy[modules].get(pathname)
@@ -281,7 +282,7 @@
 		}
 		function fxy_require(...paths){
 			let pathname = fxy_join(...paths)
-			return fxy_module(fxy_paths(pathname))
+			return fxy_module(fxy_paths(pathname),pathname)
 		}
 		function fxy_save(path,name,value){
 			let pathname = fxy_join(path,name)
@@ -687,6 +688,10 @@
 			}
 		}
 		
+		function module_component(module_folder){
+			if('components' in window) return window.components[module_folder]
+			return null
+		}
 		function module_exports(module_folder_path){
 			const folder_path = module_folder_path
 			return new Proxy({},{
@@ -713,6 +718,35 @@
 					return o(name)
 				}
 			})
+		}
+		
+		function point_loader(){
+			return new Proxy(get_points(),{
+				get(o,name){
+					return (...x)=>{
+						return new Promise((success,error)=>{
+							try{
+								if(o.has(name)) return success(o.get(name)(...x))
+								return load_point(name).then(p=>p(...x)).then(success)
+							}catch(e){
+								return error(e)
+							}
+							
+						})
+					}
+				},
+				has(o,name){return o.has(name)}
+			})
+			//shared action
+			function get_points(){
+				if(!fxy.has(Symbol.for('points'))) fxy.set(Symbol.for('points'),new Map())
+				return fxy.get(Symbol.for('points'))
+			}
+			function load_point(name){
+				let file = !name.includes('.js') ? name+='.js':name
+				let endpoint = window.url.modules('fxy/points/',file)
+				return window.fxy.port.eval(endpoint).then(point=>get_points().set(name,point).get(name))
+			}
 		}
 		
 		function tag_closure_value(key,data){

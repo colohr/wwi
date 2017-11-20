@@ -26,7 +26,7 @@ window.fxy.exports('tool',(tool)=>{
 			get direction(){
 				let travel = this
 				if(travel.axis.horizontal) return travel.offset.x <= 0 ? 'left':'right'
-				else if(travel.axis.vertical) return travel.offset.y <= 0 ? 'top':'down'
+				else if(travel.axis.vertical) return travel.offset.y <= 0 ? 'up':'down'
 				return 'center'
 			},
 			start

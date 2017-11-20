@@ -9,6 +9,7 @@
 			--title-bar-width:calc(100%);
 			--title-bar-padding:calc(var(--title-margin) / 2);
 
+
 			background: rgba(255, 255, 255, 0.4);
 			border-radius: var(--radius,100px);
 			display: block;
@@ -16,6 +17,8 @@
 			height:var(--title-height);
 			position: relative;
 			width: calc( var(--width,100%) - (var(--title-margin) * 3));
+			text-rendering: geometricPrecision;
+			line-height: normal;
 		}
 
 		[view] {
@@ -26,16 +29,18 @@
 			width: 100%;
 			text-align: left;
 			height: 100%;
-			line-height: var(--title-height);
 		}
 		:host([closes]){
 			--title-bar-width: calc(100% - ( var(--button-size) + 6px));
 		}
 		[title-bar]{
-			display: inline-block;
 			width: var(--title-bar-width);
 			max-width: var(--title-bar-width);
 			height: 100%;
+			display: inline-flex;
+			align-content: center;
+			flex-direction: column;
+			justify-content: center;
 		}
 
 
@@ -111,12 +116,13 @@
 		button:active gui-icon{
 			background-color: rgba(105, 37, 56, 0.14);
 		}
+
 		button:hover gui-icon,
-		button:active gui-icon{
+		button:active gui-icon,
+		button:focus gui-icon{
 			opacity: 1;
 			transform: scale(1, 1);
 		}
-
 	</style>
 	<div view>
 		<div title-bar>

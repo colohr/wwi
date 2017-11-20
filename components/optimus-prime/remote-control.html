@@ -4,9 +4,13 @@
 
         :host{
 	        outline: none;
+	        padding:10px;
+	        border-radius: var(--radius,initial);
+	        background-color: rgba(0,0,0,0);
+	        transition: background 200ms ease;
         }
         :host(:focus){
-	        background-color: rgba(0,0,0,0.3);
+	        background-color: rgba(200,200,200,0.2);
         }
         a{
 	        display: block;
@@ -15,6 +19,7 @@
 	        position: relative;
 	        cursor: pointer;
         }
+
 	    [directions] a{
 		    box-sizing: border-box;
 		    margin:var(--margin,0 5px 0 5px);
@@ -24,7 +29,11 @@
 		    border-radius: var(--radius,initial);
 		    color:var(--color,var(--berry));
 	    }
-	    content-icon{
+        a:active{
+	        color:blue;
+	        box-shadow:inset var(--shadow,none);
+        }
+        gui-icon{
 		    position: relative;
 		    height:25px;
 		    width: 25px;
@@ -33,16 +42,16 @@
     </style>
 	<div gui view directions horizontal center-center>
 		<a left name="left">
-			<content-icon name="left"></content-icon>
+			<gui-icon name="left"></gui-icon>
 		</a>
 		<a up name="up">
-			<content-icon name="up"></content-icon>
+			<gui-icon name="up"></gui-icon>
 		</a>
 		<a down name="down">
-			<content-icon name="down"></content-icon>
+			<gui-icon name="down"></gui-icon>
 		</a>
 		<a right name="right">
-			<content-icon name="right"></content-icon>
+			<gui-icon name="right"></gui-icon>
 		</a>
 	</div>
 </template>

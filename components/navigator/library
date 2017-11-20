@@ -3,12 +3,19 @@ library.id = 'navigator-library'
 library.ports = [
 	window.components.search.index_url
 ]
+library.logic = [
+	'logic/index.es6'
+]
 library.elements = [
-	'buttons/index.html',
+	{
+		path:'buttons/index.html',
+		wait:['fxy.modules.navigator.Button']
+	},
 	'component.html'
 ]
 
 library.wait = [
-	'navigator-component'
+	'navigator-component',
+	'search-library'
 ]
 

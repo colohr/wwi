@@ -1,0 +1,13 @@
+library = {}
+library.id = 'gui-silly'
+library.logic = [
+	'logic/particle.es6',
+	'logic/letterify.es6'
+]
+
+library.elements = [
+	'components/explode.html',
+	'components/shiny.html'
+]
+
+library.wait = ['gui-explode','gui-shiny']

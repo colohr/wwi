@@ -1,11 +1,25 @@
 library = {}
 library.id = 'gui-components'
+//library.log = true
 library.ports = [
 	window.components['gui-card'].index_url,
 	window.components['gui-icon'].index_url,
 	window.components['gui-title'].index_url,
 	window.components['gui-check'].index_url,
 	window.components['gui-action'].index_url,
-	window.components['gui-slide'].index_url
+	window.components['gui-slide'].index_url,
+	window.components['gui-backdrop'].index_url,
+	window.components['gui-silly'].index_url,
+	window.components['gui-spinner'].index_url
 ]
-library.wait = ['gui-card','gui-title','gui-icon','gui-check','gui-action','gui-slide']
+library.wait = [
+	'gui-card',
+	'gui-title',
+	'gui-icon',
+	'gui-check',
+	'gui-action',
+	'gui-slide',
+	'gui-silly',
+	'gui-backdrop',
+	'gui-spinner'
+]

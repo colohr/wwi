@@ -31,6 +31,7 @@
 [gui][end-justified]{ -ms-flex-pack: end; -webkit-justify-content: flex-end; justify-content: flex-end; }
 [gui][around-justified], [gui][around]{ -ms-flex-pack: distribute; -webkit-justify-content: space-around; justify-content: space-around; }
 [gui][justified],[gui][between]{ -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+[gui][evenly]{ justify-content: space-evenly; }
 
 [self-start]{ -ms-align-self: flex-start; -webkit-align-self: flex-start; align-self: flex-start; }
 [self-center]{ -ms-align-self: center; -webkit-align-self: center; align-self: center; }
@@ -83,3 +84,61 @@
     will-change: transform, opacity;
 }
 
+[gui][scrollbars]{  overflow: hidden;  }
+[gui][scrollbars="x"]{
+    overflow-x:auto;
+    max-width: var(--scroll-width,100%);
+}
+[gui][scrollbars="y"]{
+    overflow-y:auto;
+    max-height: var(--scroll-height,100%);
+}
+[gui][scrollbars="xy"]{
+    overflow-x:auto;
+    overflow-y:auto;
+    max-width: var(--scroll-width,100%);
+    max-height: var(--scroll-height,100%);
+}
+[gui][scrollbars]::-webkit-scrollbar {
+    height: var(--scrollbar-size,13px);
+    overflow: visible;
+    width:var(--scrollbar-size,13px);
+
+}
+
+
+[gui][scrollbars]::-webkit-scrollbar-button { height: 0; width: 0; }
+[gui][scrollbars]::-webkit-scrollbar-corner { background: var(--scrollbar-corner-color,rgba(0, 0, 0, 0)); }
+[gui][scrollbars]::-webkit-scrollbar-thumb{
+    --scrollbar-thumb-box-shadow:inset 0 0 0 1px rgba(255, 255, 255, .1), inset 1px 1px 0 rgba(0, 0, 0, .07), inset -1px -1px 0 rgba(0, 0, 0, .07);
+}
+
+[gui][scrollbars]::-webkit-scrollbar-thumb {
+
+    --scrollbar-thumb-padding-value:100px 0 0;
+    --scrollbar-thumb-border-value:solid rgba(0,0,0,0);
+    background-clip: padding-box;
+    background-color:var(--scrollbar-thumb-color, rgba(0, 0, 0, .2));
+    border: var(--scrollbar-thumb-border, var(--scrollbar-thumb-border-value));
+    min-height: var(--scrollbar-thumb-height,28px);
+    padding: var(--scrollbar-thumb-padding,var(--scrollbar-thumb-padding-value));
+    border-radius: var(--scrollbar-thumb-radius,100px);
+    box-shadow: var(--scrollbar-thumb-shadow, var(--scrollbar-thumb-box-shadow));
+
+}
+
+[gui][scrollbars]::-webkit-scrollbar-track {
+    --track-border-edges:0 0 0 var(--scrollbar-track-width);
+    --track-border-color-value:rgba(0,0,0,0);
+    background-clip: padding-box;
+    border: solid var(--scrollbar-track-color, var(--track-border-color-value));
+    border-width: var(--scrollbar-track-border-width, var(--track-border-edges));
+}
+[gui][scrollbars]::-webkit-scrollbar-track-piece {
+    --piece-border-edges:0 0 0 var(--scrollbar-piece-width);
+    background-clip: padding-box;
+
+    background-color: var(--scrollbar-piece-color,rgba(245, 245, 245, 0.47));
+    border: solid var(--scrollbar-piece-border-color, var(--scrollbar-piece-color));
+    border-width:var(--scrollbar-piece-border-width, var(--piece-border-edges));
+}

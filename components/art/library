@@ -6,7 +6,7 @@ library.logic = [
 	'logic/canvas.es6'
 ]
 library.elements = [
-	'gradients.html',
+	
 	{
 		path:'palette.html',
 		wait:['content-menu']

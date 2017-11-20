@@ -9,9 +9,7 @@ window.fxy.exports('dom', (dom, fxy) => {
 	wwi.app = wwi_app_export
 	wwi.button = wwi_button_export
 	wwi.custom = wwi_custom_export
-	wwi.container = wwi_container_export
 	wwi.element = wwi_element_export
-	wwi.listener = wwi_listener_export
 	wwi.page = wwi_page_export
 	
 	//export actions
@@ -23,10 +21,13 @@ window.fxy.exports('dom', (dom, fxy) => {
 	
 	function wwi_button_export(doc, ...mixes) {
 		const template = generate_template(doc)
-		mixes.push(fxy.require('dom/Button'))
+		//mixes.push(fxy.require('dom/Button'))
 		const creator = generate_element_creator(...mixes)
 		creator.Element = fxy.require('element/memorize')(fxy.require('element/a11y')(creator.Element))
-		return generate_construction(template, creator)
+		
+		const construction =  generate_construction(template, creator)
+		construction.behaviors = [{module:'behavior',name:'Button'}]
+		return construction
 	}
 	
 	function wwi_custom_export(doc, ...mixes) {
@@ -36,39 +37,16 @@ window.fxy.exports('dom', (dom, fxy) => {
 		return generate_construction(template, creator)
 	}
 	
-	function wwi_container_export(...x) {
-		let CustomElement = get_element(...x)
-		function wwi_create(...definitions) {
-			if (definitions.length === 1) definitions.push(CustomElement)
-			return fxy.define(...definitions)
-		}
-		wwi_create.Element = CustomElement
-		return wwi_create
-	}
-	
 	function wwi_element_export(doc, ...mixes) {
 		const template = generate_template(doc)
 		const creator = generate_element_creator(...mixes)
 		return generate_construction(template, creator)
 	}
 	
-	function wwi_listener_export(name, ...observed) {
-		let CustomElement = fxy.require('element/actions')(class extends HTMLElement {
-			static get observedAttributes() {return observed}
-		})
-		
-		function wwi_create(mixin) {
-			if (typeof mixin === 'function') CustomElement = mixin(CustomElement)
-			return fxy.define(name, CustomElement)
-		}
-		
-		return wwi_create
-	}
-	
 	function wwi_page_export(doc, ...mixes) {
-		const page = wwi_element_export(doc, ...mixes)
-		page.Element = dom.Page(page.Element)
-		return page
+		const template = generate_template(doc)
+		const creator = generate_element_creator(...mixes)
+		return generate_construction(template, creator, {module:'behavior',name:'Page'})
 	}
 	
 	
@@ -85,7 +63,6 @@ window.fxy.exports('dom', (dom, fxy) => {
 		const list = []
 		let type = 'wwi'
 		names = names.filter(value => {
-			
 			let is_mix = value && typeof value === 'string'
 			if (!is_mix) list.push(value)
 			else if(value === Symbol.for('custom element')){
@@ -99,10 +76,15 @@ window.fxy.exports('dom', (dom, fxy) => {
 		return {base, names, properties,type}
 	}
 	
-	function generate_construction(template, creator) {
+	function generate_construction(template, creator, ...behaviors) {
 		const element_name = get_element_identity({template}).element_name
 		const construction = function wwi_construction(base, extension, ...observed) {
-			generate_base_observed(base, observed).template = template
+			if(behaviors.length) {
+				let mixins = behaviors
+				behaviors=[]
+				return (generate_element_extension(construction)(...mixins))(base,extension,...observed)
+			}
+			base = generate_base_observed(base, observed,template)
 			return fxy.define(...generate_base_definitions(element_name, base, extension))
 		}
 		if (creator) {
@@ -115,14 +97,17 @@ window.fxy.exports('dom', (dom, fxy) => {
 		return new Proxy(construction, {
 			get (o, name) {
 				if (name in o) return o[name]
-				if (name === 'extension') return generate_element_extension(o)
+				if (name === 'extension') return generate_element_extension(o,behaviors)
 				return null
 			}
 		})
 	}
 	
-	function generate_element_extension(construction) {
+	function generate_element_extension(construction,behaviors) {
+		
 		return function element_extension_mixin(...x) {
+			if(fxy.is.array(behaviors)) x = behaviors.concat(x)
+			
 			let extensions = get_extensions(...x)
 			return new Proxy(function extension_of_base(Base, ...options) {
 				Promise.all(extensions).then(results => {
@@ -196,7 +181,8 @@ window.fxy.exports('dom', (dom, fxy) => {
 		return args
 	}
 	
-	function generate_base_observed(base, observed) {
+	function generate_base_observed(base, observed, template) {
+		if(!is.text(template)) base.template = template
 		if (observed.length && Symbols.Properties in base) {
 			let base_properties = base[Symbols.Properties]
 			observed = observed.filter(observed_name => !base_properties.includes(observed_name))
@@ -206,6 +192,8 @@ window.fxy.exports('dom', (dom, fxy) => {
 	}
 	
 	function generate_template(doc) {
+		if(fxy.is.nothing(doc)) return null
+		else if(fxy.is.text(doc)) return doc
 		const template_query = get_template_selector(doc)
 		return doc.currentScript.ownerDocument.querySelector(template_query)
 	}
@@ -218,24 +206,44 @@ window.fxy.exports('dom', (dom, fxy) => {
 		//shared actions
 		function get_element_class(Base, properties) {
 			properties = observed_attributes(properties)
-			class ElementClassDefinition extends fxy.require('element/tricycle')(Base) {
+			class WebComponent extends fxy.require('element/tricycle')(Base) {
 				static get observedAttributes() { return this[Symbols.Properties] }
 				constructor(...x) {
 					super()
 					element_construction(this, ...x)
 				}
 			}
-			ElementClassDefinition[Symbols.Properties] = properties || []
-			return ElementClassDefinition
+			WebComponent[Symbols.Properties] = properties || []
+			return WebComponent
 			
 			//shared actions
 			function element_construction(element, ...x) {
-				let definitions = []
-				let template
-				if (is.text(x[0]) && x[0] === 'routes' && is.object(x[1])) definitions = [x[0], x[1]]
-				else if (!is.nothing(x[1])) template = x[1]
-				if (!definitions.length && is.object(x[0])) definitions.push(x[0])
-				element.attach_template(template).define(...definitions)
+				let definitions = x.filter(filter_definitions)
+				let template = x.filter(filter_template)
+				if(template.length>1) template = template.join('')
+				else template = template[0] || null
+				if(definitions.length === 1){ if(has_actions()) definitions.unshift('routes') }
+				attach_template(element,template).define(...definitions)
+				//if (is.text(x[0]) && x[0] === 'routes' && is.object(x[1])) definitions = [x[0], x[1]]
+				//else if (!is.nothing(x[1])) template = x[1]
+				//if (!definitions.length && is.object(x[0])) definitions.push(x[0])
+				
+				//shared actions
+				function filter_definitions(item){
+					if(item === 'routes') return true
+					return fxy.is.data(item) && (!fxy.is.element(item) && !fxy.is.element(item,DocumentFragment))
+				}
+				function filter_template(item){
+					if(fxy.is.text(item) && item !== 'routes') return true
+					return fxy.is.element(item) || fxy.is.element(item,DocumentFragment)
+				}
+				function has_actions(){
+					if(fxy.is.data(definitions[0])){
+						let names = Object.keys(definitions[0])
+						for(let name of names) if(fxy.is.function(definitions[0][name])) return true
+					}
+					return false
+				}
 			}
 			
 			function observed_attributes(properties) {
@@ -243,6 +251,8 @@ window.fxy.exports('dom', (dom, fxy) => {
 				if ('observedAttributes' in Base) properties = properties.concat(Base.observedAttributes.filter(prop => !properties.includes(prop)))
 				return properties
 			}
+			
+			
 		}
 	}
 	
@@ -258,10 +268,12 @@ window.fxy.exports('dom', (dom, fxy) => {
 				break
 		}
 		Base = fxy.require('element/slots')(Base)
-		Base = fxy.require('element/template')(Base)
+		Base = fxy.require('element/Template')(Base)
 		return Base
 	}
+	
 	function get_element_identity({name, template}) {
+		if(is.text(template)) return {element_name:template}
 		let template_id = get_element_template_id({name, template})
 		let element_name = get_element_name({name, template_id})
 		return {element_name, template_id}
@@ -281,12 +293,10 @@ window.fxy.exports('dom', (dom, fxy) => {
 	
 	function get_element_with_basic_mixes(...x) {
 		let CustomElement = get_element(...x)
-		
 		function wwi_create(...definitions) {
 			if (definitions.length === 1) definitions.push(CustomElement)
 			return fxy.define(...definitions)
 		}
-		
 		wwi_create.Element = CustomElement
 		return wwi_create
 	}
@@ -309,5 +319,54 @@ window.fxy.exports('dom', (dom, fxy) => {
 		if (current_script_id && !current_script_id.includes('-template') && doc.currentScript.ownerDocument.querySelector(`template${current_script_id}`) === null) current_script_id = current_script_id + '-template'
 		return !current_script_id ? 'template' : `template${current_script_id}`
 	}
+	
+	function attach_template(element,template){
+		const shadow_attached =  Symbol.for('template attached')
+		if(shadow_attached in element) return element
+		let shadow = 'no_shadow' in element.constructor ? element:element.attachShadow({mode:'open'})
+		element[shadow_attached] = true
+		template = is.nothing(template) ? get_template():template
+		if(is.element(template, DocumentFragment) || is.element(template)) shadow.appendChild(template)
+		else if(is.text(template)) shadow.innerHTML = template
+		return element
+		//shared actions
+		function get_template(){
+			if(!('template' in element.constructor)) return null
+			let value = element.constructor.template
+			if(is.text(value)) return value
+			else if(is.element(value, HTMLTemplateElement)) return value.content.cloneNode(true)
+			else if(is.element(value)) return value
+			return null
+		}
+	}
+	
+	
 })
 
+
+//deleted
+//wwi.container = wwi_container_export
+//function wwi_container_export(...x) {
+//	let CustomElement = get_element(...x)
+//	function wwi_create(...definitions) {
+//		if (definitions.length === 1) definitions.push(CustomElement)
+//		return fxy.define(...definitions)
+//	}
+//	wwi_create.Element = CustomElement
+//	return wwi_create
+//}
+
+//deleted
+//wwi.listener = wwi_listener_export
+//function wwi_listener_export(name, ...observed) {
+//	let CustomElement = fxy.require('element/actions')(class extends HTMLElement {
+//		static get observedAttributes() {return observed}
+//	})
+//
+//	function wwi_create(mixin) {
+//		if (typeof mixin === 'function') CustomElement = mixin(CustomElement)
+//		return fxy.define(name, CustomElement)
+//	}
+//
+//	return wwi_create
+//}

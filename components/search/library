@@ -2,8 +2,6 @@ library = {}
 library.id = 'search-library'
 library.logic = [
 	'logic/Data.es6'
-	
-	//'logic/Result.es6'
 ]
 library.elements = [
 	'components/suggestion.html',
@@ -14,8 +12,3 @@ library.elements = [
 	}
 ]
 library.wait = ['search-component']
-
-//{
-//	path:'results.html',
-//		wait:['search-result']
-//},

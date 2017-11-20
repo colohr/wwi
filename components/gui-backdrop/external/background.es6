@@ -1,8 +1,8 @@
 (function(get_control){ return get_control() })
 (function(){
-    return function export_control(wwe,fxy){
+    return function export_control(gui,fxy){
 	    const timer = Symbol('timer')
-	    const data_path = window.url(window.components.wwe.path,'background/data.json')
+	    const data_path = window.url(window.components['gui-backdrop'].path,'background/data.json')
         const types = {
 	    	collections:null,
 	        effects:null,
@@ -71,7 +71,7 @@
 		    return delete bg[timer]
 	    }
 
-		function get_graphic_url(graphic){ return url(graphic.path) }
+		function get_graphic_url(graphic){ return window.url(graphic.path) }
 	 
 		function get_random(element){
 			let type = element.hasAttribute('type') ? element.getAttribute('type'):'collections'
@@ -83,12 +83,12 @@
 			let data = type in types ? types[type]:types.collections
 		    if(fxy.is.nothing(name) || !data.has(name)){
 				let names = Array.from(data.keys())
-			    let index = app.help.numbers.random(0,names.length-1)
+			    let index = fxy.random(0,names.length-1)
 			    name = names[index]
 		    }
 		    let items = data.get(name)
 		    let graphics = Object.keys(items)
-		    let graphic_index = app.help.numbers.random(0,graphics.length-1)
+		    let graphic_index = fxy.random(0,graphics.length-1)
 		    
 		    return items[graphics[graphic_index]]
 	    }

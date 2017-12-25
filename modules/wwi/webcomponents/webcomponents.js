@@ -1,6 +1,6 @@
 (function(webcomponents){ return webcomponents() })
 (function(){
-    return function get_webcomponents({kit}){
+    return (function get_webcomponents(){
 	    window.WebComponents = window.WebComponents || {}
 	    let polyfills = []
 	    if (!('import' in document.createElement('link'))) {
@@ -18,12 +18,13 @@
 		    polyfills = ['lite']
 	    }
 	    if (polyfills.length) {
-	    	let newScript = document.createElement('script')
-		    let polyfill_file = 'webcomponents-' + polyfills.join('-') + '.js'
-		    newScript.src = kit.url('poly','webcomponents',polyfill_file)
-		    if (document.readyState === 'loading' && ('import' in document.createElement('link'))) document.write(newScript.outerHTML);
-	    	else document.head.appendChild(newScript)
+		    let polyfill_url = window.url.wwi.webcomponents(`webcomponents-${polyfills.join('-')}.js`)
+		    return window.fxy.port(polyfill_url)
+		    //let newScript = document.createElement('script')
+		    //newScript.src = polyfill_url
+		    //if (document.readyState === 'loading' && ('import' in document.createElement('link'))) document.write(newScript.outerHTML);
+	    	//else document.head.appendChild(newScript)
 	    }
-        return {}
-    }
+        return Promise.resolve(true)
+    })()
 })

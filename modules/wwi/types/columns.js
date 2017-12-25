@@ -17,30 +17,34 @@
 			return data
 		}
 	}
+	
 	const list = {
 		item:fxy.tag`
 			<li gui item>
-				<a gui link href="${'link'}" title="${'title'}">
+				<a gui link href="${'link'}" target="${'target'}" title="${'title'}">
 					${'title'}
 					<div gui description>${'description'}</div>
 				</a>
 			</li>
 		`,
 		data(data){
-			data.list = data.items.map(data=>description.data(data)).map(data=>this.item(data)).join('')
-			
+			data.list = data.items
+			                .map(get_link_item)
+			                .map(data=>this.item(data)).join('')
+			//return value
 			return data
+			//shared actions
+			function get_link_item(data){
+				if(!('target' in data)) data.target = '_self'
+				return description.data(data)
+			}
 		}
 	}
 	
 	const column =  {
 		item:fxy.tag`
-			<div gui label bold uppercase title="${'title'}" style="color: rgba(75, 75, 77, 0.54);">
-				<i class="fa" style="padding-right:2px;"></i>
-			</div>
-			<ul gui list>
-				${'list'}
-			</ul>`,
+			<div gui label bold uppercase title="${'title'}"></div>
+			<ul gui list>${'list'}</ul>`,
 		element(data){
 			let element = fxy.dom('div',{'column-item':''})
 			data = list.data(data)

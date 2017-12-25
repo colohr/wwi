@@ -25,9 +25,6 @@
 	const fxy_dom = new Proxy(element,{
 		get(o,name){
 			switch(name){
-				case 'find':
-					return findit
-					break
 				case 'load':
 				case 'module':
 					return fxy_port
@@ -59,35 +56,23 @@
 		return el
 	}
 	
-	function findit( type ){
-		let found
-		if(type in file.regs) {
-			let scripts = Array.from( window.document.scripts )
-			found = scripts.filter( script => {
-				return file.regs[type].test( script.src )
-			} )[0]
-		}
-		return found || null
-	}
-	
 	function get_eval(url){ return get_promise(url).then( res => res.text() ).then( text => window.eval(text) ) }
 	
 	function get_promise(url){
-		return new Promise(function(resolve,reject){
-			let xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function refineGetFunc(e){
+		return new Promise(function(success,error){
+			let xhttp = new XMLHttpRequest()
+			xhttp.onreadystatechange = function fxy_port_promise(e){
 				if (e.target.readyState === XMLHttpRequest.DONE) {
 					if (e.target.status === 200){
-						return resolve({
+						return success({
 							responseText:e.target.responseText,
 							text(){return new Promise((r)=>{return r(this.responseText)})}
 						})
 					}
-					else reject(new Error('Status: '+e.target.status))
+					else error(new Error('Status: '+e.target.status))
 				}
-				return
-			};
-			xhttp.onerror = function refineGetError(e){return reject(e)}
+			}
+			xhttp.onerror = function fxy_port_error(e){return error(e)}
 			xhttp.open('GET', url, true)
 			return xhttp.send(null)
 		})
@@ -106,8 +91,7 @@
 		let files = x.filter(item=>fxy.is.text(item))
 		let fetches = files.map(file=>window.fetch(fxy.file.url(file)).then(x=>x.text()))
 		return Promise.all(...fetches).then(results=>{
-			let html = results.filter(text=>fxy.is.text(text)).join('\n')
-			style.innerHTML += html
+			style.innerHTML += results.filter(text=>fxy.is.text(text)).join('\n')
 			return style
 		})
 	}
@@ -125,7 +109,7 @@
 		
 		return element_load( identity, options, target )
 		
-		//---------------source actions---------------
+		//shared actions
 		function element_add_load( el, selector, target ){
 			let loads = eloads in window ? window[eloads] : window[eloads] = new Set()
 			target = target ? target : 'rel' in el ?  window.document.head : window.document.body

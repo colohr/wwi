@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "fxy": "^0.1.7",
-    "wxy": "^0.0.501"
+    "wxy": "^0.0.502"
   },
   "description": "Web Component Toolbox: includes front-end tools, server-side tools & optional component sets created with wwi.",
   "homepage": "https://github.com/colohr/wwi#readme",
@@ -23,5 +23,5 @@
     "type": "git",
     "url": "git+https://github.com/colohr/wwi.git"
   },
-  "version": "0.0.604"
+  "version": "0.0.606"
 }

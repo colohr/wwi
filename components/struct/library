@@ -1,5 +1,8 @@
 library = {}
 library.id = 'struct-library'
+library.ports = [
+	window.components.Points.index_url
+]
 library.logic = [
 	'logic/load.es6',
 	{
@@ -7,5 +10,8 @@ library.logic = [
 		wait:['fxy.modules.struct.Interface']
 	},
 	'logic/client.es6',
-	'logic/Actions.es6'
+	{
+		path:'logic/actions.js',
+		wait:['points-library']
+	}
 ]

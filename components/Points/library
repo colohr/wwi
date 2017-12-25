@@ -1,0 +1,6 @@
+library = {}
+library.id = 'points-library'
+library.logic = [
+	'logic/utility.js',
+	'logic/Signal.js'
+]

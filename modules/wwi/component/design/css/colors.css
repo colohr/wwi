@@ -10,6 +10,7 @@ Legend:
 	🎨-bright	-> more saturation
 	🎨-dim 		-> desaturated
 	🎨-less 	-> least saturation
+	🎨-bold 	-> more saturation dark
 
 	🎨-white 	-> lighter version
 	🎨-light 	-> light version
@@ -34,6 +35,10 @@ Legend:
 	--clean-bright:rgb(230, 230, 230);
 	--clean:rgba(237, 239, 241,1);
 	--clean-50:rgba(237, 239, 241,0.7);
+
+	--platinum-light:rgb(236,238,241);
+	--platinum:rgb(224,225,226);
+	--platinum-black:rgb(158,166,175);
 
 	--day: ghostwhite;
 	--day-50:rgba(255, 255, 255,0.7);

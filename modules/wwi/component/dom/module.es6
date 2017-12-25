@@ -136,13 +136,13 @@ window.fxy.exports('dom',(dom,fxy)=>{
 		switch(active){
 			case true:
 				set('aria-hidden','false')
-				set('aria-expanded','true')
+				set('expanded','')
 				remove('tabindex')
 				if(preloaded !== true) element.dispatch('active')
 				break
 			default:
 				set('aria-hidden','true')
-				set('aria-expanded','false')
+				remove('expanded')
 				set('tabindex','-1')
 				if(preloaded !== true) element.dispatch('inactive')
 				break

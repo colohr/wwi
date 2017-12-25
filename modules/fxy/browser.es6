@@ -32,7 +32,7 @@
 			}
 		}
 		get cookies(){return this.cookie.list}
-		get compatability(){return get_compatability()}
+		get compatibility(){return get_compatibility()}
 		get desktop(){return this.type === 'desktop'}
 		get dont_track(){return window.navigator.doNotTrack}
 		get geolocation(){return get_geolocation()}
@@ -61,71 +61,150 @@
     return window.fxy.browser = new Browser()
 	
 	//shared actions
-	function get_compatability(){
+	function get_compatibility(){
+		const async_await = test_async_wait()
 		const beacon = 'sendBeacon' in navigator
 		const bluetooth = 'bluetooth' in navigator
+		const closest_element = test_closest_element()
 		const custom_elements = 'customElements' in window
 		const fetch = 'fetch' in window && !('polyfill' in window.fetch)
+		const generators = test_generators()
 		const link_import = 'import' in document.createElement('link')
 		const midi = 'requestMIDIAccess' in navigator
-		const modules = modules_supported()
+		const modules = test_modules()
+		const new_target = test_new_target()
 		const promise = 'Promise' in window
 		const proxy = 'Proxy' in window
 		const push = 'ServiceWorkerRegistration' in window && 'pushManager' in ServiceWorkerRegistration.prototype
 		const registrations = 'ServiceWorkerRegistration' in window
-		const register_element = 'registerElement' in document
 		const rtc = 'RTCPeerConnection' in window
 		const service_worker = 'serviceWorker' in navigator
 		const shadow_dom = !!HTMLElement.prototype.attachShadow
 		const template =  'content' in document.createElement('template')
+		const web_components = template && shadow_dom && custom_elements && link_import
 		
-		return test_compatability({
+		return test_compatibility({
+			async_await,
 			beacon,
 			bluetooth,
+			closest_element,
 			custom_elements,
 			fetch,
+			generators,
 			link_import,
 			midi,
 			modules,
+			new_target,
 			promise,
 			proxy,
 			push,
 			registrations,
-			register_element,
 			rtc,
 			service_worker,
 			shadow_dom,
 			template,
-			web_components:template && shadow_dom && custom_elements && link_import
+			web_components
 		})
 		
-		
-		function modules_supported(){
-			try{ return !( eval(`(()=>{try{ return typeof import('./hello.js') }catch(e){ return e }})()`) instanceof Error )
-			}catch(e){ return false }
-		}
-		
-		function passive_events(compatability){
+		function passive_events(compatibility){
 			try {
 				let opts = Object.defineProperty({}, 'passive', {
 					get: function() {
-						compatability.passive_events = true
+						compatibility.passive_events = true
 					}
 				})
 				window.addEventListener("test", null, opts);
 			}
 			catch (e) {
-				compatability.passive_events = false
+				compatibility.passive_events = false
 			}
-			return compatability
+			return compatibility
 			// Use our detect's results. passive applied if supported, capture will be false either way.
-			//elem.addEventListener('touchstart', fn, supportsPassive ? { passive: true } : false);
 		}
 		
-		function test_compatability(compatability){
-			return passive_events(compatability)
+		function test_async_wait(){
+			try{
+				eval(`(()=>{
+						function wait(x) { return new Promise(success => setTimeout(() => success(x), 500)) }
+						async function add(x) {
+							const a = await wait(20)
+							const b = await wait(30)
+							return x + a + b
+						}
+						
+						(async ()=>{
+							var c = await add(10)
+							//console.log(c)
+						})()
+				})()`)
+				return true
+			}catch(e){
+				return false
+			}
+		}
+		
+		function test_closest_element(){
+			try{
+				window.document.body.firstElementChild.closest('div')
+				return true
+			}catch(e){
+				return false
+			}
+		}
+		
+		function test_compatibility(compatibility){
+			return passive_events(compatibility)
+		}
+		
+		function test_generators(){
+			try{
+				return eval(`(()=>{
+					function* generator() {
+					  yield 1
+					  yield 2
+					  yield 3
+					}
+					let steps = generator()
+					steps.next()
+					steps.next()
+					steps.next()
+					return steps.next().done
+				)()`)
+			}catch(e){
+				return false
+			}
+		}
+		
+		function test_modules(){
+			try{
+				eval(`(()=>{
+						(async ()=>{
+							let {Test} = await import('/modules/fxy/funcs/module-test.js')
+							//console.log((new Test())+'')
+						})()
+						
+				})()`)
+				return true
+			}catch(e){
+				return false
+			}
+		}
+		
+		function test_new_target(){
+			try{
+				eval(`()=>{
+					function Foo() {
+						console.log(new.target.name);
+					}
+					return Foo()
+				})`)
+				return true
+			}catch(e){
+				return false
+			}
 		}
 	}
+	
 	function get_geolocation(){
 		return {
 			get enabled(){return 'geolocation' in window.navigator},

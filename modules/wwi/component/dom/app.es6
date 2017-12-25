@@ -38,8 +38,8 @@ window.fxy.exports('dom',(dom,fxy)=>{
 	
 	class AppOptions{
 		constructor(element){
-			this.has = (name)=>element.hasAttribute(name)
-			this.get = (name)=>element.getAttribute(name)
+			this.has = name=>element.hasAttribute(name)
+			this.get = name=>element.getAttribute(name)
 		}
 		get folder(){ return fxy.file.join(this.route_path,this.route_folder) }
 		get route_folder(){ return this.has('route-folder') ? this.get('route-folder'):'pages' }
@@ -56,10 +56,7 @@ window.fxy.exports('dom',(dom,fxy)=>{
 			if(drawer_button){
 				drawer_button.setAttribute('opens','')
 				drawer_button.define('routes',{
-					opened(opened){
-						if(opened === null) element.site.drawer.opened = false
-						else element.site.drawer.opened = true
-					}
+					opened:opened => element.site.drawer.opened = opened !== null
 				})
 			}
 			let drawer = this.drawer

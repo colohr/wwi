@@ -4,7 +4,34 @@ function wwi_get_base( get_fxy, get_kit, get_module, load_window, window){
 	let element = window.document.currentScript
 	element.setAttribute('url-kit','')
 	window.addEventListener('load',load_window)
+	window.uniform_resource = uniform_resource
 	return get_fxy(element, get_kit, get_module, window)
+	function uniform_resource(location,headers){
+		return new Promise((success,error)=>{
+			let locator = new XMLHttpRequest()
+			locator.responseType = 'text'
+			locator.open('GET', location)
+			if(headers) for(let name in headers) locator.setRequestHeader(name, headers[name])
+			locator.onload = on_load
+			locator.onerror = on_error
+			//return value
+			locator.send()
+			//shared actions
+			function on_error(e){ return error(e) }
+			function on_load(){
+				return success({
+					json:()=>Promise.resolve(get_json()),
+					text:()=>Promise.resolve(locator.response)
+				})
+				//shared actions
+				function get_json(){
+					try{ return JSON.parse(locator.response) }
+					catch(e){ console.error(e) }
+					return null
+				}
+			}
+		})
+	}
 },
 function wwi_get_fxy(element, export_base, port_module, window){
 	let data = {
@@ -28,7 +55,7 @@ function wwi_get_fxy(element, export_base, port_module, window){
 		let paths = path.split('/').filter(item=>item.length)
 		if(paths.length){
 			let last = paths[paths.length-1]
-			if(last.includes('.')) paths = paths.filter(item=>item===last)
+			if(last.includes('.')) paths = paths.filter(item=>item!==last)
 		}
 		paths.unshift(host)
 		return `${window.location.protocol}//${paths.join('/')}`
@@ -88,7 +115,15 @@ function wwi_module( query, resource, source, window){
 	const world_wide_internet = {
 		components(kit){ return kit.has('import') ? fxy.in(kit.get('import')):[] },
 		get(promise_all){
-			if(!window.fxy.browser.compatability.web_components) return get_eval(window.url.wwi('poly/poly.es6')).then(_=>promise_all(this.items))
+			if(!window.fxy.browser.compatibility.web_components) {
+				return get_eval(window.url.wwi.webcomponents('webcomponents.js')).then(_=>promise_all(this.items))
+				//return get_eval(window.url.wwi('poly/poly.es6'))
+				//fxy.port.eval(window.url.wwi.poly('webcomponents/webcomponents.es6'))
+				//   .then(value=>{
+				//	   if (typeof value === 'function') return value({get kit(){ return window.kit }, get port(){ return fxy.port }, get source(){ return fxy.file }})
+				//	   return value
+				//   })
+			}
 			return promise_all(this.items)
 		},
 		items:['wwi.es6','app.es6'].map(file=>window.url.wwi(file))

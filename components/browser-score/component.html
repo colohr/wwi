@@ -1,7 +1,6 @@
 <template id="browser-score">
 	<style>
 		@import "modules/wwi/component/design/host.css";
-		@import "modules/wwi/design/action-item.css";
 		:host {
 			display: block;
 			position: relative;
@@ -10,11 +9,14 @@
 			width:100%;
 			background: var(--marine-bg);
 		}
-		[container]{  position: relative;  }
+		[container]{
+			position: relative;
+			perspective: 1000px;
+		}
 		[box]{
 			display:block;
 			box-sizing: border-box;
-			overflow: hidden;
+
 			border: 10px solid var(--tomato);
 			max-width: 100%;
 			transform-style: preserve-3d;
@@ -30,16 +32,15 @@
 			left:calc(50vw - 35%);
 			z-index: 1;
 		}
-
 		[box]:nth-of-type(1){
-			transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,-40px);
+			transform: rotate3d(1,0,0,75deg) scale3d(0.8,0.8,1) translate3d(0,25px,-40px);
 		}
 
 		[box]:nth-of-type(2){
-			transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,0px);
+			transform: rotate3d(1,0,0,75deg) scale3d(0.8,0.8,1) translate3d(0,25px,0px);
 		}
 		[box]:nth-of-type(3){
-			transform: rotateX(75deg) scale(0.8,0.8) translate3d(0,25px,40px);
+			transform: rotate3d(1,0,0,75deg) scale3d(0.8,0.8,1) translate3d(0,25px,40px);
 		}
 
 		[box]:nth-of-type(1):hover{
@@ -53,17 +54,17 @@
 		}
 
 		:host(:hover) [box]:nth-of-type(1){
-			transform: rotateX(45deg) scale(0.8,0.8) rotateY(0deg) translate3d(0px,5vh,-5vh);
+			transform: rotate3d(1,0,0,45deg) scale3d(0.8,0.8,1) translate3d(0px,5vh,-5vh);
 		}
 		:host(:hover) [box]:nth-of-type(2){
-			transform: rotateX(45deg) scale(0.8,0.8) rotateY(0deg) translate3d(0px,10vh,20vh);
+			transform: rotate3d(1,0,0,45deg) scale3d(0.8,0.8,1) translate3d(0px,10vh,20vh);
 		}
 		:host(:hover) [box]:nth-of-type(3){
-			transform: rotateX(45deg) scale(0.8,0.8) rotateY(0deg) translate3d(0px,20vh,45vh);
+			transform: rotate3d(1,0,0,45deg) scale3d(0.8,0.8,1) translate3d(0px,20vh,45vh);
 		}
 
 		:host([scored]:active) [box]{
-			transform: rotateX(55deg) scale(1,1) rotateY(0) translate3d(0,5px,-50px) !important;
+			transform: rotate3d(1,0,0,45deg) scale3d(1,1,1) translate3d(0,5px,-50px) !important;
 		}
 
 		[title]{
@@ -74,15 +75,11 @@
 			color: #464551;
 			filter: drop-shadow(0 0 4px);
 			background: rgba(31, 31, 31, 0.46);
+			overflow: hidden;
+
 		}
-		tagger-element{
-			margin-top:calc(120vh + 50px);
-			margin-bottom:50px;
-		}
-		a{  -webkit-text-stroke: 0;  }
-		[box]:nth-of-type(3):hover a{
-			color:var(--turquoise);
-		}
+
+
 		[view]{
 			overflow-y:auto;
 			max-height:100%;
@@ -96,6 +93,54 @@
 			z-index: 0;
 			text-rendering: geometricPrecision;
 			opacity: 1;
+		}
+		[button-box]{
+			position: absolute;
+			top:-120px;
+			right:0;
+			left:0;
+			transform-style: preserve-3d;
+			transition: transform 700ms ease;
+			transform-origin: bottom center;
+			transform: rotate3d(1, 0, 0, -45deg);
+			height:120px;
+		}
+		[button-box] [score]{
+
+			text-rendering: geometricPrecision;
+			position: absolute;
+			font-size:80px;
+			background-color:transparent;
+			border:none;
+			color:transparent;
+			-webkit-text-fill-color: transparent;
+			animation: neon-sign 1200ms infinite both alternate-reverse;
+			animation-timing-function: linear;
+			-webkit-text-stroke-width: 2px;
+			font-weight: 800;
+		}
+		[box]:hover [button-box]{
+			transform: rotate3d(0, 0, 0, 0deg)
+		}
+		@keyframes neon-sign {
+			0%{
+				-webkit-text-stroke-color:transparent;
+			}
+			20%{
+				-webkit-text-stroke-color:var(--saphire);
+			}
+			40%{
+				-webkit-text-stroke-color:transparent;
+			}
+			60%{
+				-webkit-text-stroke-color:var(--apple);
+			}
+			80%{
+				-webkit-text-stroke-color:transparent;
+			}
+			100%{
+				-webkit-text-stroke-color: var(--bubblegum);
+			}
 		}
 	</style>
 	<div container view gui vertical center-center>
@@ -119,8 +164,12 @@
 				<div>World</div>
 				<div>Wide</div>
 				<div>Internet</div>
-				<a action-item role="button" tabindex="0" style="font-size:60px" score>Web Score</a>
+
 			</div>
+			<div gui horizontal center-center button-box>
+				<div score>Web Score</div>
+			</div>
+
 		</div>
 		<div details>
 			<ol></ol>
@@ -130,17 +179,17 @@
 </template>
 <script>
     (function(doc){
+
         const BrowserScore = wwi.element(doc).extension(...components['browser-score'].mix('ProgressReport'))
 	    BrowserScore(class extends BrowserScore.Element{
-
 	    	connected(){
 	    		this.define({scored:true})
-			    this.query('[score]').onclick = e => this.load()
-			    let compatability = fxy.browser.compatability
+			    this.load()
+			    let compatibility = fxy.browser.compatibility
 			    let detail = fxy.tag`<li><code>${'name'} &rarr; ${'value'}</code></li>`
 			    let html = ''
-			    for(let name in compatability){
-	    			let value = compatability[name] === true ? 'YES':'NO'
+			    for(let name in compatibility){
+	    			let value = compatibility[name] === true ? 'YES':'NO'
 	    			html += detail({name,value})
 			    }
 			    this.details.innerHTML = html

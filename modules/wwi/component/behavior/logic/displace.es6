@@ -23,7 +23,7 @@
 	    
 	    const move = (0, generate_move)()
 	    const touch_events = window.fxy.browser.touch
-	    const passive = window.fxy.browser.compatability.passive_events
+	    const passive = window.fxy.browser.compatibility.passive_events
 	    const windex = Symbol('x data')
 	    const windex_index = '9982034802398403298042938'
 	    

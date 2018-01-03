@@ -85,7 +85,6 @@ window.fxy.exports('Points',(Points,fxy)=>{
 		if(name.includes('(')) name = name.split('(')[0]
 		if(name.includes('{')) name = name.split('{')[0]
 		if(name.includes(' on ')) name = name.split(' on ')[0]
-		console.log({name,line})
 		return name.trim()
 	}
 	

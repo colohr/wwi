@@ -10,98 +10,19 @@
 		class Fxy extends Map{
 			constructor(){
 				super()
-				this[modules] = new Map()
-				this.aria = new Proxy(aria,{
-					get(o,name){
-						switch(name){
-							case 'at': return aria_attributes
-							case 'element': return aria_element
-							case 'name': return aria_name
-							case 'set': return aria_attributes
-							case 'value': return aria_value
-						}
-						return null
-					},
-					has(o,name){ return name in o }
-				})
+				this[modules] = fxy_construct(this)
 			}
 			get Authority(){ return get_authority() }
 			get all(){ return all_promises }
-			get characters(){
-				return new Proxy({},{
-					get(o,name){
-						switch(name){
-							case 'alphabet':
-							case 'abc': return alphabet
-							case 'ABC': return alphabet.toUpperCase()
-							case 'numbers': return numbers
-						}
-						return null
-					}
-				})
-			}
+			get characters(){ return fxy_characters() }
 			get define(){ return define_element }
 			get deep(){ return get_deep_value }
 			get deeper(){ return get_deeper_value }
 			get doc(){ return load_doc() }
-			get dot(){ return get_dot_notation }
-			exports(folder,action){
-				if(!is_text(folder)) return module_exports_proxy()
-				if(!is_function(action)) return module_exports(folder)
-				return action(module_exports(folder),this,module_component(folder))
-			}
+			get dot(){ return dot_notation() }
+			get exports(){ return fxy_exports }
 			get external(){ return get_external() }
-			get is(){
-				return {
-					array:is_array,
-					get bool(){ return this.TF },
-					count:is_count,
-					data:is_data,
-					defined:is_defined,
-					element:is_element,
-					element_data:is_element_data,
-					email:is_email,
-					empty:is_empty,
-					error:is_error,
-					function:is_function,
-					instance:is_instance,
-					json:is_json,
-					map:is_map,
-					module:is_module,
-					nothing:is_nothing,
-					number:is_number,
-					numeric:is_numeric,
-					object:is_object,
-					set:is_set,
-					get string(){ return this.text },
-					symbol:is_symbol,
-					text:is_text,
-					TF:is_TF
-				}
-			}
-			get id(){
-				const lodash = window._
-				return {
-					get camel(){ return this.code },
-					get capital(){ return this.capitalize },
-					capitalize(value){ return is_text(value) ? lodash.capitalize(value):'' },
-					class(value){ return lodash.words(value).map(word=>this.capitalize(word)).join('') },
-					code(value){ return is_text(value) ? lodash.camelCase(value):'' },
-					dash(value){ return is_text(value) ? lodash.kebabCase(value):'' },
-					dot_notation(value){ return this.words(value).join('.') },
-					get dots(){ return this.dot_notation },
-					get kebab(){return this.dash},
-					get medial(){ return this.code },
-					path(value){ return this.words(value).join('/') },
-					proper(value){ return this.words(value).map(word=>this.capitalize(word)).join(' ') },
-					readable(value){ return this.words(value).join(' ') },
-					get snake(){return this.underscore},
-					underscore(value){ return is_text(value) ? lodash.snakeCase(value):'' },
-					words(value){ return is_text(value) ? lodash.words(value):[] },
-					get _(){ return this.underscore }
-				}
-			}
-			get in(){ return this.inputs }
+			//get in(){ return this.inputs }
 			get inputs(){ return get_inputs }
 			get load(){ return load_files }
 			get modules(){ return get_modules() }
@@ -257,6 +178,253 @@
 			})
 		}
 		
+		function dot_notation(dot_notation_value){
+			if(!is_nothing(dot_notation_value)) return get_dot_notation(dot_notation_value)
+			const lodash = window._
+			return get_dot_proxy()
+			//shared actions
+			function get_dot_act(target){
+				return new Proxy(target,{
+					get(o,name){
+						let action = lodash.get(target,name)
+						let is_action = is_function(action)
+						if(is_action) action = action.bind(target)
+						return (...x)=>is_action ? action(...x):null
+					}
+				})
+			}
+			
+			function get_dot_data(x){
+				let object = x
+				const type = get_dot_type(object)
+				return new Proxy({typename:type, get object(){ return object}},{
+					deleteProperty(o,name){ return dot_data_delete(name) },
+					get(o,name){ return dot_data_get(name) },
+					has(o,name){ return dot_data_has(name) },
+					set(o,name,value){ return dot_data_set(name,value) }
+				})
+				//shared actions
+				function dot_data_delete(name){
+					if(type !== 'invalid'){
+						if(type === 'map') object.delete(name)
+						else if(type === 'set') dot_data_update_set('delete',name)
+						else delete object[name]
+					}
+					return true
+				}
+				
+				function dot_data_get(name){
+					if(type === 'invalid') return null
+ 					let value = object[name]
+					if(is_function(value)) value = value.bind(object)
+					else switch(type){
+						case 'map':
+							value = is_nothing(value) && object.has(name) ? object.get(name):value
+							break
+						case 'set':
+							value = is_nothing(value) ? Array.from(object)[name]:value
+							break
+					}
+					if(is_nothing(value) && name === 'typename') value = type
+					return is_nothing(value) ? null:value
+				}
+				
+				function dot_data_has(name){
+					if(type === 'invalid') return false
+					if(name in object) return true
+					switch(type){
+						case 'set': return name in Array.from(object)
+						case 'map': return object.has(name)
+					}
+					return false
+				}
+				
+				function dot_data_set(name,value){
+					if(type !== 'invalid'){
+						if(type === 'map') object.set(name,value)
+						else if(type === 'set') dot_data_update_set('set',name,value)
+						else object[name] = value
+					}
+					return true
+				}
+				
+				function dot_data_update_set(type,name,value){
+					let values = Array.from(object)
+					if(type === 'delete' && !is_nothing(values[name])) delete values[name]
+					else if(type === 'set') values[name] = value
+					return object = new Set(values)
+				}
+			}
+			
+			function get_dot_notation(x){
+				return  {
+					get container(){ return this.parts.slice( 0, this.count-1 ).join('.') },
+					get count(){ return this.parts.length },
+					origin:is_text(x) ? x:'',
+					get parts(){ return 'particles' in this ? this.particles : this.particles = this.origin.split('.').filter(filter_empty_text).map(map_empty_text) },
+					get selector(){ return this.parts.join('.') },
+					get target(){ return this.parts[ this.count-1 ] },
+					value(data){
+						if(!is_data(data)) return null
+						try { return this.parts.reduce((o, i) => o[i], data) }
+						catch (e) { return null }
+					},
+					toString(){ return this.origin },
+					valueOf(){ return this.parts.join('.') }
+				}
+				//shared actions
+				function filter_empty_text(text){ return is_text(text) }
+				function map_empty_text(text){ return is_text(text) ? text.trim():null}
+			}
+			
+			function get_dot_proxy(){
+				return new Proxy(get_dot_notation,{ get:get_dot })
+				//shared actions
+				function get_dot(o,name){
+					switch(name){
+						case 'act': return get_dot_act
+						case 'combine': return (...x)=>lodash.mergeWith(...x)
+						case 'data': return get_dot_data
+						case 'delete':
+						case 'remove':
+						case 'unset':
+							return (...x)=>lodash.unset(...x)
+						case 'get': return (...x)=>lodash.get(...x)
+						case 'has': return (...x)=>lodash.has(...x)
+						case 'join':
+						case 'merge':
+							return (...x)=>lodash.merge(...x)
+						case 'pointer': return get_dot_pointer
+						case 'set': return (...x)=>lodash.set(...x)
+						case 'type': return get_dot_type
+					}
+				}
+			}
+			
+			function get_dot_pointer(x,notifier){
+				const notifies = notification=>is_data(notifier) && notification in notifier
+				const dot = get_dot_proxy()
+				return new Proxy(get_dot_data(x),{
+					deleteProperty(o,field){
+						let old = dot.get(o,field)
+						dot.delete(o,field)
+						if(notifies('change') && !is_nothing(old)) notifier.change(field,old,null,{type:'delete'})
+						return true
+					},
+					get(o,field){
+						let value = null
+						if(notifies('value')) value = notifier.value(field)
+						if(is_nothing(value)) value = dot.get(o,field)
+						return is_nothing(value) ? null:value
+					},
+					has(o,field){
+						let has = null
+						if(notifies('has')) has = notifier.value(field)
+						return !is_TF(has) ? dot.has(o,field):has
+					},
+					set(o,field,value){
+						let old = dot.get(o,field)
+						dot.set(o,field,value)
+						if(notifies('change') && old !== value) notifier.change(field,old,value,{type:'set'})
+						return true
+					}
+				})
+			}
+			
+			function get_dot_type(value){
+				if(is_array(value)) return 'array'
+				else if(is_set(value)) return 'set'
+				else if(is_map(value)) return 'map'
+				else if(is_data(value)) return 'data'
+				else if(is_function(value)) return 'function'
+				return 'invalid'
+			}
+		}
+		
+		function fxy_characters(){
+			return new Proxy({},{
+				get(o,name){
+					switch(name){
+						case 'alphabet':
+						case 'abc': return alphabet
+						case 'ABC': return alphabet.toUpperCase()
+						case 'numbers': return numbers
+					}
+					return null
+				}
+			})
+		}
+		function fxy_construct(o){
+			const lodash = window._
+			
+			o.aria = new Proxy(aria,{
+				get(o,name){
+					switch(name){
+						case 'at': return aria_attributes
+						case 'element': return aria_element
+						case 'name': return aria_name
+						case 'set': return aria_attributes
+						case 'value': return aria_value
+					}
+					return null
+				},
+				has(o,name){ return name in o }
+			})
+			
+			o.id = {
+				get camel(){ return this.code },
+				get capital(){ return this.capitalize },
+				capitalize(value){ return is_text(value) ? lodash.capitalize(value):'' },
+				class(value){ return lodash.words(value).map(word=>this.capitalize(word)).join('') },
+				code(value){ return is_text(value) ? lodash.camelCase(value):'' },
+				dash(value){ return is_text(value) ? lodash.kebabCase(value):'' },
+				dot_notation(value){ return this.words(value).join('.') },
+				get dots(){ return this.dot_notation },
+				get kebab(){return this.dash},
+				get medial(){ return this.code },
+				path(value){ return this.words(value).join('/') },
+				proper(value){ return this.words(value).map(word=>this.capitalize(word)).join(' ') },
+				readable(value){ return this.words(value).join(' ') },
+				get snake(){return this.underscore},
+				underscore(value){ return is_text(value) ? lodash.snakeCase(value):'' },
+				words(value){ return is_text(value) ? lodash.words(value):[] },
+				get _(){ return this.underscore }
+			}
+			
+			o.is = {
+				array:is_array,
+				get bool(){ return this.TF },
+				count:is_count,
+				data:is_data,
+				defined:is_defined,
+				element:is_element,
+				element_data:is_element_data,
+				email:is_email,
+				empty:is_empty,
+				error:is_error,
+				function:is_function,
+				instance:is_instance,
+				json:is_json,
+				map:is_map,
+				module:is_module,
+				nothing:is_nothing,
+				number:is_number,
+				numeric:is_numeric,
+				object:is_object,
+				set:is_set,
+				get string(){ return this.text },
+				symbol:is_symbol,
+				text:is_text,
+				TF:is_TF
+			}
+			
+			return new Map()
+		}
+		function fxy_exports(folder,action){
+			if(!is_text(folder)) return module_exports_proxy()
+			if(!is_function(action)) return module_exports(folder)
+			return action(module_exports(folder),fxy,module_component(folder))
+		}
 		function fxy_folder(path){
 			return fxy.has(path) ? fxy.get(path):fxy.set(path,new Map()).get(path)
 		}
@@ -289,6 +457,7 @@
 			fxy[modules].set(pathname,{path,name})
 			return fxy_folder(path).set(name,value).get(name)
 		}
+		
 		
 		function get_authority(){
 			const prefix = 'authority-'
@@ -350,26 +519,7 @@
 			}
 			return null
 		}
-		function get_dot_notation(x){
-			return  {
-				get container(){ return this.parts.slice( 0, this.count-1 ).join('.') },
-				get count(){ return this.parts.length },
-				origin:is_text(x) ? x:'',
-				get parts(){ return 'particles' in this ? this.particles : this.particles = this.origin.split('.').filter(filter_empty_text).map(map_empty_text) },
-				get selector(){ return this.parts.join('.') },
-				get target(){ return this.parts[ this.count-1 ] },
-				value(data){
-					if(!is_data(data)) null
-					try { return this.parts.reduce((o, i) => o[i], data) }
-					catch (e) { return null }
-				},
-				toString(){ return this.origin },
-				valueOf(){ return this.parts.join('.') }
-			}
-			//shared actions
-			function filter_empty_text(text){ return is_text(text) }
-			function map_empty_text(text){ return is_text(text) ? text.trim():null}
-		}
+		
 		function get_external(){ return new Proxy({},{ get(o,name){ return get_external_module_loader(name) } }) }
 		function get_external_module_loader(folder){
 			return function module_loader( module_value, name_value, target_value){
@@ -451,20 +601,19 @@
 		}
 		function get_modules(){
 			return new Proxy({modules:fxy.keys()},{
-				get(o,name){
-					if(fxy.has(name)){
-						return new Proxy({module:fxy.get(name)},{
-							get(o,name){
-								if(o.module.has(name)) return o.module.get(name)
-								return null
-							},
-							has(o,name){ return o.module.has(name) }
-						})
-					}
-					return null
-				},
-				has(o,name){ return fxy.has(name) }
+				get:(o,name)=>get_modules_value(name),
+				has:(o,name)=>fxy.has(name)
 			})
+			//shared actions
+			function get_modules_value(field){
+				if(fxy.has(field)){
+					return new Proxy({module:fxy.get(field)},{
+						get:(o,name)=>o.module.has(name) ? o.module.get(name):null,
+						has:(o,name)=>o.module.has(name)
+					})
+				}
+				return null
+			}
 		}
 		function get_not(...names){
 			return new Proxy((target)=>{
@@ -750,10 +899,10 @@
 		}
 		
 		function tag_closure_value(key,data){
-			let dot = get_dot_notation(key)
+			let dot = dot_notation(key)
 			let x = dot.value(data)
 			if(!x){
-				let container_dot = get_dot_notation(dot.container)
+				let container_dot = dot_notation(dot.container)
 				if(container_dot){
 					let container_value = container_dot.value(data)
 					if(is_array(container_value)){

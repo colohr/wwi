@@ -1,0 +1,7 @@
+library = {}
+library.id = 'primitive-library'
+library.logic = [
+	'logic/index.js',
+	'logic/Data/index.js',
+	'logic/List/index.js'
+]

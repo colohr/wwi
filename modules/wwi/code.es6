@@ -113,16 +113,10 @@ function wwi_module( query, resource, source, window){
 	}
 	
 	const world_wide_internet = {
-		components(kit){ return kit.has('import') ? fxy.in(kit.get('import')):[] },
+		components(kit){ return kit.has('import') ? fxy.inputs(kit.get('import')):[] },
 		get(promise_all){
 			if(!window.fxy.browser.compatibility.web_components) {
 				return get_eval(window.url.wwi.webcomponents('webcomponents.js')).then(_=>promise_all(this.items))
-				//return get_eval(window.url.wwi('poly/poly.es6'))
-				//fxy.port.eval(window.url.wwi.poly('webcomponents/webcomponents.es6'))
-				//   .then(value=>{
-				//	   if (typeof value === 'function') return value({get kit(){ return window.kit }, get port(){ return fxy.port }, get source(){ return fxy.file }})
-				//	   return value
-				//   })
 			}
 			return promise_all(this.items)
 		},

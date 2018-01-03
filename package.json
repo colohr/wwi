@@ -4,18 +4,12 @@
     "url": "https://github.com/colohr/wwi/issues"
   },
   "dependencies": {
-    "fxy": "^0.1.7",
+    "fxy": "^0.1.71",
     "wxy": "^0.0.502"
   },
   "description": "Web Component Toolbox: includes front-end tools, server-side tools & optional component sets created with wwi.",
   "homepage": "https://github.com/colohr/wwi#readme",
-  "keywords": [
-    "web components",
-    "custom elements",
-    "shadow dom",
-    "front-end",
-    "sxy"
-  ],
+  "keywords": [],
   "license": "ISC",
   "main": "./lib/index.js",
   "name": "wwi",
@@ -23,5 +17,5 @@
     "type": "git",
     "url": "git+https://github.com/colohr/wwi.git"
   },
-  "version": "0.0.606"
+  "version": "0.0.607"
 }
